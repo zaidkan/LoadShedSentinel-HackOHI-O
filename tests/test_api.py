@@ -26,7 +26,10 @@ def test_scenario_select_and_switching():
     assert res.status_code == 200
     snap = res.json()
     assert snap["cutout_status"] == "CLOSED"
-    assert len(snap["affected_premise_tokens"]) == 32
+    assert len(snap["affected_premise_tokens"]) == 16
+    assert snap["impact_source"]["provenance"] == "aep_challenge"
+    assert snap["impact_source"]["fault_asset_kind"] == "CIRCUIT_BREAKER"
+    assert not any("P-DEMO" in p for p in snap["affected_premise_tokens"])
     assert snap["status"] == "OUTAGE"
 
     # Select insufficient_evidence
@@ -37,7 +40,8 @@ def test_scenario_select_and_switching():
     assert snap_in["status"] == "UNDER_REVIEW"
 
 def test_topology_lookup_endpoint():
-    response = client.get("/api/topology/lookup?premise_id=PREM-000001")
+    premise = client.get("/api/scenario/current").json()["selected_premise_token"]
+    response = client.get("/api/topology/lookup", params={"premise_id": premise})
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "KNOWN"
