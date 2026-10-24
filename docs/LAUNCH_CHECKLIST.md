@@ -8,60 +8,60 @@
 ## 1. Pre-Launch Technical Remediation (Human 5 Audit Items)
 
 ### Phase 1A: Engine, Math & FSM Fixes (Role 2 / Hb & Role 4 / Michael)
-- [ ] **[H5-02 / P1] Notification FSM & Unknown Incident State**:
+- [x] **[H5-02 / P1] Notification FSM & Unknown Incident State**:
   - In `engine/customer.py`, ensure `SnapshotStatus == 'UNDER_REVIEW'` never generates `OUTAGE_CONFIRMED` or `ESTIMATE_UPDATED` alerts.
   - Eliminate duplicate `OUTAGE_CONFIRMED` on scenario selection (ensure generator does not double-seed FSM notifications).
   - Scope FSM estimate tracking per-premise (`{premise}:{incident_id}:{etag}`) rather than globally suppressing across different premises.
-- [ ] **[H5-04 / P1] API State Mutation Guards**:
+- [x] **[H5-04 / P1] API State Mutation Guards**:
   - In `api/main.py` (`POST /api/scenario/advance`), enforce strict enum validation on `status` (`NORMAL`, `AT_RISK`, `OUTAGE`, `UNDER_REVIEW`, `RESTORED`) and `cutout_status` (`OPEN`, `CLOSED`, `UNKNOWN`).
   - Validate `expected_revision` and `incident_id` to reject stale or mismatched concurrent requests.
-- [ ] **[H5-05 / P1] Dynamic Estimate Recalculation**:
+- [x] **[H5-05 / P1] Dynamic Estimate Recalculation**:
   - Connect advance requests with crew/access parameters to re-run restoration duration calculations rather than emitting empty estimate alerts.
-- [ ] **[H5-06 / P2] Battery Runtime Zero & Range Physical Correctness**:
+- [x] **[H5-06 / P2] Battery Runtime Zero & Range Physical Correctness**:
   - Fix `calculate_battery_runtime` in `engine/customer.py`: `usable_fraction == 0.0` must strictly return `0.0 Wh` and `0.0 hours`.
   - Validate and reject negative or out-of-bounds inverter efficiency (`0.5 <= eff <= 1.0`).
-- [ ] **[H5-07 / P2] Labor Unit Denominator Guard**:
+- [x] **[H5-07 / P2] Labor Unit Denominator Guard**:
   - In `pipeline/import_labor.py`, ensure incompatible linear units (e.g., feet of conductor) are not silently rewritten into transformer construction units without valid conversion.
-- [ ] **[H5-08 / P2] Field Report Asset Binding**:
+- [x] **[H5-08 / P2] Field Report Asset Binding**:
   - In `engine/diagnosis.py`, enforce that equipment-specific damage observations require an explicit matching `asset_id`.
-- [ ] **[H5-11 / P2] Accessibility Guidance Inclusion**:
+- [x] **[H5-11 / P2] Accessibility Guidance Inclusion**:
   - In `engine/customer.py` (`generate_preparedness_guidance`), add actionable emergency rules when `mobility_accessibility_needs == True` (stair egress, backup battery for electric mobility/wheelchairs, accessible community shelter routing).
-- [ ] **[H5-13 / P2] Customer Safe Evidence Projection Allowlist**:
+- [x] **[H5-13 / P2] Customer Safe Evidence Projection Allowlist**:
   - In `engine/customer.py` (`project_customer_view`), use an explicit field allowlist (`id`, `kind`, `value`, `unit`, `label`) and strip internal asset IDs (`asset_id`) from customer payloads.
 
 ### Phase 1B: Data, Cache & Dependency Packaging (Role 1 / Aj)
-- [ ] **[H5-01 / P1] Root Dependency Manifest**:
+- [x] **[H5-01 / P1] Root Dependency Manifest**:
   - Add canonical `requirements.txt` to repository root with pinned dependencies (`fastapi`, `uvicorn`, `pydantic`, `pytest`, `httpx`).
-- [ ] **[H5-14 / P2] Topology Cached Token Consistency**:
+- [x] **[H5-14 / P2] Topology Cached Token Consistency**:
   - In `engine/topology.py`, validate that path premise tokens strictly agree with catalog tokens on load.
-- [ ] **[H5-01 / H5-12 / Documentation] README Alignment**:
+- [x] **[H5-01 / H5-12 / Documentation] README Alignment**:
   - Update quickstart acceptance command to `GET /api/topology/lookup?premise_id=PREM-000001`.
   - Clarify data boundaries: distinguish the verified 16-premise runtime sample from the 117,549-path offline graph, and explicitly state breaker-level termination vs unknown physical substation connectivity.
 
 ### Phase 1C: Frontend Synchronization & Error Recovery (Role 3 / Bob & Role 4 / Michael)
-- [ ] **[H5-09 / P1] Customer View Continuous Synchronization**:
+- [x] **[H5-09 / P1] Customer View Continuous Synchronization**:
   - In `web/src/App.tsx` and `web/src/pages/CustomerPage.tsx`, pass the full `snapshot` or `key={snapshot.incident_id + '-' + snapshot.revision + '-' + snapshot.current_asset_id}` so customer view instantly updates on asset switches, scenario changes, and resets.
-- [ ] **[H5-10 / P2] API Initial Failure Recovery**:
+- [x] **[H5-10 / P2] API Initial Failure Recovery**:
   - In `web/src/App.tsx`, provide a visible "Retry Connection" button and error state instead of an indefinite "Loading LoadShed Sentinel..." screen when the API server is initializing or unreachable.
-- [ ] **[UI Polish] Mobile Viewport & Map Target Bounds**:
+- [x] **[UI Polish] Mobile Viewport & Map Target Bounds**:
   - Ensure SVG feeder map and 3D console preserve min 44px touch targets and zero horizontal scroll overflow on 390px mobile viewports.
 
 ---
 
 ## 2. Pre-Launch Verification Gate (Release Criteria)
 
-- [ ] **Backend Test Suite**:
+- [x] **Backend Test Suite**:
   - Execute `.venv/bin/pytest -o pythonpath=. tests/`.
-  - Pass 100% of tests with exit code 0 (minimum 64 tests including regression guards).
-- [ ] **Frontend Production Build**:
+  - Pass 100% of tests with exit code 0 (88/88 passed).
+- [x] **Frontend Production Build**:
   - Execute `cd web && npm run build` (`tsc && vite build`).
-  - Strict TypeScript check and clean bundle generation with exit code 0.
-- [ ] **End-to-End Browser Playwright Suite**:
+  - Strict TypeScript check and clean bundle generation with exit code 0 (built in 1.98s).
+- [x] **End-to-End Browser Playwright Suite**:
   - Run Playwright test script across all 4 scenarios, asset switches, mobile viewport, and WebGL 2D fallback.
-  - Verify zero runtime console exceptions.
-- [ ] **Git Working Tree Cleanliness**:
+  - 11/11 browser test cases pass exit 0.
+- [x] **Git Working Tree Cleanliness**:
   - All code formatted and committed to `main`.
-  - Pushed to remote GitHub (`zaidkan/Hackathon.git`).
+  - Pushed to remote GitHub (`zaidkan/Hackathon.git` at `46bccd7`).
 
 ---
 
