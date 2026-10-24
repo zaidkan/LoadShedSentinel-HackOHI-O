@@ -24,6 +24,7 @@ class AEPImpact:
             raise ValueError("Expected AEP-derived, explicitly scoped public network bundle")
         nodes, paths = bundle["nodes"], bundle["supply_paths"]
         self.metadata = meta
+        self.bundle_edges = bundle.get("edges", [])
         self.assets = {n["asset_token"]: n for n in nodes}
         self.paths = {p["premise_token"]: p for p in paths}
         if len(self.assets) != len(nodes) or len(self.paths) != len(paths) or not self.paths:
@@ -109,6 +110,49 @@ class AEPImpact:
             for token, node in sorted(self.assets.items())
             if node["kind"] in ("TRANSFORMER", "CIRCUIT_BREAKER")
         ]
+
+    def geojson(self) -> dict:
+        """Schematic map from the very same source bundle used for outage impact.
+
+        Only generalized equipment points; no premise location or conductor lines.
+        Missing GIS joins stay missing, never guessed.
+        """
+        features, locations = [], {}
+        for token, node in sorted(self.assets.items()):
+            point = node.get("coordinates")
+            if point is None:
+                continue
+            if (not isinstance(point, list) or len(point) != 2 or
+                    any(not isinstance(v, (int, float)) or isinstance(v, bool) for v in point) or
+                    not (-180 <= point[0] <= 180 and -90 <= point[1] <= 90)):
+                raise ValueError("Invalid generalized AEP equipment coordinate")
+            locations[token] = point
+            features.append({
+                "type": "Feature",
+                "geometry": {"type": "Point", "coordinates": point},
+                "properties": {"asset_token": token, "kind": node["kind"],
+                               "provenance": "aep_challenge", "geometry_quality": "generalized"},
+            })
+        for edge in self.bundle_edges:
+            lower, upper = edge["downstream_token"], edge["upstream_token"]
+            if lower in locations and upper in locations and locations[lower] != locations[upper]:
+                features.append({
+                    "type": "Feature",
+                    "geometry": {"type": "LineString",
+                                 "coordinates": [locations[lower], locations[upper]]},
+                    "properties": {"downstream_token": lower, "upstream_token": upper,
+                                   "provenance": "aep_challenge",
+                                   "relation": "provided_upstream_sequence",
+                                   "geometry_quality": "schematic_link_not_conductor"},
+                })
+        return {
+            "type": "FeatureCollection", "status": "KNOWN", "features": features,
+            "provenance": "aep_challenge", "scope": "selected_subnet",
+            "missing_geometry_tokens": sorted(set(self.assets) - set(locations)),
+            "geometry_policy": "Generalized AEP equipment locations (0.02-degree grid); "
+                               "links are schematic dependencies, NOT conductors.",
+            "relationship_basis": "supplied_upstream_sequence_not_live_energization",
+        }
 
     def trace(self, premise_token: str) -> dict:
         path = self.paths.get(premise_token)
