@@ -1,0 +1,267 @@
+{
+  "active_faults": [
+    {
+      "asset_token": "ASSET-4D3811483AD1FB8F",
+      "fault_token": "SCENARIO-LOCAL",
+      "state": "ACTIVE"
+    },
+    {
+      "asset_token": "ASSET-8183AD3FFD74B8CF",
+      "fault_token": "SCENARIO-UPSTREAM",
+      "state": "ACTIVE"
+    }
+  ],
+  "after_local_repair": {
+    "blocking_fault_tokens": [
+      "SCENARIO-UPSTREAM"
+    ],
+    "clear_of_modeled_faults": false,
+    "premise_token": "PREM-0B30A08C7266D4BF",
+    "requires_explicit_reenergization": true,
+    "status": "KNOWN_IN_SCOPE",
+    "unknown_fault_tokens": []
+  },
+  "disclosure": "Faults are simulated on a real supplied dependency path.",
+  "impact": {
+    "known_count": 8,
+    "premise_states": [
+      {
+        "blocking_fault_tokens": [
+          "SCENARIO-LOCAL",
+          "SCENARIO-UPSTREAM"
+        ],
+        "clear_of_modeled_faults": false,
+        "premise_token": "PREM-0B30A08C7266D4BF",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [
+          "SCENARIO-LOCAL",
+          "SCENARIO-UPSTREAM"
+        ],
+        "clear_of_modeled_faults": false,
+        "premise_token": "PREM-18D896D9BA3A6742",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [],
+        "clear_of_modeled_faults": true,
+        "premise_token": "PREM-2C7D1FA7804104E9",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [],
+        "clear_of_modeled_faults": true,
+        "premise_token": "PREM-3EB7CFB5FEE2F689",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [],
+        "clear_of_modeled_faults": true,
+        "premise_token": "PREM-4254BDA0BDA3AE63",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [],
+        "clear_of_modeled_faults": true,
+        "premise_token": "PREM-54D6D4F5EE7203DC",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [],
+        "clear_of_modeled_faults": true,
+        "premise_token": "PREM-57377B41B7FF07B7",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [],
+        "clear_of_modeled_faults": true,
+        "premise_token": "PREM-58C01E7EE6E78158",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [
+          "SCENARIO-UPSTREAM"
+        ],
+        "clear_of_modeled_faults": false,
+        "premise_token": "PREM-5BD748397AD95FC9",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [
+          "SCENARIO-UPSTREAM"
+        ],
+        "clear_of_modeled_faults": false,
+        "premise_token": "PREM-65407403B0C9216A",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [],
+        "clear_of_modeled_faults": true,
+        "premise_token": "PREM-7965B5A1349D13E5",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [
+          "SCENARIO-LOCAL",
+          "SCENARIO-UPSTREAM"
+        ],
+        "clear_of_modeled_faults": false,
+        "premise_token": "PREM-9CD9B633192D8F1B",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [
+          "SCENARIO-UPSTREAM"
+        ],
+        "clear_of_modeled_faults": false,
+        "premise_token": "PREM-B8DF9AD90151321C",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [
+          "SCENARIO-UPSTREAM"
+        ],
+        "clear_of_modeled_faults": false,
+        "premise_token": "PREM-E46129B8743DA751",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [],
+        "clear_of_modeled_faults": true,
+        "premise_token": "PREM-EC8EC570B73A55C4",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      },
+      {
+        "blocking_fault_tokens": [
+          "SCENARIO-UPSTREAM"
+        ],
+        "clear_of_modeled_faults": false,
+        "premise_token": "PREM-FC1CDDA2C3D68306",
+        "requires_explicit_reenergization": true,
+        "status": "KNOWN_IN_SCOPE",
+        "unknown_fault_tokens": []
+      }
+    ],
+    "premise_tokens": [
+      "PREM-0B30A08C7266D4BF",
+      "PREM-18D896D9BA3A6742",
+      "PREM-5BD748397AD95FC9",
+      "PREM-65407403B0C9216A",
+      "PREM-9CD9B633192D8F1B",
+      "PREM-B8DF9AD90151321C",
+      "PREM-E46129B8743DA751",
+      "PREM-FC1CDDA2C3D68306"
+    ],
+    "provenance": "scenario",
+    "scope": "selected_subnet",
+    "unknown_coverage_count": 0
+  },
+  "local_asset_token": "ASSET-4D3811483AD1FB8F",
+  "provenance": "scenario",
+  "risk": {
+    "as_of": "2026-10-24",
+    "assumptions": [
+      "Storm intensity is a user scenario, not a measured forecast.",
+      "Index = 80 * intensity + min(20, 4 * earlier nearby damage reports).",
+      "Bands: LOW below 30; MODERATE below 65; HIGH otherwise. Thresholds are demo assumptions.",
+      "Nearby damage counts have no comparable exposure denominator and are not failure rates."
+    ],
+    "band": "HIGH",
+    "confidence_kind": "limited_source_coverage",
+    "drivers": [
+      {
+        "factor": "storm_scenario_intensity",
+        "points": 56.0,
+        "provenance": "scenario",
+        "value": 0.7
+      },
+      {
+        "factor": "earlier_nearby_damage_reports",
+        "points": 20,
+        "provenance": "aep_challenge",
+        "radius_m": 2000,
+        "value": 12
+      }
+    ],
+    "evidence_refs": [
+      "ARCOS_REPORT_DATE_SPATIAL_AGGREGATE",
+      "SOURCE-63BD8B74332E0F0A"
+    ],
+    "missing_inputs": [
+      "Measured storm forecast",
+      "Calibrated outage labels",
+      "Live switching state and full physical conductor path"
+    ],
+    "model_version": "ordinal-scenario-v1",
+    "premise_token": "PREM-0B30A08C7266D4BF",
+    "score": 76.0,
+    "score_kind": "ordinal_scenario_index",
+    "source": [
+      "aep_challenge",
+      "scenario"
+    ]
+  },
+  "selected_premise_token": "PREM-0B30A08C7266D4BF",
+  "supply_path": {
+    "asset_tokens": [
+      "ASSET-4D3811483AD1FB8F",
+      "ASSET-8183AD3FFD74B8CF",
+      "ASSET-EA2142456C63633E",
+      "ASSET-00FE606EC2BF3F0F",
+      "ASSET-F131F485A6582C3B",
+      "ASSET-364D878C367B313A"
+    ],
+    "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+    "evidence_refs": [
+      "SOURCE-63BD8B74332E0F0A"
+    ],
+    "limitations": [
+      "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+      "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+      "Some upstream equipment is supplied in text but has no validated GIS geometry."
+    ],
+    "physical_path_complete": false,
+    "premise_token": "PREM-0B30A08C7266D4BF",
+    "provenance": "aep_challenge",
+    "status": "PARTIAL",
+    "text_path_complete": true,
+    "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+    "unmapped_gis_tokens": [
+      "ASSET-00FE606EC2BF3F0F",
+      "ASSET-F131F485A6582C3B",
+      "ASSET-364D878C367B313A"
+    ]
+  },
+  "upstream_asset_token": "ASSET-8183AD3FFD74B8CF"
+}

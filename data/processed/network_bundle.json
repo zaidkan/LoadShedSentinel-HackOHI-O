@@ -1,0 +1,1176 @@
+{
+  "edges": [
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-65407403B0C9216A",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-5405BE644B753F39"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-5405BE644B753F39",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-8183AD3FFD74B8CF"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-8183AD3FFD74B8CF",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-EA2142456C63633E"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-EA2142456C63633E",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-00FE606EC2BF3F0F"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-00FE606EC2BF3F0F",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-F131F485A6582C3B"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-F131F485A6582C3B",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-364D878C367B313A"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-FC1CDDA2C3D68306",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-5405BE644B753F39"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-3EB7CFB5FEE2F689",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-B4735B2138B3CE7C"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-B4735B2138B3CE7C",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-374EB45ADD130357"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-374EB45ADD130357",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-364D878C367B313A"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-2C7D1FA7804104E9",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-253FD0B7C3F209A9"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-253FD0B7C3F209A9",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-374EB45ADD130357"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-B8DF9AD90151321C",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-5405BE644B753F39"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-18D896D9BA3A6742",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-4D3811483AD1FB8F"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-4D3811483AD1FB8F",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-8183AD3FFD74B8CF"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-EC8EC570B73A55C4",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-3D728064C2BE9061"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-3D728064C2BE9061",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-374EB45ADD130357"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-7965B5A1349D13E5",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-47FA2B5E062A42E6"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "ASSET-47FA2B5E062A42E6",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-374EB45ADD130357"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-54D6D4F5EE7203DC",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-47FA2B5E062A42E6"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-E46129B8743DA751",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-5405BE644B753F39"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-57377B41B7FF07B7",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-47FA2B5E062A42E6"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-5BD748397AD95FC9",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-5405BE644B753F39"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-0B30A08C7266D4BF",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-4D3811483AD1FB8F"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-4254BDA0BDA3AE63",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-47FA2B5E062A42E6"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-58C01E7EE6E78158",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-B4735B2138B3CE7C"
+    },
+    {
+      "basis": "provided_upstream_sequence",
+      "downstream_token": "PREM-9CD9B633192D8F1B",
+      "physical_line_geometry": false,
+      "provenance": "aep_challenge",
+      "upstream_token": "ASSET-4D3811483AD1FB8F"
+    }
+  ],
+  "metadata": {
+    "coordinate_policy": {
+      "axis_order": "longitude_latitude",
+      "crs": "EPSG:4326",
+      "grid_degrees": 0.02,
+      "meaning": "Generalized source geometry; unsuitable for navigation or exact premises."
+    },
+    "limitations": [
+      "Selected counts are not full-network impact counts.",
+      "GIS line context does not add electrical dependencies.",
+      "Historical damage Circuit labels do not match customer circuit_id; no circuit join is claimed.",
+      "NEAR_FID target layer is unverified; no damage-to-equipment assignment is claimed."
+    ],
+    "provenance": "aep_challenge",
+    "schema_version": "data_slice_v1",
+    "scope": "selected_subnet",
+    "source_archive_sha256": {
+      "Data1.zip": "08ac47b7dd7f43cde56509644d7292d0b6978dcd62300912b4ecf0a2c3c6eca3",
+      "Data2.zip": "13bea1c84636989a6475f481d67f25b25a17fcac8b77f674a5157e3a1d105f00",
+      "matched_upstream.zip": "13f8d9da49843c959059b4074417c47671105131cdc4bfe9daf7b534e5f522c3"
+    }
+  },
+  "nodes": [
+    {
+      "asset_token": "ASSET-364D878C367B313A",
+      "coordinates": null,
+      "full_source_known_count": 1563,
+      "gis_join": "UNMAPPED",
+      "kind": "CIRCUIT_BREAKER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-8183AD3FFD74B8CF",
+      "coordinates": [
+        -80.1,
+        37.2
+      ],
+      "full_source_known_count": 8,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "FUSE",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-374EB45ADD130357",
+      "coordinates": [
+        -80.06,
+        37.2
+      ],
+      "full_source_known_count": 23,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "FUSE",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-F131F485A6582C3B",
+      "coordinates": null,
+      "full_source_known_count": 265,
+      "gis_join": "UNMAPPED",
+      "kind": "RECLOSER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-00FE606EC2BF3F0F",
+      "coordinates": null,
+      "full_source_known_count": 92,
+      "gis_join": "UNMAPPED",
+      "kind": "RECLOSER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-EA2142456C63633E",
+      "coordinates": [
+        -80.1,
+        37.2
+      ],
+      "full_source_known_count": 20,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "FUSE",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-4D3811483AD1FB8F",
+      "coordinates": [
+        -80.1,
+        37.2
+      ],
+      "full_source_known_count": 3,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "TRANSFORMER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-5405BE644B753F39",
+      "coordinates": [
+        -80.1,
+        37.2
+      ],
+      "full_source_known_count": 5,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "TRANSFORMER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-3D728064C2BE9061",
+      "coordinates": [
+        -80.06,
+        37.2
+      ],
+      "full_source_known_count": 1,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "TRANSFORMER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-47FA2B5E062A42E6",
+      "coordinates": [
+        -80.06,
+        37.2
+      ],
+      "full_source_known_count": 4,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "TRANSFORMER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-253FD0B7C3F209A9",
+      "coordinates": [
+        -80.06,
+        37.2
+      ],
+      "full_source_known_count": 1,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "TRANSFORMER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    },
+    {
+      "asset_token": "ASSET-B4735B2138B3CE7C",
+      "coordinates": [
+        -80.06,
+        37.2
+      ],
+      "full_source_known_count": 2,
+      "gis_join": "CLASS_ID_LOCATION",
+      "kind": "TRANSFORMER",
+      "provenance": "aep_challenge",
+      "relationship_basis": "provided_upstream_sequence"
+    }
+  ],
+  "risk_context": {
+    "PREM-0B30A08C7266D4BF": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 2,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 3,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        }
+      ]
+    },
+    "PREM-18D896D9BA3A6742": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 2,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 3,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        }
+      ]
+    },
+    "PREM-2C7D1FA7804104E9": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 5,
+          "date": "2024-04-12"
+        },
+        {
+          "count": 1,
+          "date": "2024-10-01"
+        },
+        {
+          "count": 1,
+          "date": "2025-02-12"
+        },
+        {
+          "count": 24,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 26,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        },
+        {
+          "count": 2,
+          "date": "2025-02-17"
+        }
+      ]
+    },
+    "PREM-3EB7CFB5FEE2F689": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 1,
+          "date": "2024-10-01"
+        },
+        {
+          "count": 22,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 28,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 6,
+          "date": "2025-02-15"
+        },
+        {
+          "count": 1,
+          "date": "2025-02-17"
+        }
+      ]
+    },
+    "PREM-4254BDA0BDA3AE63": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 5,
+          "date": "2024-04-12"
+        },
+        {
+          "count": 1,
+          "date": "2024-10-01"
+        },
+        {
+          "count": 23,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 28,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        },
+        {
+          "count": 2,
+          "date": "2025-02-17"
+        }
+      ]
+    },
+    "PREM-54D6D4F5EE7203DC": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 5,
+          "date": "2024-04-12"
+        },
+        {
+          "count": 1,
+          "date": "2024-10-01"
+        },
+        {
+          "count": 23,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 28,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        },
+        {
+          "count": 2,
+          "date": "2025-02-17"
+        }
+      ]
+    },
+    "PREM-57377B41B7FF07B7": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 5,
+          "date": "2024-04-12"
+        },
+        {
+          "count": 1,
+          "date": "2024-10-01"
+        },
+        {
+          "count": 22,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 28,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        },
+        {
+          "count": 2,
+          "date": "2025-02-17"
+        }
+      ]
+    },
+    "PREM-58C01E7EE6E78158": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 1,
+          "date": "2024-10-01"
+        },
+        {
+          "count": 22,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 29,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 6,
+          "date": "2025-02-15"
+        },
+        {
+          "count": 1,
+          "date": "2025-02-17"
+        }
+      ]
+    },
+    "PREM-5BD748397AD95FC9": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 2,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 3,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        }
+      ]
+    },
+    "PREM-65407403B0C9216A": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 2,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 3,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        }
+      ]
+    },
+    "PREM-7965B5A1349D13E5": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 5,
+          "date": "2024-04-12"
+        },
+        {
+          "count": 1,
+          "date": "2024-10-01"
+        },
+        {
+          "count": 23,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 28,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        },
+        {
+          "count": 2,
+          "date": "2025-02-17"
+        }
+      ]
+    },
+    "PREM-9CD9B633192D8F1B": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 2,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 3,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 6,
+          "date": "2025-02-15"
+        }
+      ]
+    },
+    "PREM-B8DF9AD90151321C": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 2,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 3,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        }
+      ]
+    },
+    "PREM-E46129B8743DA751": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 2,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 3,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        }
+      ]
+    },
+    "PREM-EC8EC570B73A55C4": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 5,
+          "date": "2024-04-12"
+        },
+        {
+          "count": 1,
+          "date": "2024-10-01"
+        },
+        {
+          "count": 22,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 28,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        },
+        {
+          "count": 2,
+          "date": "2025-02-17"
+        }
+      ]
+    },
+    "PREM-FC1CDDA2C3D68306": {
+      "limitation": "Spatial context only; no causal asset match, exposure denominator, or independent storm labels.",
+      "radius_m": 2000,
+      "reports_by_date": [
+        {
+          "count": 2,
+          "date": "2025-02-13"
+        },
+        {
+          "count": 3,
+          "date": "2025-02-14"
+        },
+        {
+          "count": 7,
+          "date": "2025-02-15"
+        }
+      ]
+    }
+  },
+  "supply_paths": [
+    {
+      "asset_tokens": [
+        "ASSET-4D3811483AD1FB8F",
+        "ASSET-8183AD3FFD74B8CF",
+        "ASSET-EA2142456C63633E",
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-63BD8B74332E0F0A"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-0B30A08C7266D4BF",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-4D3811483AD1FB8F",
+        "ASSET-8183AD3FFD74B8CF",
+        "ASSET-EA2142456C63633E",
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-71ED641C86617588"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-18D896D9BA3A6742",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-253FD0B7C3F209A9",
+        "ASSET-374EB45ADD130357",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-F61B5862F2AF61C0"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-2C7D1FA7804104E9",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-B4735B2138B3CE7C",
+        "ASSET-374EB45ADD130357",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-27D259DAD9454BFF"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-3EB7CFB5FEE2F689",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-47FA2B5E062A42E6",
+        "ASSET-374EB45ADD130357",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-89A74E213248917D"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-4254BDA0BDA3AE63",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-47FA2B5E062A42E6",
+        "ASSET-374EB45ADD130357",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-A6AC2A7885511D49"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-54D6D4F5EE7203DC",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-47FA2B5E062A42E6",
+        "ASSET-374EB45ADD130357",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-CBC5A29F50F8F4FD"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-57377B41B7FF07B7",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-B4735B2138B3CE7C",
+        "ASSET-374EB45ADD130357",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-C16EBB8E7A50EFF9"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-58C01E7EE6E78158",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-5405BE644B753F39",
+        "ASSET-8183AD3FFD74B8CF",
+        "ASSET-EA2142456C63633E",
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-5958AE5EAB75F491"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-5BD748397AD95FC9",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-5405BE644B753F39",
+        "ASSET-8183AD3FFD74B8CF",
+        "ASSET-EA2142456C63633E",
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-89ECA2130157ED7F"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-65407403B0C9216A",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-47FA2B5E062A42E6",
+        "ASSET-374EB45ADD130357",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-A16077B40FC36A03"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-7965B5A1349D13E5",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-4D3811483AD1FB8F",
+        "ASSET-8183AD3FFD74B8CF",
+        "ASSET-EA2142456C63633E",
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-2208E3285E51B1E5"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-9CD9B633192D8F1B",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-5405BE644B753F39",
+        "ASSET-8183AD3FFD74B8CF",
+        "ASSET-EA2142456C63633E",
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-41BF68861BEF26AA"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-B8DF9AD90151321C",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-5405BE644B753F39",
+        "ASSET-8183AD3FFD74B8CF",
+        "ASSET-EA2142456C63633E",
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-9D83420D38A768CF"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-E46129B8743DA751",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-3D728064C2BE9061",
+        "ASSET-374EB45ADD130357",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-D002785AAB0D1C71"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-EC8EC570B73A55C4",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-364D878C367B313A"
+      ]
+    },
+    {
+      "asset_tokens": [
+        "ASSET-5405BE644B753F39",
+        "ASSET-8183AD3FFD74B8CF",
+        "ASSET-EA2142456C63633E",
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ],
+      "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
+      "evidence_refs": [
+        "SOURCE-2013000889C6D59D"
+      ],
+      "limitations": [
+        "Ordered equipment dependencies omit primary/secondary conductors and substation geometry.",
+        "Normal switch positions are not live state; no power-flow or alternate-feed feasibility is established.",
+        "Some upstream equipment is supplied in text but has no validated GIS geometry."
+      ],
+      "physical_path_complete": false,
+      "premise_token": "PREM-FC1CDDA2C3D68306",
+      "provenance": "aep_challenge",
+      "status": "PARTIAL",
+      "text_path_complete": true,
+      "transformer_join": "CUSTOMER_LOCATION_CIRCUIT_AND_TEXT_CLASS_ID_LOCATION",
+      "unmapped_gis_tokens": [
+        "ASSET-00FE606EC2BF3F0F",
+        "ASSET-F131F485A6582C3B",
+        "ASSET-364D878C367B313A"
+      ]
+    }
+  ]
+}

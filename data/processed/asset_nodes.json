@@ -1,0 +1,137 @@
+[
+  {
+    "asset_token": "ASSET-364D878C367B313A",
+    "coordinates": null,
+    "full_source_known_count": 1563,
+    "gis_join": "UNMAPPED",
+    "kind": "CIRCUIT_BREAKER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-8183AD3FFD74B8CF",
+    "coordinates": [
+      -80.1,
+      37.2
+    ],
+    "full_source_known_count": 8,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "FUSE",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-374EB45ADD130357",
+    "coordinates": [
+      -80.06,
+      37.2
+    ],
+    "full_source_known_count": 23,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "FUSE",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-F131F485A6582C3B",
+    "coordinates": null,
+    "full_source_known_count": 265,
+    "gis_join": "UNMAPPED",
+    "kind": "RECLOSER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-00FE606EC2BF3F0F",
+    "coordinates": null,
+    "full_source_known_count": 92,
+    "gis_join": "UNMAPPED",
+    "kind": "RECLOSER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-EA2142456C63633E",
+    "coordinates": [
+      -80.1,
+      37.2
+    ],
+    "full_source_known_count": 20,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "FUSE",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-4D3811483AD1FB8F",
+    "coordinates": [
+      -80.1,
+      37.2
+    ],
+    "full_source_known_count": 3,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "TRANSFORMER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-5405BE644B753F39",
+    "coordinates": [
+      -80.1,
+      37.2
+    ],
+    "full_source_known_count": 5,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "TRANSFORMER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-3D728064C2BE9061",
+    "coordinates": [
+      -80.06,
+      37.2
+    ],
+    "full_source_known_count": 1,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "TRANSFORMER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-47FA2B5E062A42E6",
+    "coordinates": [
+      -80.06,
+      37.2
+    ],
+    "full_source_known_count": 4,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "TRANSFORMER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-253FD0B7C3F209A9",
+    "coordinates": [
+      -80.06,
+      37.2
+    ],
+    "full_source_known_count": 1,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "TRANSFORMER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  },
+  {
+    "asset_token": "ASSET-B4735B2138B3CE7C",
+    "coordinates": [
+      -80.06,
+      37.2
+    ],
+    "full_source_known_count": 2,
+    "gis_join": "CLASS_ID_LOCATION",
+    "kind": "TRANSFORMER",
+    "provenance": "aep_challenge",
+    "relationship_basis": "provided_upstream_sequence"
+  }
+]

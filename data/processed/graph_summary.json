@@ -1,0 +1,90 @@
+{
+  "customer_transformer_location_key_exists": 117615,
+  "equipment_gis_joins": {
+    "CLASS_ID_LOCATION": 31954,
+    "LOCATION_MISMATCH": 2,
+    "UNMAPPED": 644
+  },
+  "equipment_gis_joins_by_kind": {
+    "Circuit Breaker": {
+      "UNMAPPED": 110
+    },
+    "Distribution": {
+      "CLASS_ID_LOCATION": 25298,
+      "LOCATION_MISMATCH": 2,
+      "UNMAPPED": 2
+    },
+    "Fuse": {
+      "CLASS_ID_LOCATION": 6656,
+      "UNMAPPED": 101
+    },
+    "Recloser (Electronic)": {
+      "UNMAPPED": 36
+    },
+    "Recloser (Hydraulic)": {
+      "UNMAPPED": 286
+    },
+    "Sectionalizer": {
+      "UNMAPPED": 1
+    },
+    "Step": {
+      "UNMAPPED": 108
+    }
+  },
+  "equipment_kinds": {
+    "Circuit Breaker": 110,
+    "Distribution": 25302,
+    "Fuse": 6757,
+    "Recloser (Electronic)": 36,
+    "Recloser (Hydraulic)": 286,
+    "Sectionalizer": 1,
+    "Step": 108
+  },
+  "joins": {
+    "customer_rows_without_text": 47,
+    "customer_transformer_join": {
+      "LOCATION_CIRCUIT": 117615,
+      "UNMAPPED": 27
+    },
+    "rejected_customer_paths": {
+      "CUSTOMER_TEXT_TRANSFORMER_CONFLICT": 2,
+      "NO_TEXT_PATH": 47,
+      "TEXT_LOCATION_MISMATCH": 12,
+      "UNMAPPED": 27
+    },
+    "text_keys_without_customer": 4,
+    "validated_premise_paths": 117554
+  },
+  "limitations": [
+    "Selected counts are not full-network impact counts.",
+    "GIS line context does not add electrical dependencies.",
+    "Historical damage Circuit labels do not match customer circuit_id; no circuit join is claimed.",
+    "NEAR_FID target layer is unverified; no damage-to-equipment assignment is claimed."
+  ],
+  "scope": "selected_subnet",
+  "selected_assets": 12,
+  "selected_links": 27,
+  "selected_premises": 16,
+  "source": "aep_challenge",
+  "source_counts": {
+    "ambulance": 10,
+    "customers": 117642,
+    "damage": 1659,
+    "fire": 37,
+    "fuses": 7616,
+    "hospitals": 5,
+    "poles": 107013,
+    "primary": 62788,
+    "reclosers": 331,
+    "secondary": 127403,
+    "switches": 900,
+    "transformers": 26959
+  },
+  "unique_equipment_tokens": 32600,
+  "upstream": {
+    "accepted_paths": 117599,
+    "conflicting_premises": 0,
+    "duplicate_rows": 0,
+    "rejected_rows": []
+  }
+}

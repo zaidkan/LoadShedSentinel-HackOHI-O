@@ -1,0 +1,1791 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-8183AD3FFD74B8CF",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "FUSE",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-374EB45ADD130357",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "FUSE",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-EA2142456C63633E",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "FUSE",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-4D3811483AD1FB8F",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "TRANSFORMER",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-5405BE644B753F39",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "TRANSFORMER",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-3D728064C2BE9061",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "TRANSFORMER",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-47FA2B5E062A42E6",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "TRANSFORMER",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-253FD0B7C3F209A9",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "TRANSFORMER",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "asset_token": "ASSET-B4735B2138B3CE7C",
+        "gis_join": "CLASS_ID_LOCATION",
+        "kind": "TRANSFORMER",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-65407403B0C9216A",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-FC1CDDA2C3D68306",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-3EB7CFB5FEE2F689",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-2C7D1FA7804104E9",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-B8DF9AD90151321C",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-18D896D9BA3A6742",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-EC8EC570B73A55C4",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-7965B5A1349D13E5",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-54D6D4F5EE7203DC",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-E46129B8743DA751",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-57377B41B7FF07B7",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-5BD748397AD95FC9",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-0B30A08C7266D4BF",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-4254BDA0BDA3AE63",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.06,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-58C01E7EE6E78158",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          -80.1,
+          37.2
+        ],
+        "type": "Point"
+      },
+      "properties": {
+        "kind": "PREMISE",
+        "premise_token": "PREM-9CD9B633192D8F1B",
+        "provenance": "aep_challenge"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.22
+          ],
+          [
+            -80.06,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-655E1DC795F0405E",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.22
+          ],
+          [
+            -80.06,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-71217451AE9190C4",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.04,
+            37.2
+          ],
+          [
+            -80.04,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-E44D92BB65A31AFA",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.04,
+            37.2
+          ],
+          [
+            -80.04,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-B6BBE930E4BA0436",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.04,
+            37.22
+          ],
+          [
+            -80.04,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-D19836F89980F4DF",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.04,
+            37.2
+          ],
+          [
+            -80.04,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-9271A70A0B76BB75",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.04,
+            37.2
+          ],
+          [
+            -80.04,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-EE6AC9675ABA48D9",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.04,
+            37.2
+          ],
+          [
+            -80.06,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-F7A066DEF787816B",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.06,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-C316AEEA94B55DED",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.22
+          ],
+          [
+            -80.08,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-7B21440915AE2ECA",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.06,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-AC28BD4885D881D8",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.22
+          ],
+          [
+            -80.08,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-09BECE301BCA2A0F",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.22
+          ],
+          [
+            -80.1,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-BFCBCCE054737D18",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.22
+          ],
+          [
+            -80.08,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-964378B6179727E5",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.22
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-34A8CB847564E601",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.22
+          ],
+          [
+            -80.1,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-503648D9823FA06A",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.1,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-767FA92057D4BD9A",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.12,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-98899DC4F99DDAAB",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.12,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-8F34687B60BC51AE",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.2
+          ],
+          [
+            -80.1,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-92240FBBF3E67991",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-10378E9FA6A739DC",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.18
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-6B051593952FD03D",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.18
+          ],
+          [
+            -80.08,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-12AB91991CFB35F3",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.18
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-67AE32C62CF540F1",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.18
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-A92DFC9C89A680ED",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.18
+          ],
+          [
+            -80.1,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-8A7C8EB1DA505018",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.18
+          ],
+          [
+            -80.1,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-944A431974152037",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.18
+          ],
+          [
+            -80.06,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-D2936A99AC51065A",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.06,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-C78132B62CEC924D",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.18
+          ],
+          [
+            -80.06,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-0BFA8828D32FBB1D",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.06,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-57EF0252568C7B51",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.06,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-656D0130D765CCF9",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-F2F7162ACC9FBF55",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.04,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-667437278DDB849C",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.06,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-2320645367F2BB79",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.18
+          ],
+          [
+            -80.06,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-A2815CBD71088E36",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.18
+          ],
+          [
+            -80.04,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-47C7B35051D04A3B",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.12,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-C214F97253723783",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.04,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-A933FC57AAC304F8",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.2
+          ],
+          [
+            -80.06,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-52EFECF82BCC56E6",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-FF96ACBF2147F5C9",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.2
+          ],
+          [
+            -80.08,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-82F9BD5F370FCD98",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-796D2B727A34267E",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.2
+          ],
+          [
+            -80.1,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-312E08E8CBD78D6C",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.1,
+            37.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-EFBDB8C710765065",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.12,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-9968DF9B38752C32",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.2
+          ],
+          [
+            -80.1,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-478E2D0F08EACFDB",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-BC48FB9597A51B97",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.18
+          ],
+          [
+            -80.1,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-65DE08BCC6B43797",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.18
+          ],
+          [
+            -80.08,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-46F41C303CE4D71C",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.18
+          ],
+          [
+            -80.08,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-B9FBB10CB7FE9AA7",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.2
+          ],
+          [
+            -80.12,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-46F4B5372EE1ADD6",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.12,
+            37.18
+          ],
+          [
+            -80.1,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-62DEB7E692C78E30",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.1,
+            37.18
+          ],
+          [
+            -80.12,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-33C4C5701507EF3F",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.2
+          ],
+          [
+            -80.06,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-8D770E79AD562971",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.2
+          ],
+          [
+            -80.06,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-0ED57A03B72F02DD",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.08,
+            37.2
+          ],
+          [
+            -80.08,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-77428CD755CFD332",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.04,
+            37.18
+          ],
+          [
+            -80.06,
+            37.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-4D7209A3198F375B",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.06,
+            37.2
+          ],
+          [
+            -80.08,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-ACB150837078405B",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            -80.04,
+            37.2
+          ],
+          [
+            -80.06,
+            37.2
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "electrical_connectivity": "UNVERIFIED",
+        "feature_token": "GIS-79EB7C3585053419",
+        "kind": "PRIMARY",
+        "provenance": "aep_challenge",
+        "role": "GIS_CONTEXT_ONLY"
+      },
+      "type": "Feature"
+    }
+  ],
+  "metadata": {
+    "coordinate_policy": {
+      "axis_order": "longitude_latitude",
+      "crs": "EPSG:4326",
+      "grid_degrees": 0.02,
+      "meaning": "Generalized source geometry; unsuitable for navigation or exact premises."
+    },
+    "limitations": [
+      "Selected counts are not full-network impact counts.",
+      "GIS line context does not add electrical dependencies.",
+      "Historical damage Circuit labels do not match customer circuit_id; no circuit join is claimed.",
+      "NEAR_FID target layer is unverified; no damage-to-equipment assignment is claimed."
+    ],
+    "provenance": "aep_challenge",
+    "schema_version": "data_slice_v1",
+    "scope": "selected_subnet",
+    "source_archive_sha256": {
+      "Data1.zip": "08ac47b7dd7f43cde56509644d7292d0b6978dcd62300912b4ecf0a2c3c6eca3",
+      "Data2.zip": "13bea1c84636989a6475f481d67f25b25a17fcac8b77f674a5157e3a1d105f00",
+      "matched_upstream.zip": "13f8d9da49843c959059b4074417c47671105131cdc4bfe9daf7b534e5f522c3"
+    }
+  },
+  "type": "FeatureCollection"
+}
