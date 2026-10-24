@@ -1,0 +1,22 @@
+---
+description: Hallmark — new pages and marketing sites that avoid AI slop (48 themes, sloplint). Apply when user names Hallmark, /hallmark, or asks to build a new designed page—not for routine app edits unless redesign is requested.
+globs: ["**/*.html", "**/*.tsx", "**/*.jsx", "**/*.vue", "**/*.css"]
+alwaysApply: false
+---
+
+# Hallmark ([usehallmark.com](https://www.usehallmark.com))
+
+Read `.cursor/skills/hallmark/SKILL.md` and follow it **only** when:
+
+- The user names **Hallmark** or runs `/hallmark …`
+- They ask to **build or design a new page/site** with strong visual direction
+- They explicitly request **`/hallmark redesign <path>`** or **`/hallmark audit <path>`**
+
+Do **not** apply Hallmark to polish an existing LoadShed UI unless the user asks for a Hallmark redesign.
+
+Skill directory: `.agents/skills/hallmark/` (symlinked at `.cursor/skills/hallmark/`).
+
+- Themes: read **one** file from `references/themes/` per build (via `scripts/theme.mjs` when available).
+- Before handoff: `node .agents/skills/hallmark/scripts/sloplint.mjs <output> --render` when Node is available.
+
+Coordinate with `ui-ux-skills-coordination.mdc`: project `DESIGN.md` and Impeccable context win for in-product UI; Hallmark is strongest for **new** marketing or standalone pages.
