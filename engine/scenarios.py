@@ -1,10 +1,8 @@
-"""Pure, deterministic judging demonstrations; no live observations or dispatch.
+"""Deterministic incident demos over AEP-supplied dependency paths, not live outages.
 
-generate_scenario(id, {}) uses fixed demo IDs/time. Context may override timestamp_utc,
-incident_id, current_asset_id, upstream_asset_id, revision, selected_premise_token,
-local_premise_tokens, feeder_premise_tokens, crew_size, queue_hours, access_hours,
-energization_hours and duration_factors. Premise lists are declared scenario groups,
-not inferred GIS connectivity. Return value is the authoritative ScenarioSnapshot.
+Default scenarios use the sanitized AEP challenge sample to derive impacted premises.
+Explicit legacy footprint overrides remain for pure unit tests; the API never uses them.
+Restoration durations and sensor readings are still separately modeled assumptions.
 """
 from __future__ import annotations
 
@@ -22,19 +20,20 @@ _CONTEXT_KEYS = {
     'timestamp_utc', 'incident_id', 'current_asset_id', 'upstream_asset_id', 'revision',
     'selected_premise_token', 'local_premise_tokens', 'feeder_premise_tokens',
     'crew_size', 'queue_hours', 'access_hours', 'energization_hours', 'duration_factors',
+    'source_impact',
 }
 
 
 def _identifier(value, name, *, premise=False):
-    pattern = r'P-[A-Za-z0-9][A-Za-z0-9_-]{0,63}' if premise else r'[A-Za-z0-9][A-Za-z0-9_-]{0,79}'
+    pattern = r'(?:P|PREM)-[A-Za-z0-9][A-Za-z0-9_-]{0,63}' if premise else r'[A-Za-z0-9][A-Za-z0-9_-]{0,79}'
     if not isinstance(value, str) or not re.fullmatch(pattern, value):
         raise ValueError('Invalid ' + name)
     return value
 
 
 def _premises(values, name):
-    if not isinstance(values, list) or not 1 <= len(values) <= 1000:
-        raise ValueError(name + ' requires 1..1000 unique public premise tokens')
+    if not isinstance(values, list) or not 1 <= len(values) <= 200000:
+        raise ValueError(name + ' requires 1..200000 unique public premise tokens')
     result = [_identifier(value, name, premise=True) for value in values]
     if len(set(result)) != len(result): raise ValueError('Duplicate ' + name)
     return sorted(result)
@@ -57,6 +56,11 @@ by crew size. No contradictory-evidence case gets an outage confirmation or ETR.
         raise ValueError('Unknown demonstration scenario')
     if not isinstance(context, dict) or set(context) - _CONTEXT_KEYS:
         raise ValueError('Unknown context keys or context is not a dictionary')
+    # Neither the default app nor judges' API should silently fall back to P-DEMO
+    # groups. A missing/corrupt AEP sample fails closed instead.
+    if 'local_premise_tokens' not in context and 'feeder_premise_tokens' not in context:
+        from engine.aep_impact import AEPImpact
+        context = {**AEPImpact.load().scenario_context(scenario_id), **context}
     raw_time = context.get('timestamp_utc', '2026-10-24T18:00:00Z')
     try:
         date = datetime.fromisoformat(raw_time.replace('Z', '+00:00'))
@@ -74,6 +78,12 @@ by crew size. No contradictory-evidence case gets an outage confirmation or ETR.
     feeder = _premises(context.get('feeder_premise_tokens', [f'P-DEMO-{i:03d}' for i in range(1, 33)]), 'feeder_premise_tokens')
     if not set(local) < set(feeder): raise ValueError('Feeder footprint must strictly contain local footprint')
     footprint = feeder if scenario_id == 'upstream_feeder' else local
+    source_impact = context.get('source_impact')
+    if source_impact is not None:
+        if not isinstance(source_impact, dict) or source_impact.get('provenance') != 'aep_challenge':
+            raise ValueError('Invalid source impact metadata')
+        if source_impact.get('affected_count_in_sample') != len(footprint):
+            raise ValueError('Source footprint count does not match supplied paths')
     selected = _identifier(context.get('selected_premise_token', footprint[0]), 'selected_premise_token', premise=True)
     if selected not in footprint: raise ValueError('Selected premise is outside the declared scenario footprint')
     crew_size = _integer(context.get('crew_size', 2 if scenario_id == 'local_protection' else 3), 'crew_size', 100)
@@ -130,17 +140,25 @@ by crew size. No contradictory-evidence case gets an outage confirmation or ETR.
     notifications = [] if uncertain else [dict(
         type='OUTAGE_CONFIRMED', delivery_mode='demo', sent_at_utc=timestamp,
         text='Declared demonstration outage for this scenario footprint; cause and work package remain subject to utility review. No real message sent.')]
+    scope_note = ('Premise dependency footprint computed from anonymized AEP challenge upstream paths '
+                  'in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. '
+                  if source_impact is not None else
+                  'Premise groups are declared test inputs, not inferred connectivity. ')
     return ScenarioSnapshot(
         scenario_id=scenario_id, incident_id=incident, revision=revision, current_asset_id=asset,
         selected_premise_token=selected, timestamp_utc=timestamp, cutout_status=cutout,
         status='UNDER_REVIEW' if uncertain else 'OUTAGE', evidence=evidence, hypotheses=diagnosis['hypotheses'],
         crew_recommendation=crew, restoration=restoration, solar=solar,
         affected_premise_tokens=[] if uncertain else list(footprint),
+        impact_source=source_impact,
         customer_risk=dict(band='UNKNOWN' if uncertain else 'HIGH', confidence_kind='scenario_only',
                            drivers=['Conflicting scenario telemetry; impact unconfirmed'] if uncertain else
-                           ['Declared storm/outage demonstration', 'Declared feeder group' if scenario_id == 'upstream_feeder' else 'Declared local premise group']),
+                           ['Simulated fault on AEP-supplied equipment dependencies' if source_impact is not None else 'Declared storm/outage demonstration',
+                            'Selected source-derived breaker dependency' if scenario_id == 'upstream_feeder' and source_impact is not None else
+                            'Selected source-derived transformer dependency' if source_impact is not None else
+                            ('Declared feeder group' if scenario_id == 'upstream_feeder' else 'Declared local premise group')]),
         notifications=notifications,
         disclosure='Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. '
-                   'Premise groups are declared, not inferred connectivity. Planning ranges are not utility commitments; '
+                   + scope_note + 'Planning ranges are not utility commitments; '
                    'crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; '
                    'modeled runtime is not verified hardware endurance.')
