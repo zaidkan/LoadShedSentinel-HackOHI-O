@@ -121,6 +121,8 @@ def map_damage_to_work_packages(damage, catalog):
 
 ARCOS Asset_Type names drive reviewed category mappings. Conductor length,
 unknown transformer ratings and unknown pole sizes never acquire invented hours.
+Explicit quantity units must match the source denominator; no conversion is
+inferred. Legacy unitless pole/transformer/switch quantities mean device counts.
 """
     result = dict(work_packages=[], missing_inputs=[], requires_dispatcher_review=True,
                   mapping_basis='Modeled asset/category mapping to sourced construction-unit averages')
@@ -143,11 +145,17 @@ unknown transformer ratings and unknown pole sizes never acquire invented hours.
     record = next((r for r in catalog['records'] if r['code'] == code), None)
     if record is None:
         result['missing_inputs'].append('supported labor reference and exact rating/size'); return result
-    if record['quantity_unit'] == 'unspecified':
-        result['missing_inputs'].append('verified quantity denominator for labor-only adder'); return result
+    unit = record.get('quantity_unit')
+    if unit in (None, '', 'unknown', 'unspecified', 'task_assumption'):
+        result['missing_inputs'].append('verified quantity denominator for labor reference'); return result
+    quantity_unit = damage.get('quantity_unit')
+    if 'quantity_unit' not in damage and str(damage.get('asset_type', '')).lower() in ('pole', 'transformer', 'switch'):
+        quantity_unit = 'construction_unit'
+    if quantity_unit != unit:
+        result['missing_inputs'].append('explicit quantity unit matching the labor reference denominator'); return result
     operation = damage.get('operation', 'replace')
     if operation not in ('install', 'remove', 'replace'): raise ValueError('Unknown work operation')
-    result['work_packages'].append(dict(labor_ref=record, quantity=float(quantity), quantity_unit=record['quantity_unit'], operation=operation))
+    result['work_packages'].append(dict(labor_ref=record, quantity=float(quantity), quantity_unit=quantity_unit, operation=operation))
     return result
 
 

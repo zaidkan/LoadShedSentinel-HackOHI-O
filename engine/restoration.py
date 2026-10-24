@@ -120,6 +120,26 @@ For multi-fault planning use context.tasks of {id,person_hours,crew_size,crew_id
     return result
 
 
+def recompute_restoration(damage, labor_ref, context, *, crew_size=None, access_hours=None, timestamp_utc=None):
+    """Re-estimate original work inputs after staffing or access-delay edits.
+
+    None keeps the corresponding context value. A crew-size override applies to
+    every explicit task; crew IDs, dependencies and person-hours are preserved.
+    Access delay replaces the prior value, rather than accumulating. Supply a
+    new timestamp explicitly when the planning update occurs at a later time.
+    Inputs are not mutated; the existing estimator validates and reschedules the
+    work, preserving unavailable estimates and applying indirect labor once.
+    """
+    updated = dict(context)
+    if crew_size is not None:
+        updated['crew_size'] = crew_size
+        if context.get('tasks') is not None:
+            updated['tasks'] = [{**task, 'crew_size': crew_size} for task in context['tasks']]
+    if access_hours is not None: updated['access_hours'] = access_hours
+    if timestamp_utc is not None: updated['timestamp_utc'] = timestamp_utc
+    return estimate_restoration(damage, labor_ref, updated)
+
+
 def evaluate_restoration(premise_blockers, completed_task_ids, authorized_premise_tokens=()):
     """Pure staged-demo readiness. Authorization must be an explicit scenario event.
 

@@ -23,6 +23,9 @@ class Topology:
                 raise ValueError("Invalid persisted premise path")
             if premise not in graph["premise_tokens"] or not isinstance(premise, str):
                 raise ValueError("Invalid persisted premise key")
+            token = record.get("premise_token")
+            if not isinstance(token, str) or not token or token != graph["premise_tokens"][premise]:
+                raise ValueError("Persisted premise token disagrees with catalog")
             for key in ids:
                 self.reverse[key].add(premise)
 

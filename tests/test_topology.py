@@ -210,6 +210,28 @@ class TopologyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Topology(self.graph)
 
+    def test_persistence_rejects_premise_token_catalog_disagreement(self):
+        premise = "PRIVATE-PREMISE-0001"
+        other_token = self.graph["premise_tokens"]["PRIVATE-PREMISE-0002"]
+        path = self.root / "private.json"
+        for token in (other_token, "PREM-FOREIGN", premise, "", None, 1, [], {}):
+            with self.subTest(token=token):
+                graph = json.loads(json.dumps(self.graph))
+                graph["paths"][premise]["premise_token"] = token
+                write_json(path, graph, private=True)
+                with self.assertRaisesRegex(ValueError, "premise token"):
+                    Topology.load(path)
+        graph = json.loads(json.dumps(self.graph))
+        del graph["paths"][premise]["premise_token"]
+        write_json(path, graph, private=True)
+        with self.assertRaisesRegex(ValueError, "premise token"):
+            Topology.load(path)
+        graph = json.loads(json.dumps(self.graph))
+        graph["premise_tokens"][premise] = "PREM-CHANGED"
+        write_json(path, graph, private=True)
+        with self.assertRaisesRegex(ValueError, "premise token"):
+            Topology.load(path)
+
     def test_shared_equipment_conflicting_parent_does_not_expand_other_paths(self):
         upstream = parse_upstream([text_path("PRIVATE-PREMISE-0001"),
                                    text_path("PRIVATE-PREMISE-0002", fuse="0201"),

@@ -12,7 +12,7 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
 
 1. **Upstream Electrical Topology Engine**:
    - Ingests real AEP GIS layers (12 shapefiles) and ordered upstream connectivity paths.
-   - Offline preprocessing accepted 117,549 AEP-supplied customer paths through equipment up to provided **circuit breakers** (physical substation connectivity is not established).
+   - Offline preprocessing accepted 117,549 AEP-supplied customer paths through equipment terminating at provided **circuit breakers**. Physical substation connectivity remains **UNKNOWN**; reported station labels do not establish that connection.
    - The checked-in interactive demo uses a **16-premise anonymized AEP-source sample** and computes transformer/breaker dependency impacts dynamically; it does not expose the full private graph.
    - Evaluates multi-premise outages, distinguishing localized transformer failures from upstream feeder interruptions.
 
@@ -68,14 +68,20 @@ All six HackOHI/O judging criteria are rigorously crosswalked to verifiable CLI 
 # Set up virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
-# Run full automated test suite (54/54 tests pass exit 0)
-pytest -o pythonpath=. tests/
+# Run the automated test suite
+python -m pytest -o pythonpath=. tests/
 
 # Launch FastAPI backend server (port 8000)
-uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+python -m uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 ```
+
+The checked-in `data/processed/network_bundle.json` supplies the demo sample; the
+sample lookup works without generating the optional full private graph. To verify
+all three full-source topology checks, keep the official AEP archives in
+`aep_challenge_hack26/data/raw/` (or set `AEP_DATA_DIR` to their local directory).
+Without those archives, those checks skip.
 
 ### 2. Frontend Web Application
 ```bash
@@ -97,10 +103,12 @@ curl http://localhost:8000/api/health
 # 2. Select demonstration scenario
 curl -X POST http://localhost:8000/api/scenario/select -H "Content-Type: application/json" -d '{"scenario_id":"local_protection"}'
 
-# 3. Query premise topology trace
+# 3. Query a premise in the checked-in anonymized AEP sample
 curl 'http://localhost:8000/api/aep/source'
-# Retrieve a premise token from /api/scenario/current then call:
-# curl 'http://localhost:8000/api/topology/lookup?premise_id=<PREM-TOKEN>'
+curl 'http://localhost:8000/api/topology/lookup?premise_id=PREM-0B30A08C7266D4BF'
+# Optional full-graph token example (UNKNOWN without the private graph):
+curl 'http://localhost:8000/api/topology/lookup?premise_id=PREM-000001'
+# A known trace ends at a circuit breaker; substation_status remains UNKNOWN.
 
 # 4. Calculate home battery runtime
 curl -X POST http://localhost:8000/api/customer/battery-runtime -H "Content-Type: application/json" -d '{"capacity_wh":1000,"usable_fraction":0.85,"device_w":120,"inverter_efficiency":0.85,"reserve_margin_pct":0.15}'

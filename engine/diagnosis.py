@@ -24,6 +24,7 @@ def usable_evidence(snapshot):
     """Bind local evidence to incident/asset, retain latest per source, and stable IDs.
 
 Upstream evidence with an asset ID requires membership in upstream_asset_ids.
+Equipment-specific field damage requires an explicit current-asset match.
 Missing/invalid timestamps, foreign records and unknown provenance are not facts.
 """
     incident = snapshot.get('incident_id'); asset = snapshot.get('current_asset_id')
@@ -34,6 +35,7 @@ Missing/invalid timestamps, foreign records and unknown provenance are not facts
         if row.get('incident_id') != incident or row.get('quality') not in QUALITIES or row.get('provenance') not in PROVENANCES: continue
         date = _timestamp(row.get('timestamp_utc'))
         if date is None or (now is not None and date > now): continue
+        if row.get('kind') == 'field_damage' and row.get('asset_id') != asset: continue
         upstream = row.get('kind') in ('upstream_trip', 'widespread_outage', 'ami_outage_count')
         allowed = {asset, None} | (set(snapshot.get('upstream_asset_ids', [])) if upstream else set())
         if row.get('asset_id') not in allowed: continue

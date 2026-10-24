@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import type { ScenarioSnapshot } from '../../../contracts/types';
 import {
   fetchCustomerSnapshot,
   calculateBatteryRuntime,
@@ -11,10 +12,11 @@ import {
 import { ShieldAlert, Battery, AlertTriangle, Clock, HeartPulse, CheckCircle2, Search, GitBranch } from 'lucide-react';
 
 export interface CustomerPageProps {
+  snapshot: ScenarioSnapshot;
   scenarioId?: string;
 }
 
-export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
+export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSnapshot, scenarioId }) => {
   const [snapshot, setSnapshot] = useState<CustomerSnapshotView | null>(null);
   const [loading, setLoading] = useState(true);
   const [premiseToken, setPremiseToken] = useState('');
@@ -41,7 +43,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
 
   useEffect(() => {
     loadSnapshot();
-  }, [scenarioId]);
+  }, [scenarioId, scenarioSnapshot.incident_id, scenarioSnapshot.revision, scenarioSnapshot.current_asset_id]);
 
   useEffect(() => {
     runBatteryCalculation();
@@ -113,11 +115,11 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <div className="min-w-0 max-w-4xl mx-auto px-4 py-8 space-y-8 [overflow-wrap:anywhere]">
       {/* Header */}
       <div className="border-b border-slate-800 pb-6">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="min-w-0">
             <h1 className="text-2xl font-bold text-white flex items-center gap-2">
               <ShieldAlert className="w-7 h-7 text-blue-500" />
               LoadShed Outage Concierge
@@ -126,7 +128,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
               Personalized residential storm preparation and restoration updates.
             </p>
           </div>
-          <div className="text-right">
+          <div className="min-w-0 md:text-right">
             <span className="text-xs text-slate-500 block mb-1">Premise Location Token</span>
             <div className="flex items-center gap-1.5">
               <input
@@ -151,7 +153,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
       {/* Step 1 Trace Result Card */}
       {topologyTrace && (
         <div className="bg-slate-900/90 border border-blue-900/40 rounded-xl p-4 shadow-lg space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
               <GitBranch className="w-4 h-4" /> AEP Source Supply Path (Not Live Energization)
             </span>
@@ -387,7 +389,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
                 <span className="px-2 py-0.5 rounded bg-blue-900/40 text-blue-400 text-xs font-mono font-semibold">
                   {n.type}
                 </span>
-                <div className="flex-1">
+                <div className="min-w-0 flex-1">
                   <div className="text-slate-200">{n.text}</div>
                   <div className="text-xs text-slate-500 mt-1">{n.sent_at_utc} (Demo Broadcast)</div>
                 </div>
