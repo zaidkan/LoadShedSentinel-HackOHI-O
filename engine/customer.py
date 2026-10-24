@@ -233,6 +233,7 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
         "selected_premise_token": snapshot.selected_premise_token,
         "timestamp_utc": snapshot.timestamp_utc,
         "status": snapshot.status,
+        "impact_source": snapshot.impact_source,
         "customer_risk": risk_dict,
         "restoration_planning": {
             "kind": snapshot.restoration.kind,
