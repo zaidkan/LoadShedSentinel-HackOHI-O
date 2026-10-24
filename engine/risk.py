@@ -8,6 +8,7 @@ from engine.topology import Topology
 
 
 MODEL_VERSION = "ordinal-scenario-v1"
+STORM_SCENARIOS = {"calm": 0.1, "moderate": 0.5, "severe": 0.9}
 
 
 class RiskService:
@@ -55,6 +56,35 @@ class RiskService:
         result["evidence_refs"].extend(path["evidence_refs"])
         result["missing_inputs"].append("Live switching state and full physical conductor path")
         return result
+
+    def preview_risk(self, premise: str, storm_scenario: str, *, as_of: str) -> dict:
+        """Return the narrow integration_v1 Risk shape without relabeling the data.
+
+        Human 4 can validate this dictionary with Risk.model_validate at its seam.
+        The contract has no limited-source confidence enum, so confidence is
+        explicitly unavailable until that source-aware contract extension exists.
+        """
+        date.fromisoformat(as_of)
+        if storm_scenario not in {*STORM_SCENARIOS, "unknown"}:
+            raise ValueError("Unknown storm scenario")
+        if self.topology.get_supply_path(premise)["status"] == "UNKNOWN":
+            return {"band": "UNKNOWN", "confidence_kind": "unavailable", "drivers": [
+                "Premise has no validated source path in the selected AEP slice; no location fallback is applied."]}
+        if storm_scenario == "unknown":
+            return {"band": "UNKNOWN", "confidence_kind": "unavailable", "drivers": [
+                "Storm intensity is unavailable; a risk band cannot be calculated."]}
+        result = self.get_risk(premise, {"intensity": STORM_SCENARIOS[storm_scenario], "as_of": as_of})
+        drivers = ["Ordinal scenario index using AEP challenge spatial history; no calibrated outage probability.",
+                   f"Assumed {storm_scenario} storm intensity: {STORM_SCENARIOS[storm_scenario]:g} on a 0–1 scale."]
+        for driver in result["drivers"]:
+            if driver["factor"] == "earlier_nearby_damage_reports":
+                drivers.append(f"{driver['value']} earlier damage reports within {driver['radius_m']:g} meters, "
+                               f"strictly before {as_of}; spatial context is not a causal equipment match.")
+        drivers.extend(["Risk confidence is unavailable: source coverage is limited and the index is not calibrated.",
+                        "Read-only source preview; synthetic incident snapshots retain their own fixture risk."])
+        if "Historical spatial coverage" in result["missing_inputs"]:
+            drivers.append("Historical spatial coverage is missing; this band uses the storm scenario alone.")
+        return {"band": result["band"], "confidence_kind": "unavailable", "drivers": drivers}
 
 
 def get_risk(network: dict, premise: str, storm: dict) -> dict:

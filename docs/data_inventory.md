@@ -4,6 +4,10 @@ Implemented against team repository commit `6470fce` on October 24, 2026. The da
 module is independent of API routes, canonical incident schemas, the labor parser,
 and the frontend. Human 4 still owns integration of these pure services.
 
+The continuation imports Human 4's `f1461e6` scaffold and verifies the data services
+through its `TeamServices.network` and `TeamServices.risk` injection hooks. This
+branch contains both workstreams, with no edits to Human 4's API/contracts files.
+
 ## Run and verify
 
 From the repository root, with Python 3.11 or later:
@@ -14,6 +18,10 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pipeline.build_graph
 .\.venv\Scripts\python.exe -m pytest -q tests/test_data_pipeline.py tests/test_graph.py tests/test_risk.py
 ```
+
+To run the combined data/API tests after importing Human 4's scaffold, also
+install `requirements.txt`, then run `python -m pytest -q` and
+`python scripts/export_contract.py --check`.
 
 The checked-in processed slice works offline without installing the ingestion
 dependencies: `engine/topology.py` and `engine/risk.py` use only the Python standard
@@ -120,6 +128,7 @@ from the bundle/example rather than hard-code them.
 | `source_inventory.json` | Full schema inventory, counts, missingness and hashes |
 | `damage_features.json` | All 1,659 sanitized historical records; date-only, no geometry or unverified asset assignment |
 | `data_handoff_example.json` | One matching path/risk/multi-fault demonstration for integration |
+| `data_demo_cases.json` | Source-backed home comparisons and local/upstream/overlapping simulated fault cases |
 
 Historical damage features use JSON rather than the blueprint's proposed Parquet
 file so the runtime can load the handoff without pandas/Arrow. No consumer contract
@@ -197,8 +206,102 @@ same source archives and private token key produced byte-identical content for
 all seven processed exports. The measured full import took about 24 seconds on
 this machine; this is not an application latency benchmark.
 
-Human 4 still needs to freeze schemas and wire network/risk/scenario routes.
-Human 3 can consume the GeoJSON plus separate relational edges. Human 2 can use
-the blocker/dependent helpers and sanitized damage classes; repair scheduling and
-labor interpretation remain with Human 2. There is no running application or
-end-to-end UI claim in this handoff. Video recording follows the integrated build.
+Human 4 has now published the fixture schemas; the source-mode extensions and
+default route wiring below remain. Human 3 can consume the GeoJSON plus separate
+relational edges. Human 2 can use the blocker/dependent helpers and sanitized
+damage classes; repair scheduling and labor interpretation remain with Human 2.
+The combined branch has Human 4's working fixture API, with no claim of a source
+incident reaching the final UI yet. Video recording follows the integrated build.
+
+## Continuation against Human 4's integration scaffold
+
+The canonical `integration_v1` schemas now exist. `NetworkService` supplies the
+network read model expected by `TeamServices.network(circuit_id)`, including its
+`source`, `geometry` and `paths` keys, plus nodes, relational edges, scope and
+coverage. `NetworkService.load()` resolves exports relative to the repository,
+independent of the shell's working directory. It rejects mixed source/geometry
+metadata and mismatched public tokens. `get_premises()` supplies a data-owned
+selection catalog for the future canonical catalog extension.
+
+Accepted circuit selectors are `selected_subnet` or an opaque circuit token from
+the source paths. `DEMO-CIRCUIT-A` is deliberately not an alias for a real circuit.
+Unknown selectors raise `UnknownCircuitError`; the integrator translates that to
+HTTP 404. The map's line-context features now carry opaque `circuit_token` values,
+so circuit-filtered reads cannot include another circuit's context.
+
+`RiskService.preview_risk(premise, storm_scenario, as_of=...)` returns precisely
+the three current canonical Risk fields. Named intensity assumptions are calm
+0.1, moderate 0.5, severe 0.9; unknown intensity gives UNKNOWN. Its customer-safe
+drivers explain AEP spatial history, temporal cutoff, assumptions and lack of
+calibration. The current schema only permits `scenario_only` or `unavailable`
+confidence. The source preview uses `unavailable`, never a false synthetic-data
+claim or an invented confidence percentage. The full result remains available
+through `get_risk()` for a future source-aware contract.
+
+Concrete seam wiring for Human 4 (not enabled in the default app by this branch):
+
+```python
+from fastapi import HTTPException
+from api.main import create_app
+from api.schemas import Risk
+from api.services import TeamServices
+from engine.topology import NetworkService, UnknownCircuitError
+from engine.risk import RiskService
+
+data = NetworkService.load()
+risks = RiskService(data.bundle)
+
+def source_network(circuit_id):
+    try:
+        return data.get_network(circuit_id)
+    except UnknownCircuitError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+def source_risk(request):
+    if request.scenario_id != "source_preview":
+        raise HTTPException(404, "Source preview is separate from fixture incidents")
+    return Risk.model_validate(risks.preview_risk(
+        request.premise_token, request.storm_scenario, as_of="2026-10-24"))
+
+app = create_app(TeamServices(network=source_network, risk=source_risk))
+```
+
+With that explicitly selected setup, query
+`GET /api/network?circuit_id=selected_subnet` and use `scenario_id: source_preview`
+plus a real token for `POST /api/risk`. These read-only previews do not create a
+source-data incident, change revisions or send alerts. The default app and fixture
+catalog remain unchanged. App metadata still describes Human 4's fixture mode;
+it must be revised by Human 4 when wiring source adapters into the default app.
+
+### Exact requests to Human 4 before source incident orchestration
+
+1. Extend canonical `SupplyPath` to allow `provenance: aep_challenge`, represent
+   supplied text completeness separately from incomplete physical connectivity,
+   and carry GIS gaps/limitations. `complete_in_fixture` cannot describe this data.
+2. Extend `PremiseSummary`, `ScenarioSummary` and `Impact.scope` to support a
+   source-backed selected subnet. Keep scenario faults labeled `scenario`, while
+   network/path context stays `aep_challenge`; do not relabel the whole result.
+3. Allow risk source/coverage, missing inputs and a limited-source confidence
+   kind. Preserve the difference between unknown risk and uncalibrated confidence.
+4. Add an explicit real-premise catalog/orchestration input. The snapshot enricher
+   forbids changing selected IDs, paths, fault memberships and impact, so it cannot
+   legitimately replace fixture orchestration with source topology.
+5. Map canonical `fault_id`/`asset_id` to graph `fault_token`/`asset_token` at the
+   adapter boundary. Use actual source tokens from `data_demo_cases.json` for
+   source scenarios; fixture asset IDs must remain unknown to this graph.
+6. Update metadata, disclosures, network selector defaults and generated
+   contracts together when enabling source mode. `source_data_ingested: false`
+   and `awaiting_person_1` describe only the current default fixture app.
+
+The new data demo cases provide a selected home, another home behind the same
+transformer, a different transformer behind the same fuse, and another fuse branch
+under the shared breaker. The simulated local-only footprint is 3 premises;
+upstream-only and overlapping-fault footprints are 8, demonstrating the union
+rule. These relationships come from validated text paths, not map proximity.
+
+The combined suite currently passes **57 tests** and canonical generated files
+match Python schemas. `tests/test_data_adapters.py` exercises actual network/risk
+hook injection through FastAPI, source-token consistency, circuit filtering,
+unknowns, customer-safe risk text and unchanged incident revisions/alerts. The
+default fixture API is still synthetic; source-to-incident wiring remains Human
+4's integration change, with this reviewable read model and seam tests ready.

@@ -10,6 +10,10 @@ from copy import deepcopy
 from pathlib import Path
 
 
+class UnknownCircuitError(ValueError):
+    """The API adapter should translate this into a 404, never a default circuit."""
+
+
 class Topology:
     def __init__(self, bundle: dict):
         self.bundle = bundle
@@ -88,6 +92,79 @@ class Topology:
                 "branch_b_tokens": [t for t in b_tokens if t not in shared],
                 "first_shared_upstream_token": shared[0] if shared else None,
                 "limitation": "Supplied dependencies explain branch differences; geographic proximity proves no link."}
+
+
+class NetworkService:
+    """Sanitized read model for TeamServices.network(circuit_id).
+
+    This does not replace the integrator's synthetic premise or scenario catalog.
+    """
+
+    def __init__(self, bundle: dict, geometry: dict):
+        self.topology = Topology(bundle)
+        self.bundle = bundle
+        self.geometry = geometry
+        if geometry.get("type") != "FeatureCollection":
+            raise ValueError("Network geometry must be a GeoJSON FeatureCollection")
+        if geometry.get("metadata") != bundle.get("metadata"):
+            raise ValueError("Network and geometry exports must have matching source/scope metadata")
+        self.circuits = sorted({p["circuit_token"] for p in bundle["supply_paths"]})
+        mapped_premises = {f["properties"]["premise_token"] for f in geometry["features"]
+                           if "premise_token" in f["properties"]}
+        if mapped_premises != set(self.topology.paths):
+            raise ValueError("Network and geometry exports have mismatched premise tokens")
+        for feature in geometry["features"]:
+            props = feature["properties"]
+            if "asset_token" in props and props["asset_token"] not in self.topology.nodes:
+                raise ValueError("Network and geometry exports have mismatched asset tokens")
+            if props.get("role") == "GIS_CONTEXT_ONLY" and props.get("circuit_token") not in self.circuits:
+                raise ValueError("GIS context must reference a circuit in this source slice")
+
+    @classmethod
+    def load(cls, directory: str | Path | None = None):
+        root = Path(directory) if directory is not None else Path(__file__).resolve().parents[1] / "data" / "processed"
+        def read(name):
+            return json.loads((root / name).read_text(encoding="utf-8"))
+        return cls(read("network_bundle.json"), read("network.geojson"))
+
+    def get_premises(self, circuit_id: str = "selected_subnet") -> list[dict]:
+        paths = self._paths(circuit_id)
+        return [{"token": p["premise_token"], "label": f"Anonymized home {i + 1}",
+                 "source": "aep_challenge", "scope": "selected_subnet"}
+                for i, p in enumerate(paths)]
+
+    def _paths(self, circuit_id: str) -> list[dict]:
+        if circuit_id == "selected_subnet":
+            return self.bundle["supply_paths"]
+        if circuit_id not in self.circuits:
+            raise UnknownCircuitError("Circuit is outside this validated source slice")
+        return [p for p in self.bundle["supply_paths"] if p["circuit_token"] == circuit_id]
+
+    def get_network(self, circuit_id: str = "selected_subnet") -> dict:
+        paths = self._paths(circuit_id)
+        premises = {p["premise_token"] for p in paths}
+        circuits = {p["circuit_token"] for p in paths}
+        assets = {a for p in paths for a in p["asset_tokens"]}
+        features = []
+        for feature in self.geometry["features"]:
+            props = feature["properties"]
+            if (props.get("premise_token") in premises or props.get("asset_token") in assets
+                    or props.get("role") == "GIS_CONTEXT_ONLY" and props.get("circuit_token") in circuits):
+                features.append(feature)
+        # The whole response is detached, so one consumer cannot corrupt subsequent reads.
+        return deepcopy({
+            "circuit_id": circuit_id, "available_circuit_tokens": sorted(circuits),
+            "source": "aep_challenge", "scope": "selected_subnet",
+            "geometry": {**self.geometry, "features": features},
+            "paths": paths, "nodes": [n for n in self.bundle["nodes"] if n["asset_token"] in assets],
+            "edges": [e for e in self.bundle["edges"] if e["downstream_token"] in assets | premises
+                      and e["upstream_token"] in assets],
+            "coverage": {"known_premise_count": len(paths), "enumerated_asset_count": len(assets),
+                         "physical_path_complete": False, "full_circuit_export": False},
+            "limitations": self.bundle["metadata"]["limitations"] + [
+                "Provided text dependencies and generalized GIS context do not establish live service status.",
+                "This source read model is separate from the integration_v1 synthetic incident catalog."],
+        })
 
 
 def get_supply_path(network: dict, premise_token: str) -> dict:

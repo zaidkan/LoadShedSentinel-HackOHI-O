@@ -1,0 +1,543 @@
+{
+  "cases": [
+    {
+      "faults": [
+        {
+          "asset_token": "ASSET-4D3811483AD1FB8F",
+          "fault_token": "SCENARIO-LOCAL",
+          "state": "ACTIVE"
+        }
+      ],
+      "id": "local_only",
+      "impact": {
+        "known_count": 3,
+        "premise_states": [
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-LOCAL"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-0B30A08C7266D4BF",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-LOCAL"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-18D896D9BA3A6742",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-2C7D1FA7804104E9",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-3EB7CFB5FEE2F689",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-4254BDA0BDA3AE63",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-54D6D4F5EE7203DC",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-57377B41B7FF07B7",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-58C01E7EE6E78158",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-5BD748397AD95FC9",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-65407403B0C9216A",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-7965B5A1349D13E5",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-LOCAL"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-9CD9B633192D8F1B",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-B8DF9AD90151321C",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-E46129B8743DA751",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-EC8EC570B73A55C4",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-FC1CDDA2C3D68306",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          }
+        ],
+        "premise_tokens": [
+          "PREM-0B30A08C7266D4BF",
+          "PREM-18D896D9BA3A6742",
+          "PREM-9CD9B633192D8F1B"
+        ],
+        "provenance": "scenario",
+        "scope": "selected_subnet",
+        "unknown_coverage_count": 0
+      }
+    },
+    {
+      "faults": [
+        {
+          "asset_token": "ASSET-8183AD3FFD74B8CF",
+          "fault_token": "SCENARIO-UPSTREAM",
+          "state": "ACTIVE"
+        }
+      ],
+      "id": "upstream_only",
+      "impact": {
+        "known_count": 8,
+        "premise_states": [
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-0B30A08C7266D4BF",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-18D896D9BA3A6742",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-2C7D1FA7804104E9",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-3EB7CFB5FEE2F689",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-4254BDA0BDA3AE63",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-54D6D4F5EE7203DC",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-57377B41B7FF07B7",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-58C01E7EE6E78158",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-5BD748397AD95FC9",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-65407403B0C9216A",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-7965B5A1349D13E5",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-9CD9B633192D8F1B",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-B8DF9AD90151321C",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-E46129B8743DA751",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-EC8EC570B73A55C4",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-FC1CDDA2C3D68306",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          }
+        ],
+        "premise_tokens": [
+          "PREM-0B30A08C7266D4BF",
+          "PREM-18D896D9BA3A6742",
+          "PREM-5BD748397AD95FC9",
+          "PREM-65407403B0C9216A",
+          "PREM-9CD9B633192D8F1B",
+          "PREM-B8DF9AD90151321C",
+          "PREM-E46129B8743DA751",
+          "PREM-FC1CDDA2C3D68306"
+        ],
+        "provenance": "scenario",
+        "scope": "selected_subnet",
+        "unknown_coverage_count": 0
+      }
+    },
+    {
+      "faults": [
+        {
+          "asset_token": "ASSET-4D3811483AD1FB8F",
+          "fault_token": "SCENARIO-LOCAL",
+          "state": "ACTIVE"
+        },
+        {
+          "asset_token": "ASSET-8183AD3FFD74B8CF",
+          "fault_token": "SCENARIO-UPSTREAM",
+          "state": "ACTIVE"
+        }
+      ],
+      "id": "overlapping_faults",
+      "impact": {
+        "known_count": 8,
+        "premise_states": [
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-LOCAL",
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-0B30A08C7266D4BF",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-LOCAL",
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-18D896D9BA3A6742",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-2C7D1FA7804104E9",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-3EB7CFB5FEE2F689",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-4254BDA0BDA3AE63",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-54D6D4F5EE7203DC",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-57377B41B7FF07B7",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-58C01E7EE6E78158",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-5BD748397AD95FC9",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-65407403B0C9216A",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-7965B5A1349D13E5",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-LOCAL",
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-9CD9B633192D8F1B",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-B8DF9AD90151321C",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-E46129B8743DA751",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [],
+            "clear_of_modeled_faults": true,
+            "premise_token": "PREM-EC8EC570B73A55C4",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          },
+          {
+            "blocking_fault_tokens": [
+              "SCENARIO-UPSTREAM"
+            ],
+            "clear_of_modeled_faults": false,
+            "premise_token": "PREM-FC1CDDA2C3D68306",
+            "requires_explicit_reenergization": true,
+            "status": "KNOWN_IN_SCOPE",
+            "unknown_fault_tokens": []
+          }
+        ],
+        "premise_tokens": [
+          "PREM-0B30A08C7266D4BF",
+          "PREM-18D896D9BA3A6742",
+          "PREM-5BD748397AD95FC9",
+          "PREM-65407403B0C9216A",
+          "PREM-9CD9B633192D8F1B",
+          "PREM-B8DF9AD90151321C",
+          "PREM-E46129B8743DA751",
+          "PREM-FC1CDDA2C3D68306"
+        ],
+        "provenance": "scenario",
+        "scope": "selected_subnet",
+        "unknown_coverage_count": 0
+      }
+    }
+  ],
+  "comparison": {
+    "branch_a_tokens": [
+      "ASSET-4D3811483AD1FB8F",
+      "ASSET-8183AD3FFD74B8CF",
+      "ASSET-EA2142456C63633E",
+      "ASSET-00FE606EC2BF3F0F",
+      "ASSET-F131F485A6582C3B"
+    ],
+    "branch_b_tokens": [
+      "ASSET-253FD0B7C3F209A9",
+      "ASSET-374EB45ADD130357"
+    ],
+    "first_shared_upstream_token": "ASSET-364D878C367B313A",
+    "limitation": "Supplied dependencies explain branch differences; geographic proximity proves no link.",
+    "premise_a": "PREM-0B30A08C7266D4BF",
+    "premise_b": "PREM-2C7D1FA7804104E9",
+    "shared_upstream_tokens": [
+      "ASSET-364D878C367B313A"
+    ],
+    "status": "KNOWN_IN_SCOPE"
+  },
+  "limitation": "Faults/impacts are simulations over actual text paths; no physical proximity or live-state claim.",
+  "local_fault_asset_token": "ASSET-4D3811483AD1FB8F",
+  "other_fuse_same_breaker_premise_token": "PREM-2C7D1FA7804104E9",
+  "other_transformer_same_fuse_premise_token": "PREM-5BD748397AD95FC9",
+  "same_transformer_premise_token": "PREM-18D896D9BA3A6742",
+  "scope": "selected_subnet",
+  "selected_premise_token": "PREM-0B30A08C7266D4BF",
+  "source": "aep_challenge",
+  "upstream_fault_asset_token": "ASSET-8183AD3FFD74B8CF"
+}

@@ -150,6 +150,7 @@ def contextual_lines(raw: Path, circuits: set[str], points: list, tokenizer: Tok
                     result.append({"type": "Feature", "geometry": {"type": "LineString", "coordinates": coords},
                                    "properties": {"feature_token": tokenizer.token("GIS", f"{name}:{ordinal}:{start}"),
                                                   "kind": name.upper(), "role": "GIS_CONTEXT_ONLY",
+                                                  "circuit_token": tokenizer.token("CIRCUIT", key(row["circuit_id"])),
                                                   "provenance": "aep_challenge", "electrical_connectivity": "UNVERIFIED"}})
                     if len(result) >= limit:
                         return result
@@ -272,6 +273,25 @@ def build(raw: Path, output: Path, private_dir: Path, max_premises: int = 40) ->
                "after_local_repair": topology.remaining_blockers(chosen["premise_token"], [{**faults[0], "state": "CLEARED"}, faults[1]]),
                "provenance": "scenario", "disclosure": "Faults are simulated on a real supplied dependency path."}
     write_json(output / "data_handoff_example.json", example)
+    # Three branches for frontend/QA controls, chosen by dependence rather than geometry.
+    selected_path = topology.paths[chosen["premise_token"]]
+    local_set = set(topology.get_dependents(local)["premise_tokens"])
+    upstream_set = set(topology.get_dependents(upstream_asset)["premise_tokens"])
+    same_transformer = next((p for p in sorted(local_set) if p != chosen["premise_token"]), None)
+    other_transformer = next((p for p in sorted(upstream_set - local_set)), None)
+    other_branch = next((p for p in sorted(topology.paths) if p not in upstream_set
+                         and selected_path["asset_tokens"][-1] in topology.paths[p]["asset_tokens"]), None)
+    cases = {"source": "aep_challenge", "scope": "selected_subnet", "selected_premise_token": chosen["premise_token"],
+             "same_transformer_premise_token": same_transformer,
+             "other_transformer_same_fuse_premise_token": other_transformer,
+             "other_fuse_same_breaker_premise_token": other_branch,
+             "local_fault_asset_token": local, "upstream_fault_asset_token": upstream_asset,
+             "cases": [{"id": "local_only", "faults": [faults[0]], "impact": topology.affected_premises([faults[0]])},
+                       {"id": "upstream_only", "faults": [faults[1]], "impact": topology.affected_premises([faults[1]])},
+                       {"id": "overlapping_faults", "faults": faults, "impact": topology.affected_premises(faults)}],
+             "comparison": topology.compare_paths(chosen["premise_token"], other_branch) if other_branch else None,
+             "limitation": "Faults/impacts are simulations over actual text paths; no physical proximity or live-state claim."}
+    write_json(output / "data_demo_cases.json", cases)
     return report
 
 

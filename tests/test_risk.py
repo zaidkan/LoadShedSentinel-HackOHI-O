@@ -40,6 +40,18 @@ def test_missing_history_reduces_confidence_not_increases_risk(network):
     assert "Historical spatial coverage" in missing["missing_inputs"]
 
 
+def test_named_storm_preview_is_uncalibrated_and_temporally_bounded(network):
+    service = RiskService(network)
+    result = service.preview_risk("P", "moderate", as_of="2026-10-24")
+    assert result["band"] == "MODERATE"
+    assert result["confidence_kind"] == "unavailable"
+    assert any("1 earlier damage reports" in text for text in result["drivers"])
+    assert service.preview_risk("P", "unknown", as_of="2026-10-24")["band"] == "UNKNOWN"
+    assert service.preview_risk("missing", "severe", as_of="2026-10-24")["band"] == "UNKNOWN"
+    with pytest.raises(ValueError):
+        service.preview_risk("P", "extreme", as_of="2026-10-24")
+
+
 @pytest.mark.parametrize("intensity", [-0.1, 1.1, float("nan"), float("inf"), True, "high", None])
 def test_invalid_intensities_are_rejected(network, intensity):
     with pytest.raises(ValueError):

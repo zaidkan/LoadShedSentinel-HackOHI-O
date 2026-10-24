@@ -399,6 +399,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-655E1DC795F0405E",
         "kind": "PRIMARY",
@@ -422,6 +423,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-71217451AE9190C4",
         "kind": "PRIMARY",
@@ -445,6 +447,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-E44D92BB65A31AFA",
         "kind": "PRIMARY",
@@ -468,6 +471,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-B6BBE930E4BA0436",
         "kind": "PRIMARY",
@@ -491,6 +495,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-D19836F89980F4DF",
         "kind": "PRIMARY",
@@ -514,6 +519,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-9271A70A0B76BB75",
         "kind": "PRIMARY",
@@ -537,6 +543,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-EE6AC9675ABA48D9",
         "kind": "PRIMARY",
@@ -560,6 +567,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-F7A066DEF787816B",
         "kind": "PRIMARY",
@@ -583,6 +591,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-C316AEEA94B55DED",
         "kind": "PRIMARY",
@@ -606,6 +615,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-7B21440915AE2ECA",
         "kind": "PRIMARY",
@@ -629,6 +639,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-AC28BD4885D881D8",
         "kind": "PRIMARY",
@@ -652,6 +663,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-09BECE301BCA2A0F",
         "kind": "PRIMARY",
@@ -675,6 +687,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-BFCBCCE054737D18",
         "kind": "PRIMARY",
@@ -698,6 +711,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-964378B6179727E5",
         "kind": "PRIMARY",
@@ -721,6 +735,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-34A8CB847564E601",
         "kind": "PRIMARY",
@@ -744,6 +759,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-503648D9823FA06A",
         "kind": "PRIMARY",
@@ -767,6 +783,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-767FA92057D4BD9A",
         "kind": "PRIMARY",
@@ -790,6 +807,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-98899DC4F99DDAAB",
         "kind": "PRIMARY",
@@ -813,6 +831,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-8F34687B60BC51AE",
         "kind": "PRIMARY",
@@ -836,6 +855,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-92240FBBF3E67991",
         "kind": "PRIMARY",
@@ -859,6 +879,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-10378E9FA6A739DC",
         "kind": "PRIMARY",
@@ -882,6 +903,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-6B051593952FD03D",
         "kind": "PRIMARY",
@@ -905,6 +927,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-12AB91991CFB35F3",
         "kind": "PRIMARY",
@@ -928,6 +951,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-67AE32C62CF540F1",
         "kind": "PRIMARY",
@@ -951,6 +975,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-A92DFC9C89A680ED",
         "kind": "PRIMARY",
@@ -974,6 +999,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-8A7C8EB1DA505018",
         "kind": "PRIMARY",
@@ -997,6 +1023,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-944A431974152037",
         "kind": "PRIMARY",
@@ -1020,6 +1047,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-D2936A99AC51065A",
         "kind": "PRIMARY",
@@ -1043,6 +1071,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-C78132B62CEC924D",
         "kind": "PRIMARY",
@@ -1066,6 +1095,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-0BFA8828D32FBB1D",
         "kind": "PRIMARY",
@@ -1089,6 +1119,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-57EF0252568C7B51",
         "kind": "PRIMARY",
@@ -1112,6 +1143,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-656D0130D765CCF9",
         "kind": "PRIMARY",
@@ -1135,6 +1167,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-F2F7162ACC9FBF55",
         "kind": "PRIMARY",
@@ -1158,6 +1191,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-667437278DDB849C",
         "kind": "PRIMARY",
@@ -1181,6 +1215,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-2320645367F2BB79",
         "kind": "PRIMARY",
@@ -1204,6 +1239,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-A2815CBD71088E36",
         "kind": "PRIMARY",
@@ -1227,6 +1263,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-47C7B35051D04A3B",
         "kind": "PRIMARY",
@@ -1250,6 +1287,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-C214F97253723783",
         "kind": "PRIMARY",
@@ -1273,6 +1311,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-A933FC57AAC304F8",
         "kind": "PRIMARY",
@@ -1296,6 +1335,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-52EFECF82BCC56E6",
         "kind": "PRIMARY",
@@ -1319,6 +1359,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-FF96ACBF2147F5C9",
         "kind": "PRIMARY",
@@ -1342,6 +1383,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-82F9BD5F370FCD98",
         "kind": "PRIMARY",
@@ -1365,6 +1407,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-796D2B727A34267E",
         "kind": "PRIMARY",
@@ -1388,6 +1431,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-312E08E8CBD78D6C",
         "kind": "PRIMARY",
@@ -1411,6 +1455,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-EFBDB8C710765065",
         "kind": "PRIMARY",
@@ -1434,6 +1479,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-9968DF9B38752C32",
         "kind": "PRIMARY",
@@ -1457,6 +1503,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-478E2D0F08EACFDB",
         "kind": "PRIMARY",
@@ -1480,6 +1527,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-BC48FB9597A51B97",
         "kind": "PRIMARY",
@@ -1503,6 +1551,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-65DE08BCC6B43797",
         "kind": "PRIMARY",
@@ -1526,6 +1575,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-46F41C303CE4D71C",
         "kind": "PRIMARY",
@@ -1549,6 +1599,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-B9FBB10CB7FE9AA7",
         "kind": "PRIMARY",
@@ -1572,6 +1623,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-46F4B5372EE1ADD6",
         "kind": "PRIMARY",
@@ -1595,6 +1647,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-62DEB7E692C78E30",
         "kind": "PRIMARY",
@@ -1618,6 +1671,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-33C4C5701507EF3F",
         "kind": "PRIMARY",
@@ -1641,6 +1695,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-8D770E79AD562971",
         "kind": "PRIMARY",
@@ -1664,6 +1719,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-0ED57A03B72F02DD",
         "kind": "PRIMARY",
@@ -1687,6 +1743,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-77428CD755CFD332",
         "kind": "PRIMARY",
@@ -1710,6 +1767,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-4D7209A3198F375B",
         "kind": "PRIMARY",
@@ -1733,6 +1791,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-ACB150837078405B",
         "kind": "PRIMARY",
@@ -1756,6 +1815,7 @@
         "type": "LineString"
       },
       "properties": {
+        "circuit_token": "CIRCUIT-02C8EDC5F7F74BEC",
         "electrical_connectivity": "UNVERIFIED",
         "feature_token": "GIS-79EB7C3585053419",
         "kind": "PRIMARY",

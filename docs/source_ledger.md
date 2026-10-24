@@ -15,6 +15,9 @@ should add their own evidence separately.
 | Spatial history factor | `network_bundle.json:risk_context` | Date/count aggregates within 2 km; no inferred asset failure or electrical connection |
 | Ordinal risk | `engine/risk.py`; `data_handoff_example.json:risk` | Derived index combining supplied history and scenario storm; explicit assumed weights; not an empirical probability |
 | Fault footprint/blockers | `engine/topology.py`; `data_handoff_example.json` | Simulated faults over supplied dependencies; union counts in selected scope, not confirmed outages |
+| Scoped network adapter | `engine/topology.py:NetworkService`; `tests/test_data_adapters.py` | Real source geometry/paths through Human 4's existing network hook; fixture circuit aliases rejected, circuit map context filtered |
+| Canonical risk preview | `engine/risk.py:RiskService.preview_risk`; `tests/test_data_adapters.py` | Customer-safe strings in the existing Risk shape; confidence unavailable because there is no calibrated model; separate from fixture snapshots |
+| Comparison and overlap cases | `data_demo_cases.json` | Actual shared/differing text paths, with explicitly simulated 3-premise local and 8-premise upstream/union footprints |
 | Workbook metadata | `source_inventory.json:workbook_metadata_only` | Sheet names/hash only; Human 2 owns units and labor interpretation |
 
 The source repository's official data description is

@@ -63,7 +63,7 @@ def test_tokens_are_stable_with_key_and_do_not_embed_source_id():
 def test_export_is_allowlisted_and_positions_are_generalized():
     root = Path(__file__).resolve().parents[1] / "data" / "processed"
     geojson = json.loads((root / "network.geojson").read_text())
-    allowed = {"asset_token", "premise_token", "kind", "provenance", "gis_join", "feature_token", "role", "electrical_connectivity"}
+    allowed = {"asset_token", "premise_token", "kind", "provenance", "gis_join", "feature_token", "role", "circuit_token", "electrical_connectivity"}
     for feature in geojson["features"]:
         assert set(feature["properties"]) <= allowed
         coordinates = feature["geometry"]["coordinates"]
