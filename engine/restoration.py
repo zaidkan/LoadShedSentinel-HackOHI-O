@@ -100,6 +100,7 @@ For multi-fault planning use context.tasks of {id,person_hours,crew_size,crew_id
         tasks = context.get('tasks'); details = []
         if tasks is None:
             if not damage or not labor_ref: raise ValueError('Missing verified work package or labor reference')
+            if labor_ref.get('quantity_unit') in (None, 'unknown', 'unspecified', 'task_assumption'): raise ValueError('Unverified quantity denominator')
             if damage.get('quantity_unit') != labor_ref.get('quantity_unit') or not damage.get('quantity_unit'): raise ValueError('Quantity unit does not match labor reference')
             operation = damage.get('operation')
             columns = {'install': ['install_hours'], 'remove': ['remove_hours'], 'replace': ['install_hours', 'remove_hours']}.get(operation)

@@ -50,6 +50,7 @@ not a weather forecast. Events retain their original timezone-aware timestamps.
     step_hours = _number(node_config.get('step_minutes', 60), 'step minutes', positive=True) / 60
     event_capture = _number(node_config.get('event_capture_wh', 0), 'event capture energy')
     load, message_wh, interval = _loads(node_config)
+    daily = daily_energy_wh(node_config)
     hours = _number(event_window.get('hours'), 'window hours', positive=True)
     if hours / step_hours > 10000: raise ValueError('Too many integration steps')
     start = _date(event_window.get('start_utc')); end = start + timedelta(hours=hours)
@@ -97,7 +98,6 @@ not a weather forecast. Events retain their original timezone-aware timestamps.
             else: pending.extend(new)
             elapsed += dt; final_connection = 'OFFLINE' if missing > 1e-12 else connection
             trace.append(point())
-    daily = daily_energy_wh(node_config)
     solar = dict(battery_soc_pct=energy / capacity * 100, nominal_wh=nominal, solar_w=panel,
                  modeled_runtime_days=energy / daily if daily > 0 else None,
                  buffered_events=len(pending), connectivity=final_connection, provenance='modeled_sensor')

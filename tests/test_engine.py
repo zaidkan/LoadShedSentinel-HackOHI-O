@@ -60,7 +60,7 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(mapped['work_packages'][0]['labor_ref']['code'], 'POL:Medium')
         self.assertEqual(mapped['work_packages'][0]['quantity'], 2)
         self.assertTrue(mapped['requires_dispatcher_review'])
-        for damage in [dict(asset_type='Pole', quantity=1), dict(asset_type='Transformer', transformer_kva=37.5, quantity=1), dict(asset_type='primary', quantity=1), dict(asset_type='Fuse Bank')]:
+        for damage in [dict(asset_type='Pole', quantity=1), dict(asset_type='Transformer', transformer_kva=37.5, quantity=1), dict(asset_type='primary', quantity=1), dict(asset_type='Fuse Bank'), dict(asset_type='Fuse Bank', quantity=1)]:
             self.assertFalse(map_damage_to_work_packages(damage, c)['work_packages'])
         self.assertEqual(map_damage_to_work_packages(dict(asset_type='Transformer', transformer_kva=25, quantity=1), c)['work_packages'][0]['labor_ref']['code'], 'TRANSFORMER:25')
 
@@ -137,6 +137,8 @@ class EngineTests(unittest.TestCase):
             self.assertEqual(estimate_restoration(damage, ref, context)['kind'], 'unavailable')
         self.assertEqual(estimate_restoration(damage, None, dict(timestamp_utc=NOW, crew_size=3))['kind'], 'unavailable')
         with self.assertRaises(ValueError): estimate_restoration(damage, ref, dict(timestamp_utc=NOW, crew_size=3, travel_hours=2))
+        unknown = {**ref, 'quantity_unit': 'unspecified'}
+        self.assertEqual(estimate_restoration({**damage, 'quantity_unit': 'unspecified'}, unknown, dict(timestamp_utc=NOW, crew_size=3))['kind'], 'unavailable')
         bad = {**damage, 'quantity_unit': 'feet'}
         self.assertEqual(estimate_restoration(bad, ref, dict(timestamp_utc=NOW, crew_size=3))['kind'], 'unavailable')
 
@@ -217,7 +219,7 @@ class EngineTests(unittest.TestCase):
         from engine.crew import recommend_crew
         from engine.restoration import estimate_restoration
         from engine.energy import simulate_energy
-        schema_path = Path('/Users/zaid/Larp-MAXXX/hackathon/api/schemas.py')
+        schema_path = Path(__file__).resolve().parents[1] / 'api/schemas.py'
         if not schema_path.exists(): self.skipTest('Integrator schema source not available')
         classes = {node.name: {child.target.id for child in node.body if isinstance(child, ast.AnnAssign)}
                    for node in ast.parse(schema_path.read_text()).body if isinstance(node, ast.ClassDef)}

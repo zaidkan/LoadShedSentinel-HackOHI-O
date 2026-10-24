@@ -78,7 +78,7 @@ def load_labor_catalog(path=DEFAULT_WORKBOOK):
                             install_hours=hours(install_col), remove_hours=hours(remove_col) if remove_col else None,
                             quantity_unit=unit, hour_basis='direct_job_site_hours', indirect_multiplier=4.5,
                             source={'workbook': path.name, 'workbook_sha256': workbook_hash, 'sheet': sheet, 'cells': [f'{c}{row_number}' for c in [install_col, remove_col] if c], 'missing_cells': [f'{c}{row_number}' for c in [install_col, remove_col] if c and (c not in row or row[c]['value'] is None)]},
-                            requires_dispatcher_review=True))
+                            requires_dispatcher_review=True, requires_unit_confirmation=unit == 'unspecified'))
     for name, rows, _ in sheets:
         if name == 'CNC':
             for _, row in sorted(rows.items()):
@@ -101,7 +101,7 @@ def load_labor_catalog(path=DEFAULT_WORKBOOK):
             for number, row in sorted(rows.items()):
                 if number == 1: continue
                 label = str(row.get('A', {}).get('value', ''))
-                unit = 'cubic_foot' if row.get('E', {}).get('value') == 'per cubic foot' else 'task_assumption'
+                unit = 'cubic_foot' if row.get('E', {}).get('value') == 'per cubic foot' else 'unspecified'
                 add('LABOR:' + label, name, row, 'D', unit=unit, label=label, kind='labor_adder')
     if len({r['code'] for r in records}) != len(records): raise ValueError('Ambiguous duplicate labor reference keys')
     return dict(workbook=path.name, sha256=workbook_hash,
@@ -127,6 +127,8 @@ unknown transformer ratings and unknown pole sizes never acquire invented hours.
     quantity = damage.get('quantity')
     if isinstance(quantity, bool) or _number(quantity) is None or float(quantity) <= 0:
         result['missing_inputs'].append('positive explicit quantity'); return result
+    if str(damage.get('asset_type', '')).lower() in ('fuse bank', 'recloser bank') and damage.get('quantity_unit') != 'construction_unit':
+        result['missing_inputs'].append('explicit component construction-unit count; a bank is not one device'); return result
     code = damage.get('damage_code')
     if code is None:
         code = {'pole': 'POL', 'transformer': 'TRANSFORMER', 'fuse bank': 'XCO',
@@ -141,6 +143,8 @@ unknown transformer ratings and unknown pole sizes never acquire invented hours.
     record = next((r for r in catalog['records'] if r['code'] == code), None)
     if record is None:
         result['missing_inputs'].append('supported labor reference and exact rating/size'); return result
+    if record['quantity_unit'] == 'unspecified':
+        result['missing_inputs'].append('verified quantity denominator for labor-only adder'); return result
     operation = damage.get('operation', 'replace')
     if operation not in ('install', 'remove', 'replace'): raise ValueError('Unknown work operation')
     result['work_packages'].append(dict(labor_ref=record, quantity=float(quantity), quantity_unit=record['quantity_unit'], operation=operation))
