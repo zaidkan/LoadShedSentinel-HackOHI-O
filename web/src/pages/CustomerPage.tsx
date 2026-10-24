@@ -17,7 +17,7 @@ export interface CustomerPageProps {
 export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
   const [snapshot, setSnapshot] = useState<CustomerSnapshotView | null>(null);
   const [loading, setLoading] = useState(true);
-  const [premiseToken, setPremiseToken] = useState('PREM-000001');
+  const [premiseToken, setPremiseToken] = useState('');
   const [topologyTrace, setTopologyTrace] = useState<any | null>(null);
   const [traceLoading, setTraceLoading] = useState(false);
 
@@ -52,6 +52,9 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
     try {
       const data = await fetchCustomerSnapshot();
       setSnapshot(data);
+      // This selected premise is drawn from the same source-dependent fault footprint.
+      setPremiseToken(data.selected_premise_token);
+      setTopologyTrace(null);
     } catch (e) {
       console.error('Failed to load customer snapshot', e);
     } finally {
@@ -128,7 +131,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
                 type="text"
                 value={premiseToken}
                 onChange={(e) => setPremiseToken(e.target.value)}
-                placeholder="e.g. PREM-000001"
+                placeholder="Anonymized AEP premise"
                 className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-sm text-blue-400 font-mono w-36"
               />
               <button
@@ -148,7 +151,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
         <div className="bg-slate-900/90 border border-blue-900/40 rounded-xl p-4 shadow-lg space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-              <GitBranch className="w-4 h-4" /> Live Supply Path Trace (AEP Topology Graph)
+              <GitBranch className="w-4 h-4" /> AEP Source Supply Path (Not Live Energization)
             </span>
             <span className="text-xs px-2 py-0.5 rounded bg-blue-900/40 text-blue-300 font-mono">
               Status: {topologyTrace.status}
@@ -197,6 +200,15 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
               ? 'Local protective equipment triggered. Utility dispatch investigating supply line.'
               : 'Supply lines operating within normal load parameters.'}
           </p>
+
+          {snapshot?.impact_source && (
+            <p className="text-xs text-blue-300 mb-3">
+              {snapshot.status === 'UNDER_REVIEW'
+                ? 'Affected customer count is unconfirmed.'
+                : `${snapshot.impact_source.affected_count_in_sample} modeled dependent premises in a ${snapshot.impact_source.sample_premise_count}-premise AEP source sample.`}
+              {' '}These are simulated dependencies, not confirmed live outages.
+            </p>
+          )}
 
           {snapshot?.restoration_planning && (
             <div className="bg-slate-950/60 rounded-lg p-3 border border-slate-800/80 flex items-center gap-3">
