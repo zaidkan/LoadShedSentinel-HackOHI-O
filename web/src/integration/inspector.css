@@ -1,0 +1,27 @@
+.integration-inspector { color:#dfeaf4; background:#101923; min-height:100vh; padding:32px max(20px,calc((100vw - 1200px)/2)); box-sizing:border-box; font:15px/1.55 system-ui,sans-serif; }
+.integration-inspector h1 {font-size:36px;letter-spacing:-1px;margin:8px 0;}
+.integration-inspector h2 {font-size:23px;margin-top:0;}
+.integration-inspector h3 {font-size:15px;color:#a7bbcc;margin-top:24px;}
+.integration-inspector .eyebrow {font-size:12px;letter-spacing:2px;color:#7ddbcf;}
+.integration-inspector .disclosure {border-left:3px solid #edc16d;padding:12px 16px;background:#282922;margin:24px 0;}
+.integration-inspector .controls {display:flex;gap:12px;align-items:end;flex-wrap:wrap;}
+.integration-inspector label {display:block;}
+.integration-inspector select,.integration-inspector button {font:inherit;color:inherit;background:#21303e;border:1px solid #46586b;border-radius:6px;padding:8px 12px;}
+.integration-inspector select {margin-left:8px;max-width:100%;}
+.integration-inspector button {cursor:pointer;}
+.integration-inspector button:hover {border-color:#7ddbcf;}
+.integration-inspector button:disabled {opacity:.45;cursor:default;}
+.integration-inspector a {color:#7ddbcf;}
+.integration-inspector .panels {display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;}
+.integration-inspector .panels>section {background:#172330;border:1px solid #344455;border-radius:12px;padding:24px;min-width:0;}
+.integration-inspector .task {display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #344455;}
+.integration-inspector .task span {font-size:12px;flex:1;color:#a8bdcf;}
+.integration-inspector li {margin:8px 0;overflow-wrap:anywhere;}
+.integration-inspector .check {margin:16px 0;}
+.integration-inspector .check input {margin-right:8px;accent-color:#7ddbcf;}
+.integration-inspector .status {font-size:21px;color:#7ddbcf;}
+.integration-inspector .notification {border-top:1px solid #344455;padding:16px 0;}
+.integration-inspector .notification strong {font-size:12px;color:#7ddbcf;}
+.integration-inspector .error {background:#48282c;color:#ffd6da;padding:12px;border-radius:6px;}
+.integration-inspector footer {color:#9eb1c3;padding:24px 0;font-size:12px;}
+@media(max-width:760px) {.integration-inspector .panels{grid-template-columns:1fr;}.integration-inspector{padding:24px 16px;}.integration-inspector select{margin-left:0;}}

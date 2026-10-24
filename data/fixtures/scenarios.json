@@ -1,0 +1,320 @@
+[
+  {
+    "id": "pre_storm",
+    "title": "Storm readiness",
+    "description": "Pre-storm guidance only; no outage is asserted.",
+    "paths": {
+      "P-DEMO-001": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-002": [
+        "T-DEMO-002",
+        "F-DEMO-002",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-003": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ]
+    },
+    "faults": [],
+    "events": [],
+    "estimate_sets": {
+      "": null
+    },
+    "source": "synthetic_fixture"
+  },
+  {
+    "id": "local_protection",
+    "title": "Local protective-device operation",
+    "description": "Labeled synthetic scenario for integration; no live utility information.",
+    "paths": {
+      "P-DEMO-001": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-002": [
+        "T-DEMO-002",
+        "F-DEMO-002",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-003": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ]
+    },
+    "faults": [
+      {
+        "fault_id": "FAULT-LOCAL",
+        "asset_id": "T-DEMO-001",
+        "damage_class": "protective_device",
+        "premises": [
+          "P-DEMO-001",
+          "P-DEMO-003"
+        ],
+        "task_id": "TASK-LOCAL"
+      }
+    ],
+    "events": [
+      {
+        "label": "Explicit simulated outage event",
+        "activate_fault_ids": [
+          "FAULT-LOCAL"
+        ],
+        "unknown": false,
+        "confirmed_damage": false,
+        "hypothesis_code": "LOCAL_PROTECTION_OPERATION",
+        "cutout_status": "OPEN"
+      }
+    ],
+    "estimate_sets": {
+      "": null,
+      "FAULT-LOCAL": [
+        2,
+        4,
+        6
+      ]
+    },
+    "source": "synthetic_fixture"
+  },
+  {
+    "id": "confirmed_transformer_damage",
+    "title": "Equipment assessment and confirmation",
+    "description": "Labeled synthetic scenario for integration; no live utility information.",
+    "paths": {
+      "P-DEMO-001": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-002": [
+        "T-DEMO-002",
+        "F-DEMO-002",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-003": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ]
+    },
+    "faults": [
+      {
+        "fault_id": "FAULT-LOCAL",
+        "asset_id": "T-DEMO-001",
+        "damage_class": "transformer",
+        "premises": [
+          "P-DEMO-001",
+          "P-DEMO-003"
+        ],
+        "task_id": "TASK-LOCAL"
+      }
+    ],
+    "events": [
+      {
+        "label": "Explicit simulated outage event",
+        "activate_fault_ids": [
+          "FAULT-LOCAL"
+        ],
+        "unknown": false,
+        "confirmed_damage": false,
+        "hypothesis_code": "POSSIBLE_EQUIPMENT_DISTRESS",
+        "cutout_status": "OPEN"
+      },
+      {
+        "label": "Simulated crew finding confirms replacement work",
+        "activate_fault_ids": [
+          "FAULT-LOCAL"
+        ],
+        "unknown": false,
+        "confirmed_damage": true,
+        "hypothesis_code": "POSSIBLE_EQUIPMENT_DISTRESS",
+        "cutout_status": "OPEN"
+      }
+    ],
+    "estimate_sets": {
+      "": null,
+      "FAULT-LOCAL": [
+        6,
+        9,
+        12
+      ]
+    },
+    "source": "synthetic_fixture"
+  },
+  {
+    "id": "upstream_feeder",
+    "title": "Upstream interruption",
+    "description": "Labeled synthetic scenario for integration; no live utility information.",
+    "paths": {
+      "P-DEMO-001": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-002": [
+        "T-DEMO-002",
+        "F-DEMO-002",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-003": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ]
+    },
+    "faults": [
+      {
+        "fault_id": "FAULT-UPSTREAM",
+        "asset_id": "R-DEMO-001",
+        "damage_class": "upstream_interruption",
+        "premises": [
+          "P-DEMO-001",
+          "P-DEMO-002",
+          "P-DEMO-003"
+        ],
+        "task_id": "TASK-UPSTREAM"
+      }
+    ],
+    "events": [
+      {
+        "label": "Explicit simulated outage event",
+        "activate_fault_ids": [
+          "FAULT-UPSTREAM"
+        ],
+        "unknown": false,
+        "confirmed_damage": false,
+        "hypothesis_code": "UPSTREAM_FEEDER_INTERRUPTION",
+        "cutout_status": "CLOSED"
+      }
+    ],
+    "estimate_sets": {
+      "": null,
+      "FAULT-UPSTREAM": [
+        2,
+        4,
+        6
+      ]
+    },
+    "source": "synthetic_fixture"
+  },
+  {
+    "id": "contradictory",
+    "title": "Conflicting evidence",
+    "description": "Conflicting evidence never automatically restores service.",
+    "paths": {
+      "P-DEMO-001": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-002": [
+        "T-DEMO-002",
+        "F-DEMO-002",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-003": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ]
+    },
+    "faults": [],
+    "events": [
+      {
+        "label": "Scenario evidence is incomplete",
+        "activate_fault_ids": [],
+        "unknown": true,
+        "confirmed_damage": false,
+        "hypothesis_code": "INSUFFICIENT_EVIDENCE",
+        "cutout_status": "UNKNOWN"
+      }
+    ],
+    "estimate_sets": {
+      "": null
+    },
+    "source": "synthetic_fixture"
+  },
+  {
+    "id": "multi_fault",
+    "title": "Two faults, staged restoration",
+    "description": "Shared upstream and local faults; either repair order is supported.",
+    "paths": {
+      "P-DEMO-001": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-002": [
+        "T-DEMO-002",
+        "F-DEMO-002",
+        "R-DEMO-001"
+      ],
+      "P-DEMO-003": [
+        "T-DEMO-001",
+        "F-DEMO-001",
+        "R-DEMO-001"
+      ]
+    },
+    "faults": [
+      {
+        "fault_id": "FAULT-LOCAL",
+        "asset_id": "T-DEMO-001",
+        "damage_class": "transformer",
+        "premises": [
+          "P-DEMO-001",
+          "P-DEMO-003"
+        ],
+        "task_id": "TASK-LOCAL"
+      },
+      {
+        "fault_id": "FAULT-UPSTREAM",
+        "asset_id": "R-DEMO-001",
+        "damage_class": "upstream_interruption",
+        "premises": [
+          "P-DEMO-001",
+          "P-DEMO-002",
+          "P-DEMO-003"
+        ],
+        "task_id": "TASK-UPSTREAM"
+      }
+    ],
+    "events": [
+      {
+        "label": "Explicit simulated outage event",
+        "activate_fault_ids": [
+          "FAULT-LOCAL",
+          "FAULT-UPSTREAM"
+        ],
+        "unknown": false,
+        "confirmed_damage": false,
+        "hypothesis_code": "STRUCTURE_OR_CONDUCTOR_DAMAGE",
+        "cutout_status": "OPEN"
+      }
+    ],
+    "estimate_sets": {
+      "": null,
+      "FAULT-LOCAL": [
+        6,
+        9,
+        12
+      ],
+      "FAULT-UPSTREAM": [
+        2,
+        4,
+        6
+      ],
+      "FAULT-LOCAL|FAULT-UPSTREAM": [
+        8,
+        12,
+        16
+      ]
+    },
+    "source": "synthetic_fixture"
+  }
+]
