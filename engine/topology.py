@@ -23,6 +23,8 @@ class Topology:
                 raise ValueError("Invalid persisted premise path")
             if premise not in graph["premise_tokens"] or not isinstance(premise, str):
                 raise ValueError("Invalid persisted premise key")
+            if record.get("premise_token") != graph["premise_tokens"][premise]:
+                raise ValueError("Persisted premise token disagrees with the public token catalog")
             for key in ids:
                 self.reverse[key].add(premise)
 
@@ -73,6 +75,121 @@ class Topology:
                 "coverage_partial": bool(self.graph.get("rejected")),
                 "basis": "union_of_validated_supplied_paths",
                 "disclosure": "Hypothetical dependency footprint; not an observed outage or complete service-territory count."}
+
+    def get_supply_path(self, premise):
+        """Public-token alias; the supplied breaker is not a physical substation."""
+        return self.premise_to_substation(premise)
+
+    def get_dependents(self, asset):
+        """Return the existing coverage-aware impact shape for one supplied asset."""
+        return self.affected_premises(asset)
+
+    def compare_paths(self, premise_a, premise_b):
+        a, b = self.get_supply_path(premise_a), self.get_supply_path(premise_b)
+        result = {"status": "UNKNOWN", "source": "aep_challenge", "shared_upstream_tokens": [],
+                  "branch_a_tokens": [], "branch_b_tokens": [],
+                  "limitations": ["Comparison uses supplied dependencies, not proximity or live switching state."]}
+        if a["status"] == "UNKNOWN" or b["status"] == "UNKNOWN":
+            result["reason"] = "Both validated premise paths are required."
+            return result
+        shared = set(a["path"]) & set(b["path"])
+        result.update({"status": "KNOWN", "premise_a": a["premise_token"], "premise_b": b["premise_token"],
+                       "shared_upstream_tokens": [t for t in a["path"] if t in shared],
+                       "branch_a_tokens": [t for t in a["path"] if t not in shared],
+                       "branch_b_tokens": [t for t in b["path"] if t not in shared]})
+        return result
+
+    def remaining_blockers(self, premise, faults):
+        """Evaluate declared fault states against one validated supplied path.
+
+        Unknown coverage never means a known-zero footprint. Clearing all modeled
+        blockers does not authorize restoration; the orchestrator must explicitly
+        apply its re-energization event.
+        """
+        normalized = {}
+        for fault in faults:
+            token = fault.get("fault_token")
+            if not isinstance(token, str) or not token:
+                raise ValueError("Each fault requires a nonempty fault_token")
+            state = fault.get("state", "UNKNOWN")
+            if state not in {"ACTIVE", "REPAIRING", "CLEARED", "UNKNOWN"}:
+                raise ValueError("Unsupported fault state")
+            value = (self._asset(fault.get("asset_token")), state)
+            if token in normalized and normalized[token] != value:
+                raise ValueError("Conflicting duplicate fault_token")
+            normalized[token] = value
+        key = self._premise(premise)
+        record = self.paths.get(key)
+        result = {"status": "UNKNOWN", "blocking_fault_tokens": [], "unknown_fault_tokens": [],
+                  "clear_of_modeled_faults": None, "requires_explicit_reenergization": True}
+        if record is None:
+            result["unknown_fault_tokens"] = sorted(t for t, (_, state) in normalized.items() if state != "CLEARED")
+            return result
+        blocking, unknown = set(), set()
+        path = set(record["asset_ids"])
+        for token, (asset, state) in normalized.items():
+            if state == "CLEARED":
+                continue
+            if asset not in self.reverse:
+                unknown.add(token)
+            elif asset in path:
+                (unknown if state == "UNKNOWN" else blocking).add(token)
+        result.update({"status": "UNKNOWN" if unknown else "KNOWN",
+                       "premise_token": record["premise_token"],
+                       "blocking_fault_tokens": sorted(blocking), "unknown_fault_tokens": sorted(unknown),
+                       "clear_of_modeled_faults": None if unknown else not blocking})
+        return result
+
+    @staticmethod
+    def _bounded_count(value, name):
+        if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 1000:
+            raise ValueError(name + " must be an integer from 1 to 1000")
+        return value
+
+    def premise_catalog(self, limit=50):
+        """Bounded selection entries with public tokens; no source keys or attributes."""
+        self._bounded_count(limit, "limit")
+        tokens = sorted(record["premise_token"] for record in self.paths.values())[:limit]
+        return [{"premise_token": token, "label": f"Anonymized home {i + 1}", "source": "aep_challenge"}
+                for i, token in enumerate(tokens)]
+
+    def scenario_context(self, premise, max_premises=1000):
+        """Return bounded real dependency groups for an explicitly simulated case.
+
+        The nearest supplied protective device must have a strict superset of the
+        transformer's dependent premises. Missing or oversized groups abstain;
+        groups are never sampled, truncated or invented to fit a scenario.
+        """
+        self._bounded_count(max_premises, "max_premises")
+        result = {"status": "UNKNOWN", "source": "aep_challenge", "context": None,
+                  "limitations": ["Groups count validated supplied paths only; unmatched customers may also depend on the assets.",
+                                  "Scenario context does not establish a live outage, switching feasibility or physical substation path."]}
+        key = self._premise(premise)
+        record = self.paths.get(key)
+        if record is None:
+            result["reason"] = "No validated premise supply path is available."
+            return result
+        local_asset = record["asset_ids"][0]
+        local = self.reverse[local_asset]
+        if len(local) > max_premises:
+            result["reason"] = "The complete local dependency group exceeds max_premises."
+            return result
+        protective_kinds = {"Fuse", "Recloser (Hydraulic)", "Recloser (Electronic)", "Sectionalizer", "Circuit Breaker"}
+        for asset in record["asset_ids"][1:]:
+            if self.nodes[asset]["kind"] not in protective_kinds:
+                continue
+            feeder = self.reverse[asset]
+            if not local < feeder or len(feeder) > max_premises:
+                continue
+            result.update({"status": "KNOWN", "context": {
+                "current_asset_id": self.nodes[local_asset]["asset_token"],
+                "upstream_asset_id": self.nodes[asset]["asset_token"],
+                "selected_premise_token": record["premise_token"],
+                "local_premise_tokens": sorted(self.paths[p]["premise_token"] for p in local),
+                "feeder_premise_tokens": sorted(self.paths[p]["premise_token"] for p in feeder)}})
+            return result
+        result["reason"] = "No bounded supplied protective-device group strictly contains the complete local group."
+        return result
 
     def safe_geojson(self, premise, max_premises=12):
         """Bounded equipment-only slice; no customer coordinates or raw source identifiers."""

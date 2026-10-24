@@ -128,11 +128,31 @@ Row-element counts are not maximum worksheet row numbers. Work quantities and di
 | [inventory.json](../data/processed/inventory.json) | Aggregate source metadata and schema/blank/key statistics |
 | [graph_summary.json](../data/processed/graph_summary.json) | Verified counts, accepted/rejected joins and explicit limitations |
 | [network.geojson](../data/processed/network.geojson) | 5-feature example: 3 generalized equipment points + 2 schematic relationship links; 5 anonymous premise references |
-| `data/processed/private/topology.json` | Operator-only raw technical IDs, equipment positions and accepted path lookup; file mode 0600, parent mode 0700 |
+| `data/processed/private/topology.json` | Operator-only raw technical IDs, equipment positions and accepted path lookup; POSIX file mode 0600, parent mode 0700 |
 
 Public seed is `PREM-000001`; public asset tokens use `ASSET-`. Tokens identify the supplied snapshot, not stable identities across future source revisions. Public coordinates are rounded to **0.01 degrees**; no customer coordinates, sensitive service attributes, addresses or raw premise IDs are exported. Link geometry is labelled `schematic_link_not_conductor`. No breaker position is invented. Equipment positions are unsuitable for household navigation or engineering work.
 
-Serve an explicit safe artifact, never the processed directory wholesale. Git does not preserve owner-only read permissions; reapply private-file/directory permissions after checkout or copy. Selection of a real public path does not automatically replace the scenario generator's independently declared `P-DEMO-` premise groups.
+Serve an explicit safe artifact, never the processed directory wholesale. Git does not preserve owner-only read permissions; reapply private-file/directory permissions after checkout or copy on POSIX. Windows chmod does not establish an owner-only ACL. Selection of a real public path does not automatically replace the scenario generator's independently declared `P-DEMO-` premise groups.
+
+### Runtime data continuation
+
+Run `python -m pipeline.build_graph` before starting the API or running the complete
+API tests on a fresh clone. The private graph is intentionally not tracked. The
+new `ensure_runtime_data` helper validates source hashes and persisted tokens,
+reuses a valid graph, and repairs stale/missing public outputs using a manifest
+written last. After bootstrap the current topology endpoint returns a known
+four-equipment path for `PREM-000001` instead of HTTP 503.
+
+Additional safe artifacts are `source_context.json` (public catalog plus complete
+bounded local/upstream groups), `risk_context.json` (dated report aggregates for
+the matched transformers in that published scope) and `source_manifest.json`
+(source/public-file hashes). The example has 5 local and 33 upstream dependents.
+The risk service uses reports strictly before an explicit date within 2km of the
+matched transformer, with declared ordinal scenario weights and no calibrated
+probability claim. It imports no household coordinates.
+
+See [data runtime handoff](data_runtime_handoff.md) for exact signatures, startup
+commands, validation results and the remaining source-token/scenario boundary.
 
 ## Complete source-column reference
 

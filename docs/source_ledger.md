@@ -69,3 +69,27 @@ Persist labels on every captured screen: **AEP CHALLENGE DATA**, **MODELED SENSO
 [inspect_assets.py](../pipeline/inspect_assets.py), [build_graph.py](../pipeline/build_graph.py), [topology.py](../engine/topology.py), [import_labor.py](../pipeline/import_labor.py), [restoration.py](../engine/restoration.py), [scenarios.py](../engine/scenarios.py), [customer.py](../engine/customer.py), [schemas.py](../api/schemas.py) and [main.py](../api/main.py) are the local evidence locators. These links describe code inspected for this ledger, not a claim of browser or end-to-end production validation.
 
 LRP-118 recorded 17 passing topology tests, including complete-archive checks, and successful output/privacy/permission checks. For this documentation task, ARCOS aggregates and the sourced labor example were recalculated locally. No current customer-alert integration, submission logistics, cloud architecture, operational accuracy or savings claim was independently validated here. Rehearse the exact displayed build and disclose any separately captured evidence card in the [demo script](demo_script.md).
+
+## Human 1 runtime/context continuation
+
+The [data runtime handoff](data_runtime_handoff.md) adds reproducible startup for
+the current app and source-owned helpers while preserving the engine/labor notes
+above. `ensure_runtime_data` creates the ignored private graph and validates source
+SHA-256 values; `source_manifest.json` binds public outputs to the same source
+snapshot and detects incomplete/stale publication.
+
+`source_context.json` derives 5 local and 33 upstream dependents for
+`PREM-000001` from accepted source paths. `risk_context.json` contains only public
+transformer tokens plus date/count aggregates of source damage reports within
+2km of matched transformer geometry. The example has 40 reports strictly before
+2026-10-24. Those are historical spatial context, not damage-to-equipment matches
+or exposure-normalized failure rates. `engine/risk.py` combines them with declared
+storm intensity in an explicitly assumed ordinal index; its customer projection
+validates as `CustomerRisk` without exposing source IDs/coordinates.
+
+After explicit data bootstrap, the current health and lookup endpoints load the
+real graph successfully. The updated combined backend suite passes 84 tests plus
+34 subtests, including manifest recovery, public-output privacy, token consistency,
+bounded contexts, remaining blockers and temporal leakage. The scenario engine's
+`P-`-only validator and API's empty scenario context still need Human 2/4 to connect
+these real groups to the incident; the supplied P-DEMO scenarios are not relabeled.

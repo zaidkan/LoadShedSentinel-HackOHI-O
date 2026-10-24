@@ -204,7 +204,10 @@ class TopologyTests(unittest.TestCase):
     def test_persistence_rejects_path_corruption_and_keeps_private_mode(self):
         path = self.root / "private.json"
         write_json(path, self.graph, private=True)
-        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+        if os.name == "posix":
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+        # Windows chmod controls readonly status, not owner-only ACLs.
+        self.assertTrue(path.is_file())
         self.assertEqual(Topology.load(path).affected_premises("eo_isolating_eqpt_inst:0200")["affected_count"], 3)
         self.graph["paths"]["PRIVATE-PREMISE-0001"]["asset_ids"].append("NONEXISTENT")
         with self.assertRaises(ValueError):
