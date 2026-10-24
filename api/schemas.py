@@ -97,6 +97,7 @@ class ScenarioSnapshot(BaseModel):
     restoration: Restoration
     solar: SolarNode
     affected_premise_tokens: List[str] = Field(default_factory=list)
+    impact_source: Optional[dict] = None
     customer_risk: CustomerRisk
     notifications: List[NotificationItem] = Field(default_factory=list)
     disclosure: str
