@@ -232,11 +232,8 @@ def lookup_premise_topology(premise_id: str = Query(..., description="Anonymized
 
 @app.get("/api/topology/geojson")
 def get_network_geojson():
-    """Returns the sanitized public network GeoJSON for map display."""
-    if not os.path.exists(GEOJSON_PATH):
-        raise HTTPException(status_code=404, detail="Network GeoJSON not found")
-    with open(GEOJSON_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    """Schematic map from the same AEP-source bundle used by impact simulation."""
+    return get_aep_impact().geojson()
 
 class BatteryCalcRequest(BaseModel):
     capacity_wh: float
