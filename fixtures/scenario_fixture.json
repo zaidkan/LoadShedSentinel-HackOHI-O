@@ -1,0 +1,88 @@
+{
+  "scenario_id": "local_protection",
+  "incident_id": "INC-DEMO-01",
+  "revision": 1,
+  "current_asset_id": "T-DEMO-104",
+  "selected_premise_token": "P-DEMO-001",
+  "timestamp_utc": "2026-10-24T18:00:00Z",
+  "cutout_status": "OPEN",
+  "status": "OUTAGE",
+  "evidence": [
+    {
+      "id": "E1",
+      "incident_id": "INC-DEMO-01",
+      "asset_id": "T-DEMO-104",
+      "timestamp_utc": "2026-10-24T18:00:00Z",
+      "kind": "cutout_state",
+      "value": "OPEN",
+      "provenance": "modeled_sensor",
+      "quality": "modeled",
+      "visibility": "operator"
+    },
+    {
+      "id": "E2",
+      "incident_id": "INC-DEMO-01",
+      "timestamp_utc": "2026-10-24T18:00:10Z",
+      "kind": "affected_premise_count",
+      "value": 8,
+      "unit": "premises",
+      "provenance": "scenario",
+      "quality": "modeled",
+      "visibility": "customer_safe"
+    }
+  ],
+  "hypotheses": [
+    {
+      "code": "LOCAL_PROTECTION_OPERATION",
+      "score_type": "relative_evidence",
+      "score": null,
+      "label": "Local protective device operated; cause unconfirmed",
+      "supporting_evidence_ids": ["E1", "E2"],
+      "contradicting_evidence_ids": [],
+      "missing_evidence": ["utility protection log", "field assessment"],
+      "requires_field_confirmation": true
+    }
+  ],
+  "crew_recommendation": {
+    "capabilities": ["qualified distribution line assessment"],
+    "material_categories": ["protective-device parts subject to field review"],
+    "candidate_damage_class": "protection_or_unknown",
+    "basis": "assessment_required",
+    "approved": false,
+    "reason": "Protective state observed in modeled telemetry; cause remains unresolved"
+  },
+  "restoration": {
+    "kind": "scenario_planning",
+    "lower_hours": 1.5,
+    "expected_hours": 3.0,
+    "upper_hours": 6.0,
+    "labor_work_hours": 4.5,
+    "labor_work_unit": "person-hours",
+    "assumptions": ["Awaiting verified workbook units and dispatch assumptions"],
+    "last_updated_utc": "2026-10-24T18:00:10Z"
+  },
+  "solar": {
+    "battery_soc_pct": 82,
+    "nominal_wh": 41,
+    "solar_w": 25,
+    "modeled_runtime_days": 3.5,
+    "buffered_events": 0,
+    "connectivity": "ONLINE",
+    "provenance": "modeled_sensor"
+  },
+  "affected_premise_tokens": ["P-DEMO-001", "P-DEMO-002", "P-DEMO-003", "P-DEMO-004", "P-DEMO-005", "P-DEMO-006", "P-DEMO-007", "P-DEMO-008"],
+  "customer_risk": {
+    "band": "HIGH",
+    "drivers": ["Selected storm case", "Supply relationship in example network"],
+    "confidence_kind": "scenario_only"
+  },
+  "notifications": [
+    {
+      "type": "OUTAGE_CONFIRMED",
+      "text": "Your area has an outage. Cause under assessment.",
+      "delivery_mode": "demo",
+      "sent_at_utc": "2026-10-24T18:00:10Z"
+    }
+  ],
+  "disclosure": "Demo event; modeled sensor and scenario inputs. AEP field accuracy not established."
+}
