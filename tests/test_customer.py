@@ -98,3 +98,45 @@ def test_project_customer_view_privacy():
     assert "hypotheses" not in view
     assert view["selected_premise_token"] == "P-001"
     assert view["status"] == "OUTAGE"
+
+def test_battery_runtime_edge_cases_and_clamping():
+    # Zero or negative inputs fail-safe to 0.0
+    assert calculate_battery_runtime(0, 0.85, 100)["theoretical_hours"] == 0.0
+    assert calculate_battery_runtime(1000, 0.85, 0)["theoretical_hours"] == 0.0
+    assert calculate_battery_runtime(-500, 0.85, 100)["theoretical_hours"] == 0.0
+    assert calculate_battery_runtime(1000, 0.85, -50)["theoretical_hours"] == 0.0
+    
+    # Inverter efficiency clamped to max(0.5, min(1.0, eff)) -> no zero division
+    res_zero_eff = calculate_battery_runtime(1000, 0.85, 100, inverter_efficiency=0.0)
+    assert res_zero_eff["effective_load_w"] == 200.0  # 100 / 0.5
+    
+    # Usable fraction clamped to [0.1, 1.0]
+    res_over_usable = calculate_battery_runtime(1000, 1.5, 100)
+    assert res_over_usable["usable_wh"] == 1000.0  # 1000 * 1.0
+    res_neg_usable = calculate_battery_runtime(1000, -0.5, 100)
+    assert res_neg_usable["usable_wh"] == 100.0  # 1000 * 0.1
+
+def test_notification_fsm_all_lifecycle_triggers():
+    fsm = NotificationFSM()
+    risk = CustomerRisk(band="MODERATE", drivers=["Wind"], confidence_kind="scenario")
+    
+    # 1. PRE_STORM
+    n_pre = fsm.evaluate_triggers("P-001", "INC-1", "NORMAL", risk, "", "2026-10-24T18:00:00Z")
+    assert len(n_pre) == 1
+    assert n_pre[0].type == "PRE_STORM"
+    
+    # 2. OUTAGE_CONFIRMED
+    n_out = fsm.evaluate_triggers("P-001", "INC-1", "OUTAGE", risk, "", "2026-10-24T18:05:00Z")
+    assert len(n_out) == 1
+    assert n_out[0].type == "OUTAGE_CONFIRMED"
+    
+    # 3. ESTIMATE_UPDATED
+    n_est = fsm.evaluate_triggers("P-001", "INC-1", "OUTAGE", risk, "Crews arriving", "2026-10-24T18:15:00Z")
+    assert len(n_est) == 1
+    assert n_est[0].type == "ESTIMATE_UPDATED"
+    
+    # 4. RESTORATION_COMPLETE
+    n_restored = fsm.evaluate_triggers("P-001", "INC-1", "RESTORED", risk, "Power restored", "2026-10-24T18:30:00Z")
+    assert len(n_restored) == 1
+    assert n_restored[0].type == "RESTORATION_COMPLETE"
+

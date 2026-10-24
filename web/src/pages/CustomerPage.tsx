@@ -73,6 +73,8 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
       } catch (err) {
         console.error('Battery calc error', err);
       }
+    } else {
+      setBatteryCalc(null);
     }
   }
 
@@ -150,26 +152,34 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
             <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
               <GitBranch className="w-4 h-4" /> Live Supply Path Trace (AEP Topology Graph)
             </span>
-            <span className="text-xs px-2 py-0.5 rounded bg-blue-900/40 text-blue-300 font-mono">
+            <span className={`text-xs px-2 py-0.5 rounded font-mono ${topologyTrace.status === 'KNOWN' ? 'bg-blue-900/40 text-blue-300' : 'bg-amber-900/40 text-amber-300'}`}>
               Status: {topologyTrace.status}
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-xs font-mono pt-1">
-            <span className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-blue-300 font-bold">
-              {topologyTrace.premise_token}
-            </span>
-            {topologyTrace.equipment?.map((eq: any, idx: number) => (
-              <React.Fragment key={idx}>
-                <span className="text-slate-500">→</span>
-                <span className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">
-                  {eq.kind}: <span className="text-amber-400">{eq.asset_token}</span>
+          {topologyTrace.status === 'KNOWN' ? (
+            <>
+              <div className="flex flex-wrap items-center gap-2 text-xs font-mono pt-1">
+                <span className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-blue-300 font-bold">
+                  {topologyTrace.premise_token || premiseToken}
                 </span>
-              </React.Fragment>
-            ))}
-          </div>
-          <div className="text-[11px] text-slate-500 italic pt-1">
-            Endpoint: {topologyTrace.endpoint} · Substation status: {topologyTrace.substation_status} · Basis: {topologyTrace.basis}
-          </div>
+                {topologyTrace.equipment?.map((eq: any, idx: number) => (
+                  <React.Fragment key={idx}>
+                    <span className="text-slate-500">→</span>
+                    <span className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">
+                      {eq.kind}: <span className="text-amber-400">{eq.asset_token}</span>
+                    </span>
+                  </React.Fragment>
+                ))}
+              </div>
+              <div className="text-[11px] text-slate-500 italic pt-1">
+                Endpoint: {topologyTrace.endpoint || 'Circuit Breaker'} · Substation status: {topologyTrace.substation_status || 'UNKNOWN'} · Basis: {topologyTrace.basis || 'AEP graph'}
+              </div>
+            </>
+          ) : (
+            <div className="text-xs text-amber-300 py-1 font-mono">
+              Premise {premiseToken} not mapped in distribution network slice (Reason: {topologyTrace.reason || 'unmapped'}).
+            </div>
+          )}
         </div>
       )}
 
@@ -218,13 +228,13 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Forecast Risk Band</span>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-              {snapshot?.customer_risk.band || 'MODERATE'}
+              {snapshot?.customer_risk?.band || 'MODERATE'}
             </span>
           </div>
 
           <div className="text-xl font-bold text-white mb-2">Contributing Factors</div>
           <ul className="space-y-1.5 text-sm text-slate-300">
-            {snapshot?.customer_risk.drivers.map((d, i) => (
+            {snapshot?.customer_risk?.drivers?.map((d, i) => (
               <li key={i} className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                 {d}
