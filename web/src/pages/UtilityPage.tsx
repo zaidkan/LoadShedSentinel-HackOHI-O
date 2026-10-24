@@ -1,5 +1,6 @@
 import type { ScenarioSnapshot } from '../../../contracts/types';
 import { AssetViewport } from '../three/AssetViewport';
+import { FeederMap } from '../components/map/FeederMap';
 import { TelemetryHUD } from '../components/utility/TelemetryHUD';
 import { EvidencePanel } from '../components/utility/EvidencePanel';
 import { PlanningPanels } from '../components/utility/PlanningPanels';
@@ -24,7 +25,7 @@ export function UtilityPage({ snapshot }: UtilityPageProps) {
       </div>
       <div className="utility-disclosure" role="note"><span className="utility-disclosure-label">Source disclosure</span><p>{snapshot.disclosure}</p></div>
       <div className="utility-main-grid grid">
-        <div className="utility-asset-column"><AssetViewport key={snapshot.current_asset_id} status={snapshot.cutout_status} assetId={snapshot.current_asset_id} /><TelemetryHUD snapshot={snapshot} /></div>
+        <div className="utility-asset-column"><AssetViewport key={snapshot.current_asset_id} status={snapshot.cutout_status} assetId={snapshot.current_asset_id} /><FeederMap snapshot={snapshot} /><TelemetryHUD snapshot={snapshot} /></div>
         <EvidencePanel snapshot={snapshot} />
       </div>
       <PlanningPanels snapshot={snapshot} />
