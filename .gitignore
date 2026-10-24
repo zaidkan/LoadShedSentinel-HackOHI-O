@@ -25,3 +25,7 @@ htmlcov/
 .vscode/
 *.swp
 *.swo
+
+# Large Private Data
+data/processed/private/
+
