@@ -10,7 +10,11 @@ import {
 } from '../services/api';
 import { ShieldAlert, Battery, AlertTriangle, Clock, HeartPulse, CheckCircle2, Search, GitBranch } from 'lucide-react';
 
-export const CustomerPage: React.FC = () => {
+export interface CustomerPageProps {
+  scenarioId?: string;
+}
+
+export const CustomerPage: React.FC<CustomerPageProps> = ({ scenarioId }) => {
   const [snapshot, setSnapshot] = useState<CustomerSnapshotView | null>(null);
   const [loading, setLoading] = useState(true);
   const [premiseToken, setPremiseToken] = useState('PREM-000001');
@@ -37,7 +41,7 @@ export const CustomerPage: React.FC = () => {
 
   useEffect(() => {
     loadSnapshot();
-  }, []);
+  }, [scenarioId]);
 
   useEffect(() => {
     runBatteryCalculation();

@@ -128,7 +128,7 @@ export const App: React.FC = () => {
             Loading LoadShed Sentinel...
           </div>
         ) : activeTab === 'customer' ? (
-          <CustomerPage />
+          <CustomerPage scenarioId={selectedScenarioId} />
         ) : (
           <UtilityPage snapshot={snapshot} />
         )}
