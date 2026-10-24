@@ -93,7 +93,7 @@ export function AssetViewport({ status, assetId }: { status: CutoutStatus; asset
           <CameraRig command={command} onContextLost={onContextLost} />
         </Canvas>
       </WebGLBoundary>}
-      <div className="utility-scene-caption">Wood pole · transformer · protective cutout · sensor pod · solar panel</div>
+      {!useDiagram ? <div className="utility-scene-caption">Wood pole · transformer · protective cutout · sensor pod · solar panel</div> : null}
     </div>
     <div className="utility-viewport-tools">
       <div className="utility-tool-group" role="group" aria-label="Model camera controls">
