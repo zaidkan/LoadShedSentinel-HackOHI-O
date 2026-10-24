@@ -84,6 +84,16 @@ export interface ScenarioSnapshot {
   restoration: Restoration;
   solar: SolarNode;
   affected_premise_tokens: string[];
+  impact_source?: {
+    provenance: 'aep_challenge';
+    scope: 'selected_subnet';
+    basis: string;
+    fault_asset_token: string;
+    fault_asset_kind: string;
+    affected_count_in_sample: number;
+    sample_premise_count: number;
+    full_source_known_dependent_count: number | null;
+  } | null;
   customer_risk: {
     band: RiskBand;
     drivers: string[];
