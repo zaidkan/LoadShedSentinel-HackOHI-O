@@ -1,8 +1,8 @@
 from __future__ import annotations
 import json
 import os
-from typing import Dict, Any, Optional
-from fastapi import FastAPI, HTTPException
+from typing import Dict, Any, Optional, List
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -14,6 +14,8 @@ from engine.customer import (
     HouseholdNeeds,
     NotificationFSM
 )
+from engine.scenarios import generate_scenario, SCENARIO_IDS
+from engine.topology import Topology
 
 app = FastAPI(
     title="LoadShed Sentinel API",
@@ -29,16 +31,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "..", "fixtures", "scenario_fixture.json")
+BASE_DIR = os.path.dirname(__file__)
+FIXTURE_PATH = os.path.join(BASE_DIR, "..", "fixtures", "scenario_fixture.json")
+TOPOLOGY_PATH = os.path.join(BASE_DIR, "..", "data", "processed", "private", "topology.json")
+GEOJSON_PATH = os.path.join(BASE_DIR, "..", "data", "processed", "network.geojson")
 
 # In-memory runtime state
 _current_snapshot: ScenarioSnapshot = None
 _fsm = NotificationFSM()
+_topology_instance: Optional[Topology] = None
+
+def get_topology() -> Optional[Topology]:
+    global _topology_instance
+    if _topology_instance is None and os.path.exists(TOPOLOGY_PATH):
+        try:
+            _topology_instance = Topology.load(TOPOLOGY_PATH)
+        except Exception as e:
+            print(f"Warning: could not load topology from {TOPOLOGY_PATH}: {e}")
+    return _topology_instance
 
 def _load_initial_snapshot() -> ScenarioSnapshot:
-    with open(FIXTURE_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return ScenarioSnapshot(**data)
+    try:
+        return generate_scenario("local_protection", {})
+    except Exception:
+        with open(FIXTURE_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return ScenarioSnapshot(**data)
 
 def get_snapshot() -> ScenarioSnapshot:
     global _current_snapshot
@@ -51,8 +69,71 @@ def health_check():
     return {
         "status": "healthy",
         "service": "LoadShed Sentinel API",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "topology_loaded": get_topology() is not None,
     }
+
+@app.get("/api/scenarios")
+def list_scenarios():
+    """Returns the 4 canonical demonstration scenarios."""
+    return [
+        {
+            "id": "local_protection",
+            "title": "Local Protective Device Operated (Blown Cutout)",
+            "description": "Cutout fuse barrel swings open on secondary load surge; local transformer de-energized while feeder remains live.",
+            "cutout_status": "OPEN",
+            "expected_affected": 8,
+            "status": "OUTAGE"
+        },
+        {
+            "id": "upstream_feeder",
+            "title": "Upstream Feeder Breaker Interruption",
+            "description": "Upstream distribution breaker opens; entire neighborhood feeder interrupted while local transformer hardware remains intact.",
+            "cutout_status": "CLOSED",
+            "expected_affected": 32,
+            "status": "OUTAGE"
+        },
+        {
+            "id": "confirmed_replacement",
+            "title": "Confirmed Equipment Distress (Transformer Replacement)",
+            "description": "Core failure and thermal distress confirmed; qualified utility heavy construction crew work package generated.",
+            "cutout_status": "OPEN",
+            "expected_affected": 8,
+            "status": "OUTAGE"
+        },
+        {
+            "id": "insufficient_evidence",
+            "title": "Contradictory / Insufficient Telemetry (Abstention)",
+            "description": "Sparse or conflicting telemetry; engine safely abstains from speculative diagnoses until field investigation.",
+            "cutout_status": "UNKNOWN",
+            "expected_affected": 0,
+            "status": "UNDER_REVIEW"
+        }
+    ]
+
+class SelectScenarioRequest(BaseModel):
+    scenario_id: str
+
+@app.post("/api/scenario/select")
+def select_scenario(req: SelectScenarioRequest):
+    """Switches active scenario dynamically using engine.scenarios."""
+    global _current_snapshot, _fsm
+    if req.scenario_id not in SCENARIO_IDS:
+        raise HTTPException(status_code=400, detail=f"Invalid scenario. Valid IDs: {SCENARIO_IDS}")
+    
+    _current_snapshot = generate_scenario(req.scenario_id, {})
+    
+    # Evaluate notifications via FSM
+    new_alerts = _fsm.evaluate_triggers(
+        premise_token=_current_snapshot.selected_premise_token,
+        incident_id=_current_snapshot.incident_id,
+        status=_current_snapshot.status,
+        risk=_current_snapshot.customer_risk,
+        restoration_summary=f"Incident {req.scenario_id} declared in grid simulation",
+        timestamp_utc=_current_snapshot.timestamp_utc
+    )
+    _current_snapshot.notifications.extend(new_alerts)
+    return _current_snapshot
 
 @app.get("/api/scenario/current", response_model=ScenarioSnapshot)
 def get_current_scenario():
@@ -100,6 +181,24 @@ def reset_scenario():
     _current_snapshot = _load_initial_snapshot()
     _fsm = NotificationFSM()
     return _current_snapshot
+
+@app.get("/api/topology/lookup")
+def lookup_premise_topology(premise_id: str = Query(..., description="Public premise token, e.g. PREM-000001")):
+    """Traces public premise token through upstream equipment to feeder breaker."""
+    topo = get_topology()
+    if topo is None:
+        raise HTTPException(status_code=503, detail="Topology service not ready; private graph unavailable")
+    
+    trace = topo.premise_to_substation(premise_id)
+    return trace
+
+@app.get("/api/topology/geojson")
+def get_network_geojson():
+    """Returns the sanitized public network GeoJSON for map display."""
+    if not os.path.exists(GEOJSON_PATH):
+        raise HTTPException(status_code=404, detail="Network GeoJSON not found")
+    with open(GEOJSON_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 class BatteryCalcRequest(BaseModel):
     capacity_wh: float

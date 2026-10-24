@@ -3,16 +3,19 @@ import {
   fetchCustomerSnapshot,
   calculateBatteryRuntime,
   fetchPreparednessGuidance,
+  lookupPremiseTopology,
   CustomerSnapshotView,
   BatteryCalcResult,
   PreparednessGuidance,
 } from '../services/api';
-import { ShieldAlert, Battery, AlertTriangle, Clock, HeartPulse, CheckCircle2 } from 'lucide-react';
+import { ShieldAlert, Battery, AlertTriangle, Clock, HeartPulse, CheckCircle2, Search, GitBranch } from 'lucide-react';
 
 export const CustomerPage: React.FC = () => {
   const [snapshot, setSnapshot] = useState<CustomerSnapshotView | null>(null);
   const [loading, setLoading] = useState(true);
-  const [premiseToken, setPremiseToken] = useState('P-DEMO-001');
+  const [premiseToken, setPremiseToken] = useState('PREM-000001');
+  const [topologyTrace, setTopologyTrace] = useState<any | null>(null);
+  const [traceLoading, setTraceLoading] = useState(false);
 
   // Household Needs State
   const [needs, setNeeds] = useState({
@@ -78,6 +81,20 @@ export const CustomerPage: React.FC = () => {
     }
   }
 
+  async function handleTracePremise() {
+    if (!premiseToken) return;
+    setTraceLoading(true);
+    try {
+      const trace = await lookupPremiseTopology(premiseToken);
+      setTopologyTrace(trace);
+    } catch (e) {
+      console.error('Topology lookup failed', e);
+      setTopologyTrace(null);
+    } finally {
+      setTraceLoading(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
@@ -101,16 +118,56 @@ export const CustomerPage: React.FC = () => {
             </p>
           </div>
           <div className="text-right">
-            <span className="text-xs text-slate-500 block">Supply Area Token</span>
-            <input
-              type="text"
-              value={premiseToken}
-              onChange={(e) => setPremiseToken(e.target.value)}
-              className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-blue-400 font-mono"
-            />
+            <span className="text-xs text-slate-500 block mb-1">Premise Location Token</span>
+            <div className="flex items-center gap-1.5">
+              <input
+                type="text"
+                value={premiseToken}
+                onChange={(e) => setPremiseToken(e.target.value)}
+                placeholder="e.g. PREM-000001"
+                className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-sm text-blue-400 font-mono w-36"
+              />
+              <button
+                onClick={handleTracePremise}
+                disabled={traceLoading}
+                className="flex items-center gap-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold transition"
+              >
+                <Search className="w-3.5 h-3.5" /> Trace
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Step 1 Trace Result Card */}
+      {topologyTrace && (
+        <div className="bg-slate-900/90 border border-blue-900/40 rounded-xl p-4 shadow-lg space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
+              <GitBranch className="w-4 h-4" /> Live Supply Path Trace (AEP Topology Graph)
+            </span>
+            <span className="text-xs px-2 py-0.5 rounded bg-blue-900/40 text-blue-300 font-mono">
+              Status: {topologyTrace.status}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono pt-1">
+            <span className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-blue-300 font-bold">
+              {topologyTrace.premise_token}
+            </span>
+            {topologyTrace.equipment?.map((eq: any, idx: number) => (
+              <React.Fragment key={idx}>
+                <span className="text-slate-500">→</span>
+                <span className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">
+                  {eq.kind}: <span className="text-amber-400">{eq.asset_token}</span>
+                </span>
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="text-[11px] text-slate-500 italic pt-1">
+            Endpoint: {topologyTrace.endpoint} · Substation status: {topologyTrace.substation_status} · Basis: {topologyTrace.basis}
+          </div>
+        </div>
+      )}
 
       {/* Step 2: Storm Readiness & Outage Status */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

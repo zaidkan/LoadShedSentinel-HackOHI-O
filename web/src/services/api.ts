@@ -34,6 +34,15 @@ export interface CustomerSnapshotView {
   disclosure: string;
 }
 
+export interface ScenarioMeta {
+  id: string;
+  title: string;
+  description: string;
+  cutout_status: string;
+  expected_affected: number;
+  status: string;
+}
+
 export interface BatteryCalcResult {
   theoretical_hours: number;
   conservative_hours: number;
@@ -54,8 +63,30 @@ export async function fetchCurrentScenario(): Promise<ScenarioSnapshot> {
   return res.json();
 }
 
+export async function fetchScenarios(): Promise<ScenarioMeta[]> {
+  const res = await fetch('/api/scenarios');
+  if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+  return res.json();
+}
+
+export async function selectScenario(scenarioId: string): Promise<ScenarioSnapshot> {
+  const res = await fetch('/api/scenario/select', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ scenario_id: scenarioId }),
+  });
+  if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+  return res.json();
+}
+
 export async function fetchCustomerSnapshot(): Promise<CustomerSnapshotView> {
   const res = await fetch('/api/customer/snapshot');
+  if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+  return res.json();
+}
+
+export async function lookupPremiseTopology(premiseId: string): Promise<any> {
+  const res = await fetch(`/api/topology/lookup?premise_id=${encodeURIComponent(premiseId)}`);
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
   return res.json();
 }

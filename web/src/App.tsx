@@ -1,40 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { CustomerPage } from './pages/CustomerPage';
 import { UtilityPage } from './pages/UtilityPage';
-import { fetchCurrentScenario, advanceScenario, resetScenario } from './services/api';
+import { fetchCurrentScenario, fetchScenarios, selectScenario, resetScenario, ScenarioMeta } from './services/api';
 import type { ScenarioSnapshot } from '../../contracts/types';
-import { Zap, Home, Play, RefreshCw } from 'lucide-react';
+import { Zap, Home, RefreshCw, Layers } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'customer' | 'utility'>('utility');
   const [snapshot, setSnapshot] = useState<ScenarioSnapshot | null>(null);
+  const [scenarios, setScenarios] = useState<ScenarioMeta[]>([]);
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string>('local_protection');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadSnapshot();
+    initApp();
   }, []);
 
-  async function loadSnapshot() {
+  async function initApp() {
     try {
-      const data = await fetchCurrentScenario();
-      setSnapshot(data);
+      const [scList, curr] = await Promise.all([
+        fetchScenarios().catch(() => []),
+        fetchCurrentScenario(),
+      ]);
+      setScenarios(scList);
+      setSnapshot(curr);
+      if (curr?.scenario_id) {
+        setSelectedScenarioId(curr.scenario_id);
+      }
     } catch (e) {
-      console.error('Failed to load scenario snapshot:', e);
+      console.error('Failed to initialize app:', e);
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleTriggerFault() {
+  async function handleSelectScenario(scenarioId: string) {
     try {
-      const next = await advanceScenario({
-        status: 'OUTAGE',
-        cutout_status: 'OPEN',
-        restoration_summary: 'Cutout fuse blown on secondary surge; line crew assessment scheduled',
-      });
+      setSelectedScenarioId(scenarioId);
+      const next = await selectScenario(scenarioId);
       setSnapshot(next);
     } catch (e) {
-      console.error('Failed to advance scenario:', e);
+      console.error('Failed to select scenario:', e);
     }
   }
 
@@ -42,6 +48,7 @@ export const App: React.FC = () => {
     try {
       const reset = await resetScenario();
       setSnapshot(reset);
+      if (reset?.scenario_id) setSelectedScenarioId(reset.scenario_id);
     } catch (e) {
       console.error('Failed to reset scenario:', e);
     }
@@ -50,7 +57,7 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
       {/* Top Navigation */}
-      <nav className="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+      <nav className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-white font-black tracking-tight flex items-center gap-1.5 text-base">
@@ -61,19 +68,28 @@ export const App: React.FC = () => {
             </span>
           </div>
 
-          {/* Quick Scenario Controls */}
+          {/* Demonstration Scenario Selector */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleTriggerFault}
-              className="flex items-center gap-1 px-2.5 py-1 bg-rose-600/80 hover:bg-rose-500 text-white rounded text-xs font-semibold transition"
-              title="Simulate pole-top fault (trigger blown cutout & outage)"
-            >
-              <Play className="w-3 h-3" /> Trigger Fault
-            </button>
+            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
+              <Layers className="w-3.5 h-3.5 text-blue-400" />
+              <span className="text-slate-400 hidden sm:inline">Scenario:</span>
+              <select
+                value={selectedScenarioId}
+                onChange={(e) => handleSelectScenario(e.target.value)}
+                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer"
+              >
+                {scenarios.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-slate-900 text-white">
+                    {s.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button
               onClick={handleReset}
               className="flex items-center gap-1 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs transition"
-              title="Reset scenario to normal base state"
+              title="Reset scenario to base state"
             >
               <RefreshCw className="w-3 h-3" /> Reset
             </button>

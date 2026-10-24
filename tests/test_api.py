@@ -9,25 +9,40 @@ def test_health_endpoint():
     data = response.json()
     assert data["status"] == "healthy"
 
-def test_scenario_endpoints():
-    # 1. Reset
-    res_reset = client.post("/api/scenario/reset")
-    assert res_reset.status_code == 200
-    
-    # 2. Get Operator Current
-    res_curr = client.get("/api/scenario/current")
-    assert res_curr.status_code == 200
-    data_curr = res_curr.json()
-    assert data_curr["scenario_id"] == "local_protection"
-    assert data_curr["current_asset_id"] == "T-DEMO-104"
-    assert "crew_recommendation" in data_curr
-    
-    # 3. Get Customer Snapshot (Privacy Preserved)
-    res_cust = client.get("/api/customer/snapshot")
-    assert res_cust.status_code == 200
-    data_cust = res_cust.json()
-    assert "crew_recommendation" not in data_cust
-    assert data_cust["selected_premise_token"] == "P-DEMO-001"
+def test_scenarios_listing():
+    response = client.get("/api/scenarios")
+    assert response.status_code == 200
+    scenarios = response.json()
+    assert len(scenarios) == 4
+    ids = [s["id"] for s in scenarios]
+    assert "local_protection" in ids
+    assert "upstream_feeder" in ids
+    assert "confirmed_replacement" in ids
+    assert "insufficient_evidence" in ids
+
+def test_scenario_select_and_switching():
+    # Select upstream_feeder
+    res = client.post("/api/scenario/select", json={"scenario_id": "upstream_feeder"})
+    assert res.status_code == 200
+    snap = res.json()
+    assert snap["cutout_status"] == "CLOSED"
+    assert len(snap["affected_premise_tokens"]) == 32
+    assert snap["status"] == "OUTAGE"
+
+    # Select insufficient_evidence
+    res_in = client.post("/api/scenario/select", json={"scenario_id": "insufficient_evidence"})
+    assert res_in.status_code == 200
+    snap_in = res_in.json()
+    assert snap_in["cutout_status"] == "UNKNOWN"
+    assert snap_in["status"] == "UNDER_REVIEW"
+
+def test_topology_lookup_endpoint():
+    response = client.get("/api/topology/lookup?premise_id=PREM-000001")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "KNOWN"
+    assert len(data["path"]) >= 1
+    assert data["endpoint"] == "Circuit Breaker"
 
 def test_battery_runtime_endpoint():
     payload = {
