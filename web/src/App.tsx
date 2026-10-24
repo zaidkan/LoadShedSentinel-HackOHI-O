@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CustomerPage } from './pages/CustomerPage';
 import { UtilityPage } from './pages/UtilityPage';
-import { fetchCurrentScenario, fetchScenarios, selectScenario, resetScenario, ScenarioMeta } from './services/api';
+import { fetchCurrentScenario, fetchScenarios, selectScenario, resetScenario, fetchAEPAssets, ScenarioMeta, AEPSourceAsset } from './services/api';
 import type { ScenarioSnapshot } from '../../contracts/types';
 import { Zap, Home, RefreshCw, Layers } from 'lucide-react';
 
@@ -9,6 +9,8 @@ export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'customer' | 'utility'>('utility');
   const [snapshot, setSnapshot] = useState<ScenarioSnapshot | null>(null);
   const [scenarios, setScenarios] = useState<ScenarioMeta[]>([]);
+  const [aepAssets, setAepAssets] = useState<AEPSourceAsset[]>([]);
+  const [activeAssetToken, setActiveAssetToken] = useState('');
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('local_protection');
   const [loading, setLoading] = useState(true);
 
@@ -18,12 +20,15 @@ export const App: React.FC = () => {
 
   async function initApp() {
     try {
-      const [scList, curr] = await Promise.all([
+      const [scList, curr, assets] = await Promise.all([
         fetchScenarios().catch(() => []),
         fetchCurrentScenario(),
+        fetchAEPAssets().catch(() => []),
       ]);
       setScenarios(scList);
+      setAepAssets(assets);
       setSnapshot(curr);
+      setActiveAssetToken(curr?.impact_source?.fault_asset_token || '');
       if (curr?.scenario_id) {
         setSelectedScenarioId(curr.scenario_id);
       }
@@ -36,11 +41,22 @@ export const App: React.FC = () => {
 
   async function handleSelectScenario(scenarioId: string) {
     try {
-      setSelectedScenarioId(scenarioId);
       const next = await selectScenario(scenarioId);
       setSnapshot(next);
+      setSelectedScenarioId(scenarioId);
+      setActiveAssetToken(next.impact_source?.fault_asset_token || '');
     } catch (e) {
       console.error('Failed to select scenario:', e);
+    }
+  }
+
+  async function handleSelectAsset(assetToken: string) {
+    try {
+      const next = await selectScenario(selectedScenarioId, assetToken);
+      setSnapshot(next);
+      setActiveAssetToken(next.impact_source?.fault_asset_token || '');
+    } catch (e) {
+      console.error('Failed to select AEP asset:', e);
     }
   }
 
@@ -49,6 +65,7 @@ export const App: React.FC = () => {
       const reset = await resetScenario();
       setSnapshot(reset);
       if (reset?.scenario_id) setSelectedScenarioId(reset.scenario_id);
+      setActiveAssetToken(reset?.impact_source?.fault_asset_token || '');
     } catch (e) {
       console.error('Failed to reset scenario:', e);
     }
@@ -85,6 +102,24 @@ export const App: React.FC = () => {
                 ))}
               </select>
             </div>
+
+            {aepAssets.length > 0 && (
+              <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
+                <span className="text-slate-400 hidden lg:inline">AEP asset:</span>
+                <select
+                  value={activeAssetToken}
+                  onChange={(e) => handleSelectAsset(e.target.value)}
+                  aria-label="Select source-derived AEP equipment for simulation"
+                  className="bg-transparent text-white font-medium max-w-48 focus:outline-none cursor-pointer"
+                >
+                  {aepAssets
+                    .filter(a => a.kind === (selectedScenarioId === 'upstream_feeder' ? 'CIRCUIT_BREAKER' : 'TRANSFORMER'))
+                    .map(a => <option key={a.asset_token} value={a.asset_token} className="bg-slate-900 text-white">
+                      {a.kind === 'TRANSFORMER' ? 'Transformer' : 'Breaker'} {a.asset_token.slice(-8)} · {a.dependent_premises_in_sample} sample premises
+                    </option>)}
+                </select>
+              </div>
+            )}
 
             <button
               onClick={handleReset}
@@ -123,6 +158,13 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 pb-12">
+        {snapshot?.impact_source && (
+          <p className="mx-auto max-w-7xl px-4 pt-3 text-xs text-slate-400" role="status">
+            AEP supplied-path sample · {snapshot.impact_source.sample_premise_count} premises ·
+            {snapshot.status === 'UNDER_REVIEW' ? ' affected count unknown; ' : ` ${snapshot.affected_premise_tokens.length} simulated dependent premises; `}
+            not a live outage or whole-territory estimate.
+          </p>
+        )}
         {loading || !snapshot ? (
           <div className="flex items-center justify-center min-h-[400px] text-slate-500">
             Loading LoadShed Sentinel...
