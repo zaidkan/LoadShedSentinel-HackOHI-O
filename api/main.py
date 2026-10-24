@@ -180,7 +180,12 @@ def get_customer_snapshot():
     """Returns privacy-sanitized customer concierge view."""
     return project_customer_view(get_snapshot())
 
+VALID_STATUSES = {"NORMAL", "AT_RISK", "OUTAGE", "UNDER_REVIEW", "RESTORED"}
+VALID_CUTOUTS = {"OPEN", "CLOSED", "UNKNOWN"}
+
 class AdvanceRequest(BaseModel):
+    incident_id: Optional[str] = None
+    expected_revision: Optional[int] = None
     status: Optional[str] = None
     cutout_status: Optional[str] = None
     restoration_summary: Optional[str] = None
@@ -191,9 +196,18 @@ def advance_scenario(req: AdvanceRequest):
     global _current_snapshot, _fsm
     snap = get_snapshot()
     
+    if req.incident_id and req.incident_id != snap.incident_id:
+        raise HTTPException(status_code=409, detail=f"Incident ID mismatch: current '{snap.incident_id}', requested '{req.incident_id}'")
+    if req.expected_revision is not None and req.expected_revision != snap.revision:
+        raise HTTPException(status_code=409, detail=f"Revision conflict: current {snap.revision}, expected {req.expected_revision}")
+    
     if req.status:
+        if req.status not in VALID_STATUSES:
+            raise HTTPException(status_code=400, detail=f"Invalid status '{req.status}'. Must be one of {sorted(VALID_STATUSES)}")
         snap.status = req.status
     if req.cutout_status:
+        if req.cutout_status not in VALID_CUTOUTS:
+            raise HTTPException(status_code=400, detail=f"Invalid cutout_status '{req.cutout_status}'. Must be one of {sorted(VALID_CUTOUTS)}")
         snap.cutout_status = req.cutout_status
     snap.revision += 1
     

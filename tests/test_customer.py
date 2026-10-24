@@ -106,15 +106,17 @@ def test_battery_runtime_edge_cases_and_clamping():
     assert calculate_battery_runtime(-500, 0.85, 100)["theoretical_hours"] == 0.0
     assert calculate_battery_runtime(1000, 0.85, -50)["theoretical_hours"] == 0.0
     
-    # Inverter efficiency clamped to max(0.5, min(1.0, eff)) -> no zero division
-    res_zero_eff = calculate_battery_runtime(1000, 0.85, 100, inverter_efficiency=0.0)
-    assert res_zero_eff["effective_load_w"] == 200.0  # 100 / 0.5
+    # Zero or negative usable fraction returns 0.0 Wh (physically correct; no invented energy)
+    assert calculate_battery_runtime(1000, 0.0, 100)["usable_wh"] == 0.0
+    assert calculate_battery_runtime(1000, -0.5, 100)["usable_wh"] == 0.0
+    assert calculate_battery_runtime(1000, 0.0, 100)["theoretical_hours"] == 0.0
     
-    # Usable fraction clamped to [0.1, 1.0]
+    # Zero or negative efficiency returns safe zeros
+    assert calculate_battery_runtime(1000, 0.85, 100, inverter_efficiency=0.0)["effective_load_w"] == 0.0
+    
+    # Usable fraction upper clamped to 1.0
     res_over_usable = calculate_battery_runtime(1000, 1.5, 100)
     assert res_over_usable["usable_wh"] == 1000.0  # 1000 * 1.0
-    res_neg_usable = calculate_battery_runtime(1000, -0.5, 100)
-    assert res_neg_usable["usable_wh"] == 100.0  # 1000 * 0.1
 
 def test_notification_fsm_all_lifecycle_triggers():
     fsm = NotificationFSM()

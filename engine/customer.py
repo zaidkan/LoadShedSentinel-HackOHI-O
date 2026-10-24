@@ -50,7 +50,7 @@ def calculate_battery_runtime(
     Computes theoretical battery runtime under continuous load.
     Returns estimated hours, usable energy, and safety margin.
     """
-    if capacity_wh <= 0 or device_w <= 0:
+    if capacity_wh <= 0 or device_w <= 0 or usable_fraction <= 0 or inverter_efficiency <= 0:
         return {
             "theoretical_hours": 0.0,
             "conservative_hours": 0.0,
@@ -58,8 +58,18 @@ def calculate_battery_runtime(
             "effective_load_w": 0.0
         }
     
-    usable_wh = capacity_wh * max(0.1, min(1.0, usable_fraction))
-    effective_load_w = device_w / max(0.5, min(1.0, inverter_efficiency))
+    clamped_usable = max(0.0, min(1.0, usable_fraction))
+    usable_wh = capacity_wh * clamped_usable
+    if usable_wh <= 0:
+        return {
+            "theoretical_hours": 0.0,
+            "conservative_hours": 0.0,
+            "usable_wh": 0.0,
+            "effective_load_w": 0.0
+        }
+    
+    clamped_efficiency = max(0.5, min(1.0, inverter_efficiency))
+    effective_load_w = device_w / clamped_efficiency
     
     raw_hours = usable_wh / effective_load_w
     conservative_hours = raw_hours * (1.0 - max(0.0, min(0.5, reserve_margin_pct)))
@@ -92,6 +102,14 @@ def generate_preparedness_guidance(needs: HouseholdNeeds) -> List[Dict[str, str]
             "priority": "HIGH",
             "action": "Prepare certified medical cooler and ice packs.",
             "detail": "Consult pharmacist for exact temperature tolerance ranges. Keep refrigerator door closed; do not use spoiled medication."
+        })
+    
+    if needs.mobility_accessibility_needs:
+        guidance.append({
+            "category": "ACCESSIBILITY",
+            "priority": "HIGH",
+            "action": "Plan accessible exit route and verify backup battery for electric mobility devices.",
+            "detail": "Elevators will be inoperable during power loss. Keep manual wheelchair or backup battery charger accessible, and identify accessible community cooling/warming centers."
         })
     
     if needs.food_refrigeration:
@@ -156,9 +174,9 @@ class NotificationFSM:
                 ))
                 self._sent_keys.add(pre_storm_key)
 
-        # 2. OUTAGE_CONFIRMED trigger
+        # 2. OUTAGE_CONFIRMED trigger (only for confirmed OUTAGE, never UNDER_REVIEW)
         outage_key = f"{premise_token}:{incident_id}:OUTAGE_CONFIRMED"
-        if status in ('OUTAGE', 'UNDER_REVIEW'):
+        if status == 'OUTAGE':
             if outage_key not in self._sent_keys:
                 notifications.append(NotificationItem(
                     type="OUTAGE_CONFIRMED",
@@ -172,11 +190,11 @@ class NotificationFSM:
                 ))
                 self._sent_keys.add(outage_key)
 
-        # 3. ESTIMATE_UPDATED trigger
-        if status in ('OUTAGE', 'UNDER_REVIEW') and restoration_summary:
+        # 3. ESTIMATE_UPDATED trigger (only for confirmed OUTAGE with non-empty summary)
+        if status == 'OUTAGE' and restoration_summary:
             etag = f"{incident_id}:{restoration_summary}"
             estimate_key = f"{premise_token}:{incident_id}:ESTIMATE:{etag}"
-            if estimate_key not in self._sent_keys and etag != self._last_etag:
+            if estimate_key not in self._sent_keys:
                 notifications.append(NotificationItem(
                     type="ESTIMATE_UPDATED",
                     text=(
@@ -210,11 +228,18 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
     """
     Strips internal operator details, lineworker dispatch internals,
     and raw engineering telemetry before returning to customer clients.
+    Uses strict field allowlist for evidence items.
     """
-    customer_safe_evidence = [
-        (e.model_dump() if hasattr(e, "model_dump") else e.dict())
-        for e in snapshot.evidence if e.visibility == 'customer_safe'
-    ]
+    customer_safe_evidence = []
+    for e in snapshot.evidence:
+        if getattr(e, "visibility", None) == 'customer_safe':
+            customer_safe_evidence.append({
+                "id": getattr(e, "id", ""),
+                "kind": getattr(e, "kind", ""),
+                "value": getattr(e, "value", None),
+                "unit": getattr(e, "unit", None),
+                "label": getattr(e, "label", getattr(e, "kind", ""))
+            })
     
     risk_dict = (
         snapshot.customer_risk.model_dump()
