@@ -1,0 +1,1137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Needs": {
+      "additionalProperties": false,
+      "properties": {
+        "medical_equipment": {
+          "default": false,
+          "title": "Medical Equipment",
+          "type": "boolean"
+        },
+        "refrigerated_medication": {
+          "default": false,
+          "title": "Refrigerated Medication",
+          "type": "boolean"
+        },
+        "sump_pump": {
+          "default": false,
+          "title": "Sump Pump",
+          "type": "boolean"
+        },
+        "backup_wh": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1000000,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Backup Wh"
+        },
+        "device_watts": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 100000,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Device Watts"
+        },
+        "inverter_efficiency": {
+          "default": 0.85,
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Inverter Efficiency",
+          "type": "number"
+        },
+        "reserve_fraction": {
+          "default": 0.2,
+          "exclusiveMaximum": 1,
+          "minimum": 0,
+          "title": "Reserve Fraction",
+          "type": "number"
+        }
+      },
+      "title": "Needs",
+      "type": "object"
+    },
+    "Preferences": {
+      "additionalProperties": false,
+      "properties": {
+        "opted_in": {
+          "default": false,
+          "title": "Opted In",
+          "type": "boolean"
+        },
+        "channel": {
+          "const": "in_app_demo",
+          "default": "in_app_demo",
+          "title": "Channel",
+          "type": "string"
+        },
+        "needs": {
+          "$ref": "#/$defs/Needs"
+        }
+      },
+      "title": "Preferences",
+      "type": "object"
+    },
+    "Action": {
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "maxLength": 100,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Action Id",
+          "type": "string"
+        },
+        "expected_revision": {
+          "minimum": 1,
+          "title": "Expected Revision",
+          "type": "integer"
+        },
+        "action": {
+          "enum": [
+            "advance",
+            "start_repair",
+            "complete_repair",
+            "select_premise",
+            "set_preferences"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Target Id"
+        },
+        "preferences": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Preferences"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "action_id",
+        "expected_revision",
+        "action"
+      ],
+      "title": "Action",
+      "type": "object"
+    },
+    "CrewPackage": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "material_categories": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Material Categories",
+          "type": "array"
+        },
+        "basis": {
+          "enum": [
+            "assessment_required",
+            "diagnostic_hypothesis",
+            "field_confirmed_in_scenario"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "approved": {
+          "const": false,
+          "default": false,
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "capabilities",
+        "material_categories",
+        "basis",
+        "reason"
+      ],
+      "title": "CrewPackage",
+      "type": "object"
+    },
+    "CustomerPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "guidance": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Guidance",
+          "type": "array"
+        },
+        "theoretical_runtime_hours": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Theoretical Runtime Hours"
+        },
+        "alert_eligible": {
+          "title": "Alert Eligible",
+          "type": "boolean"
+        },
+        "alert_reason": {
+          "title": "Alert Reason",
+          "type": "string"
+        },
+        "channel": {
+          "const": "in_app_demo",
+          "default": "in_app_demo",
+          "title": "Channel",
+          "type": "string"
+        }
+      },
+      "required": [
+        "guidance",
+        "alert_eligible",
+        "alert_reason"
+      ],
+      "title": "CustomerPlan",
+      "type": "object"
+    },
+    "CustomerPreferencesRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "maxLength": 100,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Action Id",
+          "type": "string"
+        },
+        "expected_revision": {
+          "minimum": 1,
+          "title": "Expected Revision",
+          "type": "integer"
+        },
+        "preferences": {
+          "$ref": "#/$defs/Preferences"
+        }
+      },
+      "required": [
+        "action_id",
+        "expected_revision",
+        "preferences"
+      ],
+      "title": "CustomerPreferencesRequest",
+      "type": "object"
+    },
+    "Notification": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "PRE_STORM",
+            "OUTAGE_CONFIRMED",
+            "ESTIMATE_UPDATED",
+            "RESTORATION_COMPLETE"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "delivery_mode": {
+          "const": "demo",
+          "default": "demo",
+          "title": "Delivery Mode",
+          "type": "string"
+        },
+        "sent_at_utc": {
+          "title": "Sent At Utc",
+          "type": "string"
+        },
+        "revision": {
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "text",
+        "sent_at_utc",
+        "revision"
+      ],
+      "title": "Notification",
+      "type": "object"
+    },
+    "Restoration": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "scenario_planning",
+            "unavailable"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "lower_hours": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lower Hours"
+        },
+        "expected_hours": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Hours"
+        },
+        "upper_hours": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upper Hours"
+        },
+        "reference": {
+          "const": "remaining_from_snapshot",
+          "default": "remaining_from_snapshot",
+          "title": "Reference",
+          "type": "string"
+        },
+        "assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "labor_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Labor Source"
+        }
+      },
+      "required": [
+        "kind",
+        "assumptions"
+      ],
+      "title": "Restoration",
+      "type": "object"
+    },
+    "Risk": {
+      "additionalProperties": false,
+      "properties": {
+        "band": {
+          "enum": [
+            "LOW",
+            "MODERATE",
+            "HIGH",
+            "UNKNOWN"
+          ],
+          "title": "Band",
+          "type": "string"
+        },
+        "confidence_kind": {
+          "enum": [
+            "scenario_only",
+            "unavailable"
+          ],
+          "title": "Confidence Kind",
+          "type": "string"
+        },
+        "drivers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Drivers",
+          "type": "array"
+        }
+      },
+      "required": [
+        "band",
+        "confidence_kind",
+        "drivers"
+      ],
+      "title": "Risk",
+      "type": "object"
+    },
+    "CustomerSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "integration_v1",
+          "default": "integration_v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "revision": {
+          "title": "Revision",
+          "type": "integer"
+        },
+        "timestamp_utc": {
+          "title": "Timestamp Utc",
+          "type": "string"
+        },
+        "premise_token": {
+          "title": "Premise Token",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "NORMAL",
+            "AT_RISK",
+            "OUTAGE",
+            "UNDER_REVIEW",
+            "RESTORED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "risk": {
+          "$ref": "#/$defs/Risk"
+        },
+        "restoration": {
+          "$ref": "#/$defs/Restoration"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "remaining_repair_count": {
+          "title": "Remaining Repair Count",
+          "type": "integer"
+        },
+        "plan": {
+          "$ref": "#/$defs/CustomerPlan"
+        },
+        "preferences": {
+          "$ref": "#/$defs/Preferences"
+        },
+        "notifications": {
+          "items": {
+            "$ref": "#/$defs/Notification"
+          },
+          "title": "Notifications",
+          "type": "array"
+        },
+        "disclosure": {
+          "title": "Disclosure",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "run_id",
+        "revision",
+        "timestamp_utc",
+        "premise_token",
+        "status",
+        "risk",
+        "restoration",
+        "explanation",
+        "remaining_repair_count",
+        "plan",
+        "preferences",
+        "notifications",
+        "disclosure"
+      ],
+      "title": "CustomerSnapshot",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "provenance": {
+          "enum": [
+            "aep_challenge",
+            "modeled_sensor",
+            "scenario"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        },
+        "visibility": {
+          "default": "operator",
+          "enum": [
+            "operator",
+            "customer_safe"
+          ],
+          "title": "Visibility",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "value",
+        "provenance"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Fault": {
+      "additionalProperties": false,
+      "properties": {
+        "fault_id": {
+          "title": "Fault Id",
+          "type": "string"
+        },
+        "asset_id": {
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "damage_class": {
+          "title": "Damage Class",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "ACTIVE",
+            "REPAIRING",
+            "CLEARED",
+            "UNKNOWN"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "provenance": {
+          "const": "scenario",
+          "default": "scenario",
+          "title": "Provenance",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fault_id",
+        "asset_id",
+        "damage_class",
+        "state"
+      ],
+      "title": "Fault",
+      "type": "object"
+    },
+    "Hypothesis": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "score_type": {
+          "default": "unavailable",
+          "enum": [
+            "relative_evidence",
+            "unavailable"
+          ],
+          "title": "Score Type",
+          "type": "string"
+        },
+        "requires_field_confirmation": {
+          "default": true,
+          "title": "Requires Field Confirmation",
+          "type": "boolean"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "code",
+        "label"
+      ],
+      "title": "Hypothesis",
+      "type": "object"
+    },
+    "Impact": {
+      "additionalProperties": false,
+      "properties": {
+        "known_affected_count": {
+          "minimum": 0,
+          "title": "Known Affected Count",
+          "type": "integer"
+        },
+        "restored_in_scenario_count": {
+          "minimum": 0,
+          "title": "Restored In Scenario Count",
+          "type": "integer"
+        },
+        "unknown_coverage_count": {
+          "minimum": 0,
+          "title": "Unknown Coverage Count",
+          "type": "integer"
+        },
+        "scope": {
+          "const": "three_household_synthetic_fixture",
+          "default": "three_household_synthetic_fixture",
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "known_affected_count",
+        "restored_in_scenario_count",
+        "unknown_coverage_count"
+      ],
+      "title": "Impact",
+      "type": "object"
+    },
+    "PremiseState": {
+      "additionalProperties": false,
+      "properties": {
+        "premise_token": {
+          "title": "Premise Token",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "NORMAL",
+            "AT_RISK",
+            "OUTAGE",
+            "UNDER_REVIEW",
+            "RESTORED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "remaining_blocking_fault_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Remaining Blocking Fault Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "premise_token",
+        "status",
+        "remaining_blocking_fault_ids"
+      ],
+      "title": "PremiseState",
+      "type": "object"
+    },
+    "PremiseSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "token": {
+          "title": "Token",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "source": {
+          "const": "synthetic_fixture",
+          "default": "synthetic_fixture",
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "token",
+        "label"
+      ],
+      "title": "PremiseSummary",
+      "type": "object"
+    },
+    "RepairTask": {
+      "additionalProperties": false,
+      "properties": {
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        },
+        "fault_id": {
+          "title": "Fault Id",
+          "type": "string"
+        },
+        "prerequisite_task_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Prerequisite Task Ids",
+          "type": "array"
+        },
+        "capabilities": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "status": {
+          "default": "PENDING",
+          "enum": [
+            "PENDING",
+            "REPAIRING",
+            "COMPLETE"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "fault_id",
+        "prerequisite_task_ids",
+        "capabilities"
+      ],
+      "title": "RepairTask",
+      "type": "object"
+    },
+    "ResetRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "maxLength": 100,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_-]+$",
+          "title": "Action Id",
+          "type": "string"
+        },
+        "expected_revision": {
+          "minimum": 1,
+          "title": "Expected Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "action_id",
+        "expected_revision"
+      ],
+      "title": "ResetRequest",
+      "type": "object"
+    },
+    "RiskRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "premise_token": {
+          "title": "Premise Token",
+          "type": "string"
+        },
+        "storm_scenario": {
+          "default": "severe",
+          "enum": [
+            "calm",
+            "moderate",
+            "severe",
+            "unknown"
+          ],
+          "title": "Storm Scenario",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "premise_token"
+      ],
+      "title": "RiskRequest",
+      "type": "object"
+    },
+    "ScenarioSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "source": {
+          "const": "synthetic_fixture",
+          "default": "synthetic_fixture",
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description"
+      ],
+      "title": "ScenarioSummary",
+      "type": "object"
+    },
+    "SolarNode": {
+      "additionalProperties": false,
+      "properties": {
+        "battery_soc_pct": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Battery Soc Pct"
+        },
+        "modeled_runtime_days": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Modeled Runtime Days"
+        },
+        "provenance": {
+          "const": "modeled_sensor",
+          "default": "modeled_sensor",
+          "title": "Provenance",
+          "type": "string"
+        },
+        "limitations": {
+          "default": "Awaiting energy-owner implementation; no field endurance claim.",
+          "title": "Limitations",
+          "type": "string"
+        }
+      },
+      "title": "SolarNode",
+      "type": "object"
+    },
+    "SupplyPath": {
+      "additionalProperties": false,
+      "properties": {
+        "premise_token": {
+          "title": "Premise Token",
+          "type": "string"
+        },
+        "asset_tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Asset Tokens",
+          "type": "array"
+        },
+        "completeness": {
+          "enum": [
+            "complete_in_fixture",
+            "unknown"
+          ],
+          "title": "Completeness",
+          "type": "string"
+        },
+        "provenance": {
+          "const": "synthetic_fixture",
+          "title": "Provenance",
+          "type": "string"
+        }
+      },
+      "required": [
+        "premise_token",
+        "asset_tokens",
+        "completeness",
+        "provenance"
+      ],
+      "title": "SupplyPath",
+      "type": "object"
+    },
+    "Snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "integration_v1",
+          "default": "integration_v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "incident_id": {
+          "title": "Incident Id",
+          "type": "string"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "timestamp_utc": {
+          "title": "Timestamp Utc",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "PRE_STORM",
+            "OUTAGE",
+            "PARTIAL_RESTORATION",
+            "RESTORED",
+            "UNDER_REVIEW"
+          ],
+          "title": "Phase",
+          "type": "string"
+        },
+        "current_asset_id": {
+          "title": "Current Asset Id",
+          "type": "string"
+        },
+        "selected_premise_token": {
+          "title": "Selected Premise Token",
+          "type": "string"
+        },
+        "cutout_status": {
+          "enum": [
+            "OPEN",
+            "CLOSED",
+            "UNKNOWN"
+          ],
+          "title": "Cutout Status",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "hypotheses": {
+          "items": {
+            "$ref": "#/$defs/Hypothesis"
+          },
+          "title": "Hypotheses",
+          "type": "array"
+        },
+        "crew_recommendation": {
+          "$ref": "#/$defs/CrewPackage"
+        },
+        "restoration": {
+          "$ref": "#/$defs/Restoration"
+        },
+        "solar": {
+          "$ref": "#/$defs/SolarNode"
+        },
+        "customer_risk": {
+          "$ref": "#/$defs/Risk"
+        },
+        "selected_supply_path": {
+          "$ref": "#/$defs/SupplyPath"
+        },
+        "active_faults": {
+          "items": {
+            "$ref": "#/$defs/Fault"
+          },
+          "title": "Active Faults",
+          "type": "array"
+        },
+        "repair_tasks": {
+          "items": {
+            "$ref": "#/$defs/RepairTask"
+          },
+          "title": "Repair Tasks",
+          "type": "array"
+        },
+        "premise_states": {
+          "items": {
+            "$ref": "#/$defs/PremiseState"
+          },
+          "title": "Premise States",
+          "type": "array"
+        },
+        "affected_premise_tokens": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Affected Premise Tokens",
+          "type": "array"
+        },
+        "impact_summary": {
+          "$ref": "#/$defs/Impact"
+        },
+        "notifications": {
+          "items": {
+            "$ref": "#/$defs/Notification"
+          },
+          "title": "Notifications",
+          "type": "array"
+        },
+        "disclosure": {
+          "title": "Disclosure",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "incident_id",
+        "run_id",
+        "revision",
+        "timestamp_utc",
+        "title",
+        "phase",
+        "current_asset_id",
+        "selected_premise_token",
+        "cutout_status",
+        "evidence",
+        "hypotheses",
+        "crew_recommendation",
+        "restoration",
+        "customer_risk",
+        "selected_supply_path",
+        "active_faults",
+        "repair_tasks",
+        "premise_states",
+        "affected_premise_tokens",
+        "impact_summary",
+        "notifications",
+        "disclosure"
+      ],
+      "title": "Snapshot",
+      "type": "object"
+    }
+  }
+}

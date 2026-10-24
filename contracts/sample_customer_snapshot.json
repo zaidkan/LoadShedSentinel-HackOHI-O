@@ -1,0 +1,55 @@
+{
+  "schema_version": "integration_v1",
+  "scenario_id": "multi_fault",
+  "run_id": "RUN-FIXTURE-001",
+  "revision": 2,
+  "timestamp_utc": "2026-10-24T20:00:00Z",
+  "premise_token": "P-DEMO-001",
+  "status": "OUTAGE",
+  "risk": {
+    "band": "HIGH",
+    "confidence_kind": "scenario_only",
+    "drivers": [
+      "Selected synthetic storm fixture; no calibrated probability."
+    ]
+  },
+  "restoration": {
+    "kind": "scenario_planning",
+    "lower_hours": 8.0,
+    "expected_hours": 12.0,
+    "upper_hours": 16.0,
+    "reference": "remaining_from_snapshot",
+    "assumptions": [
+      "Illustrative fixture interval; not calculated from the AEP workbook.",
+      "Real labor, crew scheduling and graph services await their module owners."
+    ],
+    "labor_source": null
+  },
+  "explanation": "2 simulated repair constraint(s) remain on this home's fixture supply path.",
+  "remaining_repair_count": 2,
+  "plan": {
+    "guidance": [
+      "Charge communication devices, keep a flashlight available, and follow official utility updates.",
+      "Keep refrigerator and freezer doors closed. Follow current official food-safety guidance."
+    ],
+    "theoretical_runtime_hours": null,
+    "alert_eligible": false,
+    "alert_reason": "Opt in to demo alerts; pre-storm messages also require moderate or high scenario risk.",
+    "channel": "in_app_demo"
+  },
+  "preferences": {
+    "opted_in": false,
+    "channel": "in_app_demo",
+    "needs": {
+      "medical_equipment": false,
+      "refrigerated_medication": false,
+      "sump_pump": false,
+      "backup_wh": null,
+      "device_watts": null,
+      "inverter_efficiency": 0.85,
+      "reserve_fraction": 0.2
+    }
+  },
+  "notifications": [],
+  "disclosure": "Synthetic integration fixture: connections, telemetry, damage, crew findings and restoration ranges are simulated. No live utility status or AEP labor calculation."
+}

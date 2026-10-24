@@ -1,0 +1,152 @@
+{
+  "schema_version": "integration_v1",
+  "scenario_id": "multi_fault",
+  "incident_id": "INC-RUN-FIXTURE-001",
+  "run_id": "RUN-FIXTURE-001",
+  "revision": 2,
+  "timestamp_utc": "2026-10-24T20:00:00Z",
+  "title": "Two faults, staged restoration",
+  "phase": "OUTAGE",
+  "current_asset_id": "T-DEMO-001",
+  "selected_premise_token": "P-DEMO-001",
+  "cutout_status": "OPEN",
+  "evidence": [
+    {
+      "id": "E-DEMO-1",
+      "kind": "scenario_event",
+      "value": "Explicit simulated outage event",
+      "unit": null,
+      "provenance": "scenario",
+      "visibility": "operator"
+    }
+  ],
+  "hypotheses": [
+    {
+      "code": "STRUCTURE_OR_CONDUCTOR_DAMAGE",
+      "label": "Explicit simulated outage event",
+      "score_type": "unavailable",
+      "requires_field_confirmation": true,
+      "evidence_ids": [
+        "E-DEMO-1"
+      ]
+    }
+  ],
+  "crew_recommendation": {
+    "capabilities": [
+      "qualified utility assessment"
+    ],
+    "material_categories": [],
+    "basis": "assessment_required",
+    "approved": false,
+    "reason": "Fixture recommendation; engine owner supplies verified capability rules."
+  },
+  "restoration": {
+    "kind": "scenario_planning",
+    "lower_hours": 8.0,
+    "expected_hours": 12.0,
+    "upper_hours": 16.0,
+    "reference": "remaining_from_snapshot",
+    "assumptions": [
+      "Illustrative fixture interval; not calculated from the AEP workbook.",
+      "Real labor, crew scheduling and graph services await their module owners."
+    ],
+    "labor_source": null
+  },
+  "solar": {
+    "battery_soc_pct": null,
+    "modeled_runtime_days": null,
+    "provenance": "modeled_sensor",
+    "limitations": "Awaiting energy-owner implementation; no field endurance claim."
+  },
+  "customer_risk": {
+    "band": "HIGH",
+    "confidence_kind": "scenario_only",
+    "drivers": [
+      "Selected synthetic storm fixture; no calibrated probability."
+    ]
+  },
+  "selected_supply_path": {
+    "premise_token": "P-DEMO-001",
+    "asset_tokens": [
+      "T-DEMO-001",
+      "F-DEMO-001",
+      "R-DEMO-001"
+    ],
+    "completeness": "complete_in_fixture",
+    "provenance": "synthetic_fixture"
+  },
+  "active_faults": [
+    {
+      "fault_id": "FAULT-LOCAL",
+      "asset_id": "T-DEMO-001",
+      "damage_class": "transformer",
+      "state": "ACTIVE",
+      "provenance": "scenario"
+    },
+    {
+      "fault_id": "FAULT-UPSTREAM",
+      "asset_id": "R-DEMO-001",
+      "damage_class": "upstream_interruption",
+      "state": "ACTIVE",
+      "provenance": "scenario"
+    }
+  ],
+  "repair_tasks": [
+    {
+      "task_id": "TASK-LOCAL",
+      "fault_id": "FAULT-LOCAL",
+      "prerequisite_task_ids": [],
+      "capabilities": [
+        "qualified utility crew"
+      ],
+      "status": "PENDING"
+    },
+    {
+      "task_id": "TASK-UPSTREAM",
+      "fault_id": "FAULT-UPSTREAM",
+      "prerequisite_task_ids": [],
+      "capabilities": [
+        "qualified utility crew"
+      ],
+      "status": "PENDING"
+    }
+  ],
+  "premise_states": [
+    {
+      "premise_token": "P-DEMO-001",
+      "status": "OUTAGE",
+      "remaining_blocking_fault_ids": [
+        "FAULT-LOCAL",
+        "FAULT-UPSTREAM"
+      ]
+    },
+    {
+      "premise_token": "P-DEMO-002",
+      "status": "OUTAGE",
+      "remaining_blocking_fault_ids": [
+        "FAULT-UPSTREAM"
+      ]
+    },
+    {
+      "premise_token": "P-DEMO-003",
+      "status": "OUTAGE",
+      "remaining_blocking_fault_ids": [
+        "FAULT-LOCAL",
+        "FAULT-UPSTREAM"
+      ]
+    }
+  ],
+  "affected_premise_tokens": [
+    "P-DEMO-001",
+    "P-DEMO-002",
+    "P-DEMO-003"
+  ],
+  "impact_summary": {
+    "known_affected_count": 3,
+    "restored_in_scenario_count": 0,
+    "unknown_coverage_count": 0,
+    "scope": "three_household_synthetic_fixture"
+  },
+  "notifications": [],
+  "disclosure": "Synthetic integration fixture: connections, telemetry, damage, crew findings and restoration ranges are simulated. No live utility status or AEP labor calculation."
+}
