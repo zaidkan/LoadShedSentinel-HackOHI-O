@@ -2,6 +2,8 @@
 
 **Distribution Transformer Digital Twin & AI Customer Outage Concierge**
 
+**Runtime data scope:** This demo simulates faults using *validated, anonymized dependency paths* extracted from the [official AEP challenge repository](https://github.com/hackohio/aep_challenge_hack26). The checked-in public incident sample contains **16 premises / 12 equipment nodes**. Counts reflect modeled dependencies in that sample, not observed outages or the full 117,549 accepted source paths. See [AEP impact handoff](docs/aep_source_impact_handoff.md).
+
 LoadShed Sentinel bridges the utility distribution blind spot by combining real American Electric Power (AEP) distribution topology, physical transformer telemetry modeling, 4.5× STORMS labor restoration calculations, procedural 3D digital twins, and a proactive, privacy-preserving residential outage concierge.
 
 ---
@@ -10,7 +12,8 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
 
 1. **Upstream Electrical Topology Engine**:
    - Ingests real AEP GIS layers (12 shapefiles) and ordered upstream connectivity paths.
-   - Traces 117,549 verified customer premises through 32,600 equipment nodes back to feeding substations.
+   - Offline preprocessing accepted 117,549 AEP-supplied customer paths through equipment up to provided **circuit breakers** (physical substation connectivity is not established).
+   - The checked-in interactive demo uses a **16-premise anonymized AEP-source sample** and computes transformer/breaker dependency impacts dynamically; it does not expose the full private graph.
    - Evaluates multi-premise outages, distinguishing localized transformer failures from upstream feeder interruptions.
 
 2. **Causal Fault & Restoration Reasoning Engine**:
@@ -20,7 +23,7 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
 
 3. **Procedural 3D Digital Twin & Utility Operator Console**:
    - Interactive Three.js/WebGL procedural utility pole, distribution transformer, sensor pod, and animated cutout fuse switch (latched energized vs 45° blown drop).
-   - Real-time SVG Feeder Circuit Map visualizing upstream-to-downstream topological power flow.
+   - Source-derived schematic SVG feeder map visualizing provided upstream equipment relationships (not measured power flow or live state).
    - Telemetry HUD with oil temperature, vibration harmonics, load factor, and ambient weather.
 
 4. **AI Residential Outage Concierge**:
@@ -95,7 +98,9 @@ curl http://localhost:8000/api/health
 curl -X POST http://localhost:8000/api/scenario/select -H "Content-Type: application/json" -d '{"scenario_id":"local_protection"}'
 
 # 3. Query premise topology trace
-curl http://localhost:8000/api/topology/lookup?premise_token=PREM-000001
+curl 'http://localhost:8000/api/aep/source'
+# Retrieve a premise token from /api/scenario/current then call:
+# curl 'http://localhost:8000/api/topology/lookup?premise_id=<PREM-TOKEN>'
 
 # 4. Calculate home battery runtime
 curl -X POST http://localhost:8000/api/customer/battery-runtime -H "Content-Type: application/json" -d '{"capacity_wh":1000,"usable_fraction":0.85,"device_w":120,"inverter_efficiency":0.85,"reserve_margin_pct":0.15}'

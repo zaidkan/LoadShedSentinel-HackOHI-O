@@ -16,6 +16,7 @@ from engine.customer import (
 )
 from engine.scenarios import generate_scenario, SCENARIO_IDS
 from engine.topology import Topology
+from engine.aep_impact import AEPImpact, UnknownAEPAsset
 
 app = FastAPI(
     title="LoadShed Sentinel API",
@@ -40,6 +41,22 @@ GEOJSON_PATH = os.path.join(BASE_DIR, "..", "data", "processed", "network.geojso
 _current_snapshot: ScenarioSnapshot = None
 _fsm = NotificationFSM()
 _topology_instance: Optional[Topology] = None
+_aep_impact_instance: Optional[AEPImpact] = None
+
+
+def get_aep_impact() -> AEPImpact:
+    """Validated, anonymized slice derived from the official AEP source archives.
+
+    Fail closed if the source bundle is absent. No fabricated fallback footprints.
+    """
+    global _aep_impact_instance
+    if _aep_impact_instance is None:
+        try:
+            _aep_impact_instance = AEPImpact.load()
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            raise HTTPException(status_code=503, detail="AEP impact source unavailable: " + str(exc)) from exc
+    return _aep_impact_instance
+
 
 def get_topology() -> Optional[Topology]:
     global _topology_instance
@@ -71,59 +88,76 @@ def health_check():
         "service": "LoadShed Sentinel API",
         "version": "1.0.0",
         "topology_loaded": get_topology() is not None,
+        "aep_impact_sample_loaded": _aep_impact_instance is not None,
     }
 
 @app.get("/api/scenarios")
 def list_scenarios():
-    """Returns the 4 canonical demonstration scenarios."""
-    return [
-        {
-            "id": "local_protection",
-            "title": "Local Protective Device Operated (Blown Cutout)",
-            "description": "Cutout fuse barrel swings open on secondary load surge; local transformer de-energized while feeder remains live.",
-            "cutout_status": "OPEN",
-            "expected_affected": 8,
-            "status": "OUTAGE"
-        },
-        {
-            "id": "upstream_feeder",
-            "title": "Upstream Feeder Breaker Interruption",
-            "description": "Upstream distribution breaker opens; entire neighborhood feeder interrupted while local transformer hardware remains intact.",
-            "cutout_status": "CLOSED",
-            "expected_affected": 32,
-            "status": "OUTAGE"
-        },
-        {
-            "id": "confirmed_replacement",
-            "title": "Confirmed Equipment Distress (Transformer Replacement)",
-            "description": "Core failure and thermal distress confirmed; qualified utility heavy construction crew work package generated.",
-            "cutout_status": "OPEN",
-            "expected_affected": 8,
-            "status": "OUTAGE"
-        },
-        {
-            "id": "insufficient_evidence",
-            "title": "Contradictory / Insufficient Telemetry (Abstention)",
-            "description": "Sparse or conflicting telemetry; engine safely abstains from speculative diagnoses until field investigation.",
-            "cutout_status": "UNKNOWN",
-            "expected_affected": 0,
-            "status": "UNDER_REVIEW"
-        }
+    """Scenario catalog with counts computed from the shipped AEP source paths."""
+    source = get_aep_impact()
+    descriptions = [
+        ("local_protection", "Local Transformer Protection (Simulated)",
+         "Simulated local protective-device operation, dependency footprint from AEP source paths.", "OPEN", "OUTAGE"),
+        ("upstream_feeder", "Upstream Breaker Interruption (Simulated)",
+         "Simulated breaker opening; all dependencies in the selected AEP subnet are traced.", "CLOSED", "OUTAGE"),
+        ("confirmed_replacement", "Transformer Replacement (Simulated)",
+         "Simulated field confirmation and review-only transformer work package.", "OPEN", "OUTAGE"),
+        ("insufficient_evidence", "Contradictory Telemetry (Abstention)",
+         "Evidence is insufficient; do not claim an outage or a known affected count.", "UNKNOWN", "UNDER_REVIEW"),
     ]
+    result = []
+    for scenario_id, title, description, cutout_status, status in descriptions:
+        dependency_count = source.scenario_context(scenario_id)["source_impact"]["affected_count_in_sample"]
+        result.append({
+            "id": scenario_id, "title": title, "description": description,
+            "cutout_status": cutout_status,
+            "expected_affected": 0 if scenario_id == "insufficient_evidence" else dependency_count,
+            "impact_scope": "selected_subnet",
+            "status": status,
+        })
+    return result
+
+
+@app.get("/api/aep/assets")
+def list_aep_assets():
+    """Only anonymized source asset tokens and in-sample dependency counts."""
+    return get_aep_impact().selectable_assets()
+
+
+@app.get("/api/aep/source")
+def aep_source_status():
+    source = get_aep_impact()
+    return {
+        "provenance": "aep_challenge",
+        "origin": "https://github.com/hackohio/aep_challenge_hack26",
+        "scope": "selected_subnet", "premises_in_sample": len(source.paths),
+        "equipment_in_sample": len(source.assets),
+        "basis": "validated supplied upstream paths; not physical conductor geometry",
+        "is_live_outage_data": False,
+        "is_full_territory_impact_count": False,
+        "limitations": source.metadata.get("limitations", []),
+    }
+
 
 class SelectScenarioRequest(BaseModel):
     scenario_id: str
+    asset_token: Optional[str] = None
+    premise_token: Optional[str] = None
+
 
 @app.post("/api/scenario/select")
 def select_scenario(req: SelectScenarioRequest):
-    """Switches active scenario dynamically using engine.scenarios."""
+    """Simulate a fault on selected AEP equipment, calculating dependent premises."""
     global _current_snapshot, _fsm
     if req.scenario_id not in SCENARIO_IDS:
-        raise HTTPException(status_code=400, detail=f"Invalid scenario. Valid IDs: {SCENARIO_IDS}")
-    
-    _current_snapshot = generate_scenario(req.scenario_id, {})
-    
-    # Evaluate notifications via FSM
+        raise HTTPException(status_code=400, detail="Unknown scenario")
+    try:
+        context = get_aep_impact().scenario_context(req.scenario_id, req.asset_token, req.premise_token)
+        snapshot = generate_scenario(req.scenario_id, context)
+    except (UnknownAEPAsset, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    _current_snapshot = snapshot
+
     new_alerts = _fsm.evaluate_triggers(
         premise_token=_current_snapshot.selected_premise_token,
         incident_id=_current_snapshot.incident_id,
@@ -134,6 +168,7 @@ def select_scenario(req: SelectScenarioRequest):
     )
     _current_snapshot.notifications.extend(new_alerts)
     return _current_snapshot
+
 
 @app.get("/api/scenario/current", response_model=ScenarioSnapshot)
 def get_current_scenario():
@@ -183,22 +218,22 @@ def reset_scenario():
     return _current_snapshot
 
 @app.get("/api/topology/lookup")
-def lookup_premise_topology(premise_id: str = Query(..., description="Public premise token, e.g. PREM-000001")):
-    """Traces public premise token through upstream equipment to feeder breaker."""
+def lookup_premise_topology(premise_id: str = Query(..., description="Anonymized public premise token")):
+    """Return the same AEP-derived source trace as the outage impact engine."""
+    source = get_aep_impact()
+    if premise_id in source.paths:
+        return source.trace(premise_id)
+    # Keep support for an optional full private graph without exposing its raw IDs.
     topo = get_topology()
-    if topo is None:
-        raise HTTPException(status_code=503, detail="Topology service not ready; private graph unavailable")
-    
-    trace = topo.premise_to_substation(premise_id)
-    return trace
+    if topo is not None and premise_id.startswith("PREM-"):
+        return topo.premise_to_substation(premise_id)
+    return source.trace(premise_id)
+
 
 @app.get("/api/topology/geojson")
 def get_network_geojson():
-    """Returns the sanitized public network GeoJSON for map display."""
-    if not os.path.exists(GEOJSON_PATH):
-        raise HTTPException(status_code=404, detail="Network GeoJSON not found")
-    with open(GEOJSON_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    """Schematic map from the same AEP-source bundle used by impact simulation."""
+    return get_aep_impact().geojson()
 
 class BatteryCalcRequest(BaseModel):
     capacity_wh: float

@@ -32,7 +32,9 @@ class ScenarioTests(unittest.TestCase):
         snap = self.generate('local_protection')
         self.assertEqual(snap.cutout_status, 'OPEN')
         self.assertEqual(snap.status, 'OUTAGE')
-        self.assertEqual(len(snap.affected_premise_tokens), 8)
+        self.assertEqual(len(snap.affected_premise_tokens), 3)
+        self.assertEqual(snap.impact_source.provenance if hasattr(snap.impact_source, 'provenance') else snap.impact_source['provenance'], 'aep_challenge')
+        self.assertEqual(snap.current_asset_id, snap.impact_source['fault_asset_token'])
         self.assertEqual(snap.crew_recommendation.candidate_damage_class, 'protection_or_unknown')
         self.assertTrue(snap.hypotheses[0].requires_field_confirmation)
         self.assertFalse(any(e.kind == 'field_damage' for e in snap.evidence))
@@ -41,7 +43,8 @@ class ScenarioTests(unittest.TestCase):
         local = self.generate('local_protection')
         snap = self.generate('upstream_feeder')
         self.assertEqual(snap.cutout_status, 'CLOSED')
-        self.assertEqual(len(snap.affected_premise_tokens), 32)
+        self.assertEqual(len(snap.affected_premise_tokens), 16)
+        self.assertEqual(snap.impact_source['fault_asset_kind'], 'CIRCUIT_BREAKER')
         self.assertTrue(set(local.affected_premise_tokens) < set(snap.affected_premise_tokens))
         self.assertEqual(snap.crew_recommendation.candidate_damage_class, 'upstream_feeder')
         trip = next(e for e in snap.evidence if e.kind == 'upstream_trip')
@@ -130,7 +133,7 @@ class ScenarioTests(unittest.TestCase):
                    {'queue_hours': -1}, {'duration_factors': [1, .5, 2]}, {'incident_id': ''},
                    {'current_asset_id': 'secret/path'}, {'revision': True}, {'revision': 0},
                    {'local_premise_tokens': []}, {'local_premise_tokens': ['P-A', 'P-A']},
-                   {'selected_premise_token': 'P-FOREIGN'}, {'upstream_asset_id': 'T-DEMO-104'},
+                   {'selected_premise_token': 'P-FOREIGN'}, {'upstream_asset_id': self.generate('local_protection').current_asset_id},
                    {'feeder_premise_tokens': ['P-FOREIGN']}, {'evidence': []}]
         from engine.scenarios import generate_scenario
         for context in invalid:
