@@ -57,8 +57,8 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
       {/* Top Navigation */}
-      <nav className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+      <nav className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sm:sticky sm:top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 min-h-14 py-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-3">
             <span className="text-white font-black tracking-tight flex items-center gap-1.5 text-base">
               <span className="text-blue-500">LOAD</span>SHED
@@ -69,14 +69,14 @@ export const App: React.FC = () => {
           </div>
 
           {/* Demonstration Scenario Selector */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
+            <div className="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 text-xs min-w-0 max-w-full">
               <Layers className="w-3.5 h-3.5 text-blue-400" />
               <span className="text-slate-400 hidden sm:inline">Scenario:</span>
               <select
                 value={selectedScenarioId}
                 onChange={(e) => handleSelectScenario(e.target.value)}
-                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer"
+                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer min-w-0 max-w-[60vw] sm:max-w-none truncate"
               >
                 {scenarios.map((s) => (
                   <option key={s.id} value={s.id} className="bg-slate-900 text-white">
@@ -95,7 +95,7 @@ export const App: React.FC = () => {
             </button>
 
             {/* Screen Switcher */}
-            <div className="flex items-center gap-1 bg-slate-950/60 p-1 rounded-lg border border-slate-800 ml-2">
+            <div className="flex items-center gap-1 bg-slate-950/60 p-1 rounded-lg border border-slate-800 sm:ml-2">
               <button
                 onClick={() => setActiveTab('utility')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition ${

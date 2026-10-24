@@ -161,3 +161,25 @@
   .utility-range dd { font-size: 23px; }
 }
 @media (prefers-reduced-motion: reduce) { .utility-console *, .utility-console *::before, .utility-console *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+.utility-network { margin-top: 20px; }
+.utility-network-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(260px, 1fr); }
+.utility-network-map { border-right: 1px solid var(--u-border); background: #142331; min-width: 0; }
+.utility-network-map > svg { display: block; width: 100%; height: auto; max-height: 340px; }
+.utility-network-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 18px; border-top: 1px solid var(--u-border); font-size: 11px; color: var(--u-muted); }
+.utility-network-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.utility-network-legend svg { flex-shrink: 0; }
+.utility-network-trace { padding: 16px 18px; display: grid; align-content: start; gap: 10px; min-width: 0; }
+.utility-trace-list { list-style: none; padding: 0; margin: 4px 0 0; position: relative; }
+.utility-trace-list li { position: relative; display: grid; grid-template-columns: 1fr auto; column-gap: 10px; padding: 7px 0 7px 22px; font-size: 12px; }
+.utility-console .utility-trace-list li + li { margin-top: 0; }
+.utility-trace-list li::before { content: ""; position: absolute; left: 4px; top: 13px; width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--u-info); background: var(--u-panel); }
+.utility-trace-list li:not(:last-child)::after { content: ""; position: absolute; left: 9px; top: 25px; bottom: -7px; border-left: 2px solid #3f5c70; }
+.utility-trace-list li.utility-trace-premise::before { border-color: var(--u-positive); }
+.utility-trace-list li.utility-trace-missing::before { border-style: dashed; border-color: var(--u-muted); }
+.utility-trace-list small { grid-column: 1 / -1; color: var(--u-muted); font-size: 11px; }
+.utility-network-incident { border-top: 1px solid var(--u-border); padding-top: 12px; display: grid; gap: 6px; font-size: 12px; }
+.utility-network-policy { padding: 10px 18px; border-top: 1px solid var(--u-border); font-size: 11px; color: var(--u-muted); }
+@media (max-width: 860px) {
+  .utility-network-body { grid-template-columns: 1fr; }
+  .utility-network-map { border-right: 0; border-bottom: 1px solid var(--u-border); }
+}

@@ -91,6 +91,41 @@ export async function lookupPremiseTopology(premiseId: string): Promise<any> {
   return res.json();
 }
 
+export interface NetworkFeature {
+  type: 'Feature';
+  geometry: { type: 'Point'; coordinates: [number, number] } | { type: 'LineString'; coordinates: [number, number][] };
+  properties: {
+    asset_token?: string;
+    kind?: string;
+    upstream_token?: string;
+    downstream_token?: string;
+    relation?: string;
+    geometry_quality: string;
+    provenance: string;
+  };
+}
+
+export interface NetworkGeojson {
+  type: 'FeatureCollection';
+  status: string;
+  features: NetworkFeature[];
+  provenance: string;
+  premise_tokens: string[];
+  geometry_policy: string;
+  relationship_basis: string;
+  selected_premise_token: string;
+  paths: string[][];
+  missing_geometry_tokens: string[];
+  available_peer_count: number;
+  truncated: boolean;
+}
+
+export async function fetchNetworkGeojson(): Promise<NetworkGeojson> {
+  const res = await fetch('/api/topology/geojson');
+  if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+  return res.json();
+}
+
 export async function calculateBatteryRuntime(params: {
   capacity_wh: number;
   usable_fraction: number;
