@@ -7,7 +7,7 @@ should add their own evidence separately.
 |---|---|---|
 | Organizer source archives | `aep_challenge_hack26/data/raw/{Data1,Data2,matched_upstream}.zip`; SHA-256 values in `data/processed/source_inventory.json` | Supplied challenge records; no live utility feed |
 | Layer schemas and coverage | `pipeline/inspect_assets.py`; `source_inventory.json` | Actual counts, CRS, field names, null and duplicate-key counts; no personal values exported |
-| Premise/transformer join | `pipeline/import_gis.py:AssetIndex`; `graph_summary.json` | Customer location/circuit plus text class/ID/location cross-check; 117,554 accepted paths; explicit rejection counts |
+| Premise/transformer join | `pipeline/import_gis.py:AssetIndex`; `graph_summary.json` | Customer location/circuit plus text class/ID/location and upstream circuit cross-check; 117,549 accepted paths; explicit rejection counts |
 | Text sequence | `pipeline/parse_upstream.py`; `network_bundle.json` | Provided order of transformer/protective/circuit equipment; partial physical path, no fabricated conductors or substation |
 | Selected source trace | `.data-private/lineage.json` locally only | Public token to original selected record and upstream line; private, ignored and never a browser asset |
 | Public map | `network.geojson` and its coordinate metadata | Source geometry generalized on 0.02-degree WGS84 grid; line context has no asserted household connectivity |
@@ -32,3 +32,10 @@ and ID and validating the location produces 25,298 distribution-transformer and
 The tests also prevent the local-repair/upstream-fault error and same-day damage
 leakage. These are software checks, not measured field reliability or dispatch
 accuracy.
+
+Independent review additionally reproduced five source paths with conflicting
+circuit references. Those are now rejected. Class/kind and full-record identity
+checks prevent confusing different asset classes with equal ID strings.
+Circuit-filtered graph reads now retain only relationships enumerated by their
+selected paths, even when another circuit shares the same equipment nodes.
+Regression tests cover all three cases; the current combined suite passes 63.

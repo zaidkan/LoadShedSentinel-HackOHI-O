@@ -48,7 +48,8 @@ def parse_lines(lines) -> tuple[dict[str, UpstreamPath], dict]:
             equipment = tuple(EquipmentToken.parse(p) for p in parts[1:])
             if not premise or len(equipment) < 2 or len(set(equipment)) != len(equipment):
                 raise ValueError("Missing premise, short path, or repeated equipment")
-            if equipment[0].kind != "Distribution" or equipment[-1].source_class != "eo_circuit":
+            if (equipment[0].source_class != "eo_power_xfrmr_inst" or equipment[0].kind != "Distribution"
+                    or equipment[-1].source_class != "eo_circuit"):
                 raise ValueError("Path must start at distribution transformer and end at circuit equipment")
             path = UpstreamPath(premise, equipment, number)
             if premise in accepted:

@@ -73,6 +73,20 @@ def test_network_filter_does_not_include_another_circuits_map_or_paths():
     assert "P2" not in json.dumps(result) and "C2" not in json.dumps(result)
 
 
+def test_network_filter_does_not_borrow_edges_between_shared_assets():
+    paths = [{"premise_token": "P1", "asset_tokens": ["A", "F", "R"], "circuit_token": "C1"},
+             {"premise_token": "P2", "asset_tokens": ["B", "A", "R"], "circuit_token": "C2"}]
+    edges = [{"upstream_token": parent, "downstream_token": downstream} for p in paths
+             for downstream, parent in zip([p["premise_token"]] + p["asset_tokens"][:-1], p["asset_tokens"])]
+    bundle = {"metadata": {"limitations": []}, "nodes": [{"asset_token": t} for t in ("A", "B", "F", "R")],
+              "supply_paths": paths, "edges": edges}
+    geometry = {"type": "FeatureCollection", "metadata": bundle["metadata"], "features": [
+        {"type": "Feature", "properties": {"premise_token": p}, "geometry": None} for p in ("P1", "P2")]}
+    selected = NetworkService(bundle, geometry).get_network("C1")
+    assert {(e["upstream_token"], e["downstream_token"]) for e in selected["edges"]} == {
+        ("A", "P1"), ("F", "A"), ("R", "F")}
+
+
 def test_data_demo_cases_distinguish_shared_transformer_fuse_and_breaker(source_service):
     cases = json.loads((ROOT / "data/processed/data_demo_cases.json").read_text())
     topology = source_service.topology

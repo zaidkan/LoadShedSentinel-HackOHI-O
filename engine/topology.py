@@ -145,6 +145,8 @@ class NetworkService:
         premises = {p["premise_token"] for p in paths}
         circuits = {p["circuit_token"] for p in paths}
         assets = {a for p in paths for a in p["asset_tokens"]}
+        edge_pairs = {(parent, downstream) for p in paths
+                      for downstream, parent in zip([p["premise_token"]] + p["asset_tokens"][:-1], p["asset_tokens"])}
         features = []
         for feature in self.geometry["features"]:
             props = feature["properties"]
@@ -157,8 +159,8 @@ class NetworkService:
             "source": "aep_challenge", "scope": "selected_subnet",
             "geometry": {**self.geometry, "features": features},
             "paths": paths, "nodes": [n for n in self.bundle["nodes"] if n["asset_token"] in assets],
-            "edges": [e for e in self.bundle["edges"] if e["downstream_token"] in assets | premises
-                      and e["upstream_token"] in assets],
+            "edges": [e for e in self.bundle["edges"]
+                      if (e["upstream_token"], e["downstream_token"]) in edge_pairs],
             "coverage": {"known_premise_count": len(paths), "enumerated_asset_count": len(assets),
                          "physical_path_complete": False, "full_circuit_export": False},
             "limitations": self.bundle["metadata"]["limitations"] + [

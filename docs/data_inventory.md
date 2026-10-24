@@ -68,6 +68,11 @@ Identifiers remain strings, including leading zeroes. An upstream token is
 `eo_source_` field. Its class and ID select candidate records; its location must
 also agree. Customer transformer matching requires a unique location/circuit
 combination. Duplicate locations without unique circuit support are ambiguous.
+The first text token must have both the transformer class and Distribution kind,
+and resolve to the same source record as the customer lookup. Matching ID strings
+across different asset classes is insufficient. The terminal circuit location and
+any GIS-matched upstream equipment with a populated circuit ID must agree with
+the customer's circuit; contradictory paths are rejected.
 
 | Check | Result |
 |---|---:|
@@ -75,11 +80,12 @@ combination. Duplicate locations without unique circuit support are ambiguous.
 | Unique customer transformer match after circuit check | 117,615 |
 | Customer rows without upstream text | 47 |
 | Upstream keys without a customer row | 4 |
-| Customer paths passing customer + transformer + text cross-check | 117,554 |
+| Customer paths passing customer + transformer + text cross-check | 117,549 |
 | Rejected: no text path | 47 |
 | Rejected: no customer transformer match | 27 |
 | Rejected: text location mismatch | 12 |
 | Rejected: customer/text transformer conflict | 2 |
+| Rejected: text circuit conflict | 5 |
 | Distribution tokens matching GIS class + ID + location | 25,298 / 25,302 |
 | Fuse tokens matching GIS class + ID + location | 6,656 / 6,757 |
 
@@ -94,6 +100,10 @@ recloser is joined to a differently keyed recloser-bank export by proximity.
 The text provides ordered equipment dependence, not a complete physical network:
 conductors and substation links are omitted. A path can have
 `text_path_complete: true` and `physical_path_complete: false`.
+Sixty equipment nodes in the accepted source paths have multiple supplied
+upstream parents across their sequences. These are retained as relational
+ambiguities; per-premise lookups follow the supplied sequence rather than invent
+a unique global electrical parent or a switching state.
 
 ## Delivered slice and map
 
@@ -160,7 +170,7 @@ Equivalent module functions take `network` first. Instantiate a service once for
 repeated requests. Unknown premises return `status: UNKNOWN`; unknown assets have
 `known_count: null`. No numeric zero is used to assert an unknown asset has no
 dependents. Every enumerated dependent list/count is scoped to `selected_subnet`.
-Node `full_source_known_count` counts dependence among the 117,554 validated source
+Node `full_source_known_count` counts dependence among the 117,549 validated source
 paths, not confirmed outages or the entire utility territory.
 
 Fault dictionaries have `fault_token`, `asset_token`, and state `ACTIVE`,
@@ -299,9 +309,17 @@ under the shared breaker. The simulated local-only footprint is 3 premises;
 upstream-only and overlapping-fault footprints are 8, demonstrating the union
 rule. These relationships come from validated text paths, not map proximity.
 
-The combined suite currently passes **57 tests** and canonical generated files
+The combined suite currently passes **63 tests** and canonical generated files
 match Python schemas. `tests/test_data_adapters.py` exercises actual network/risk
 hook injection through FastAPI, source-token consistency, circuit filtering,
 unknowns, customer-safe risk text and unchanged incident revisions/alerts. The
 default fixture API is still synthetic; source-to-incident wiring remains Human
 4's integration change, with this reviewable read model and seam tests ready.
+
+Independent data/adapter review found and reproduced three issues that are now
+covered by regression tests: five source paths conflicted with circuit references;
+a malformed token could confuse a fuse with a transformer sharing its ID; and
+circuit-filtered views could borrow an edge between shared assets from another
+circuit. The importer now abstains on the conflicting paths and asset identities,
+and edge filtering uses the selected paths' exact relationships. The 16-premise
+demo selection and its 3/8-premise simulated footprints are unchanged.

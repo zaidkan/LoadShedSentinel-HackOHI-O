@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 from pyproj import CRS
 
-from pipeline.build_graph import Tokenizer
+from pipeline.build_graph import Tokenizer, validate_paths
 from pipeline.import_gis import AssetIndex, generalize, project_point, wgs84_transform
-from pipeline.parse_upstream import EquipmentToken, parse_lines
+from pipeline.parse_upstream import EquipmentToken, UpstreamPath, parse_lines
 
 
 def test_preserve_leading_zero_ids_and_reject_malformed_paths():
@@ -78,6 +78,10 @@ def test_export_is_allowlisted_and_positions_are_generalized():
     assert report["joins"]["customer_rows_without_text"] == 47
     assert report["joins"]["text_keys_without_customer"] == 4
     assert report["customer_transformer_location_key_exists"] == 117615
+    assert report["joins"]["validated_premise_paths"] == 117549
+    assert report["joins"]["rejected_customer_paths"]["TEXT_CIRCUIT_CONFLICT"] == 5
+    assert (report["joins"]["validated_premise_paths"] + sum(report["joins"]["rejected_customer_paths"].values())
+            == report["source_counts"]["customers"])
 
 
 def test_duplicate_locations_can_be_resolved_only_with_unique_circuit():
@@ -88,3 +92,44 @@ def test_duplicate_locations_can_be_resolved_only_with_unique_circuit():
     row, method = index.transformer_for_customer({"aep_xfmr_l": "003", "circuit_id": "C2"})
     assert row["id"] == "002" and method == "LOCATION_CIRCUIT"
     assert index.transformer_for_customer({"aep_xfmr_l": "003", "circuit_id": "C3"})[0] is None
+
+
+@pytest.mark.parametrize("terminal_circuit,fuse_circuit,reason", [
+    ("C1", "C1", None),
+    ("C1", "", None),
+    ("C2", "C1", "TEXT_CIRCUIT_CONFLICT"),
+    ("C1", "C2", "UPSTREAM_GIS_CIRCUIT_CONFLICT"),
+])
+def test_supply_path_rejects_contradictory_circuit_references(terminal_circuit, fuse_circuit, reason):
+    customers = {"00042": {"aep_xfmr_l": "003", "circuit_id": "C1", "point": [-81, 37]}}
+    index = AssetIndex([
+        {"eo_source_": "eo_power_xfrmr_inst", "id": "001", "location_n": "003", "circuit_id": "C1", "layer": "transformers"},
+        {"eo_source_": "eo_isolating_eqpt_inst", "id": "002", "location_n": "004", "circuit_id": fuse_circuit, "layer": "fuses"},
+    ])
+    paths, _ = parse_lines(["00042\teo_power_xfrmr_inst*001*Distribution*003\t"
+                            "eo_isolating_eqpt_inst*002*Fuse*004\t"
+                            f"eo_circuit*005*Circuit Breaker*{terminal_circuit}"])
+    accepted, report = validate_paths(customers, paths, index)
+    if reason:
+        assert accepted == {}
+        assert report["rejected_customer_paths"] == {reason: 1}
+    else:
+        assert set(accepted) == {"00042"}
+
+
+def test_distribution_kind_does_not_turn_a_fuse_into_a_transformer():
+    malformed = "eo_isolating_eqpt_inst*1*Distribution*FUSELOC"
+    terminal = "eo_circuit*9*Circuit Breaker*C1"
+    paths, report = parse_lines([f"P\t{malformed}\t{terminal}"])
+    assert paths == {} and len(report["rejected_rows"]) == 1
+    # Defense in depth: even a caller constructing an UpstreamPath directly
+    # cannot join different equipment classes solely because their IDs match.
+    customers = {"P": {"aep_xfmr_l": "TXLOC", "circuit_id": "C1", "point": [-81, 37]}}
+    index = AssetIndex([
+        {"eo_source_": "eo_power_xfrmr_inst", "id": "1", "location_n": "TXLOC", "circuit_id": "C1", "layer": "transformers"},
+        {"eo_source_": "eo_isolating_eqpt_inst", "id": "1", "location_n": "FUSELOC", "circuit_id": "C1", "layer": "fuses"},
+    ])
+    paths = {"P": UpstreamPath("P", (EquipmentToken.parse(malformed), EquipmentToken.parse(terminal)), 1)}
+    accepted, report = validate_paths(customers, paths, index)
+    assert accepted == {}
+    assert report["rejected_customer_paths"] == {"CUSTOMER_TEXT_TRANSFORMER_CONFLICT": 1}

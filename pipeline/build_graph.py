@@ -62,10 +62,18 @@ def validate_paths(customers, upstream, index):
             reasons[customer_method] += 1
         elif first is None:
             reasons["TEXT_" + text_method] += 1
-        elif key(first["id"]) != key(transformer["id"]):
+        elif first is not transformer:
+            # The index returns source records. An ID alone is not an identity
+            # across equipment classes/layers that may share the same ID value.
             reasons["CUSTOMER_TEXT_TRANSFORMER_CONFLICT"] += 1
         elif customer["point"] is None:
             reasons["MISSING_PREMISE_GEOMETRY"] += 1
+        elif upstream[premise].equipment[-1].location != key(customer["circuit_id"]):
+            reasons["TEXT_CIRCUIT_CONFLICT"] += 1
+        elif any(asset is not None and key(asset.get("circuit_id"))
+                 and key(asset["circuit_id"]) != key(customer["circuit_id"])
+                 for asset, _ in (index.resolve(t) for t in upstream[premise].equipment[1:])):
+            reasons["UPSTREAM_GIS_CIRCUIT_CONFLICT"] += 1
         else:
             validated[premise] = upstream[premise]
     return validated, {"validated_premise_paths": len(validated), "rejected_customer_paths": dict(reasons),
@@ -181,6 +189,10 @@ def build(raw: Path, output: Path, private_dir: Path, max_premises: int = 40) ->
     valid, joins = validate_paths(customers, upstream, index)
     selected = choose_subnet(valid, max_premises)
     source_counts = Counter(t.raw for path in valid.values() for t in path.equipment)
+    source_parents = defaultdict(set)
+    for path in valid.values():
+        for downstream, parent in zip(path.equipment, path.equipment[1:]):
+            source_parents[downstream.raw].add(parent.raw)
     tokens = {t.raw: t for p in selected for t in valid[p].equipment}
     nodes, paths, features, edges, lineage = [], [], [], {}, []
     for raw_token, token in sorted(tokens.items()):
@@ -238,6 +250,7 @@ def build(raw: Path, output: Path, private_dir: Path, max_premises: int = 40) ->
               "equipment_gis_joins_by_kind": token_join_by_kind,
               "customer_transformer_location_key_exists": sum(key(c["aep_xfmr_l"]) in transformer_locations for c in customers.values()),
               "selected_premises": len(paths), "selected_assets": len(nodes), "selected_links": len(edges),
+              "validated_text_nodes_with_multiple_parents": sum(len(parents) > 1 for parents in source_parents.values()),
               "scope": "selected_subnet", "source": "aep_challenge",
               "limitations": ["Selected counts are not full-network impact counts.",
                               "GIS line context does not add electrical dependencies.",

@@ -49,11 +49,12 @@
     "rejected_customer_paths": {
       "CUSTOMER_TEXT_TRANSFORMER_CONFLICT": 2,
       "NO_TEXT_PATH": 47,
+      "TEXT_CIRCUIT_CONFLICT": 5,
       "TEXT_LOCATION_MISMATCH": 12,
       "UNMAPPED": 27
     },
     "text_keys_without_customer": 4,
-    "validated_premise_paths": 117554
+    "validated_premise_paths": 117549
   },
   "limitations": [
     "Selected counts are not full-network impact counts.",
@@ -86,5 +87,6 @@
     "conflicting_premises": 0,
     "duplicate_rows": 0,
     "rejected_rows": []
-  }
+  },
+  "validated_text_nodes_with_multiple_parents": 60
 }
