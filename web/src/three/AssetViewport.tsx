@@ -53,10 +53,10 @@ function CameraRig({ command, onContextLost }: { command: CameraCommand; onConte
   return null;
 }
 
-class WebGLBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { failed: boolean }> {
+class WebGLBoundary extends Component<{ children: ReactNode; fallback: ReactNode; onUnavailable: () => void }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch(_error: Error, _info: ErrorInfo) { /* Keep unsupported graphics recoverable without provider details in the UI. */ }
+  componentDidCatch(_error: Error, _info: ErrorInfo) { this.props.onUnavailable(); }
   render() { return this.state.failed ? this.props.fallback : this.props.children; }
 }
 
@@ -65,13 +65,16 @@ export function AssetViewport({ status, assetId }: { status: CutoutStatus; asset
   const [lowPoly, setLowPoly] = useState(false);
   const [webgl, setWebgl] = useState(false);
   const [contextLost, setContextLost] = useState(false);
+  const [rendererFailed, setRendererFailed] = useState(false);
   const [command, setCommand] = useState<CameraCommand>({ action: 'reset', sequence: 0 });
   const reducedMotion = useReducedMotion();
-  useEffect(() => { setWebgl('WebGL2RenderingContext' in window); }, []);
+  useEffect(() => { setWebgl(typeof window.WebGL2RenderingContext === 'function'); }, []);
   // This callback is intentionally stable: camera controls keep their listeners across telemetry updates.
   const [onContextLost] = useState(() => () => setContextLost(true));
+  const [onUnavailable] = useState(() => () => setRendererFailed(true));
   const send = (action: CameraAction) => setCommand(value => ({ action, sequence: value.sequence + 1 }));
-  const useDiagram = diagram || !webgl || contextLost;
+  const graphicsUnavailable = !webgl || contextLost || rendererFailed;
+  const useDiagram = diagram || graphicsUnavailable;
   const fallback = <div className="utility-scene-fallback"><PoleDiagram status={status} /><p role="status">3D is unavailable. The equipment diagram follows the same incident state.</p></div>;
   return <section className="utility-asset-panel" aria-labelledby="utility-asset-heading">
     <div className="utility-panel-heading">
@@ -80,7 +83,7 @@ export function AssetViewport({ status, assetId }: { status: CutoutStatus; asset
     </div>
     <div className="utility-scene" data-cutout-status={status}>
       <div className={`utility-cutout-readout utility-state-${status.toLowerCase()}`} aria-live="polite"><span className="utility-status-dot" /><span>Cutout <strong>{CUTOUT_VISUAL[status].label}</strong></span>{status === 'UNKNOWN' ? <small>Position not asserted</small> : null}</div>
-      {useDiagram ? <><PoleDiagram status={status} />{!diagram && contextLost ? <p className="utility-fallback-note" role="status">Graphics context lost · showing equipment diagram</p> : null}</> : <WebGLBoundary key={assetId} fallback={fallback}>
+      {useDiagram ? <><PoleDiagram status={status} />{!diagram && (contextLost || rendererFailed) ? <p className="utility-fallback-note" role="status">{contextLost ? 'Graphics context lost' : '3D unavailable'} · showing equipment diagram</p> : null}</> : <WebGLBoundary key={assetId} fallback={fallback} onUnavailable={onUnavailable}>
         <Canvas frameloop="demand" dpr={lowPoly ? 1 : [1, 1.5]} camera={{ position: [...CAMERA_HOME.position], fov: 42 }} gl={{ antialias: !lowPoly, powerPreference: 'low-power' }} fallback={fallback} aria-label={`Orbitable illustrative model for ${assetId}; cutout ${status.toLowerCase()}`}>
           <color attach="background" args={['#172838']} />
           <ambientLight intensity={1.5} /><hemisphereLight args={['#d4e7f5', '#4b4c45', 2]} />
@@ -103,7 +106,7 @@ export function AssetViewport({ status, assetId }: { status: CutoutStatus; asset
       </div>
       <div className="utility-tool-group">
         <button type="button" aria-pressed={lowPoly} disabled={useDiagram} onClick={() => setLowPoly(value => !value)}>Low detail</button>
-        <button type="button" aria-pressed={useDiagram} onClick={() => setDiagram(value => !value)} disabled={!webgl || contextLost}>2D diagram</button>
+        <button type="button" aria-pressed={useDiagram} onClick={() => setDiagram(value => !value)} disabled={graphicsUnavailable}>2D diagram</button>
       </div>
     </div>
     <p className="utility-scene-help">{useDiagram ? 'Equipment diagram' : 'Drag to orbit · scroll to zoom · or use the camera buttons'}. No live switching controls. Geometry is illustrative.</p>

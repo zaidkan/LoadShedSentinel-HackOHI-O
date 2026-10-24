@@ -11,7 +11,7 @@ export interface UtilityPageProps { snapshot: ScenarioSnapshot }
 
 /** A read-only projection of the canonical incident. Camera/detail controls never mutate operational state. */
 export function UtilityPage({ snapshot }: UtilityPageProps) {
-  return <main className="utility-console min-h-screen w-full" aria-labelledby="utility-page-heading">
+  return <section className="utility-console min-h-screen w-full" aria-labelledby="utility-page-heading">
     <a href="#utility-evidence-heading" className="utility-skip-link">Skip model and review incident evidence</a>
     <header className="utility-topbar">
       <div className="utility-brand"><span className="utility-brand-symbol"><UtilityIcon kind="pole" /></span><span>LoadShed <strong>Sentinel</strong></span><span className="utility-console-label">Utility console</span></div>
@@ -34,7 +34,7 @@ export function UtilityPage({ snapshot }: UtilityPageProps) {
       </section>
       <footer className="utility-footer"><span>Incident data shown as supplied · no local diagnoses or dispatch</span><span>{snapshot.incident_id} / revision {snapshot.revision}</span></footer>
     </div>
-  </main>;
+  </section>;
 }
 
 export default UtilityPage;
