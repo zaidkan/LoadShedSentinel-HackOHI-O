@@ -1,5 +1,7 @@
 # LoadShed Sentinel — FINAL IMPLEMENTATION BLUEPRINT
 
+> **Superseded planning version:** Use [FINAL_LOADSHET_IMPLEMENTATION.md](FINAL_LOADSHET_IMPLEMENTATION.md) for the current blueprint, verified dataset audit, owner assignments and multi-fault restoration requirements. This file is retained as earlier planning context.
+
 **HackOHI/O 2026 × AEP AI Outage Concierge**  
 **Build goal:** one complete, 3D, cloud-architected, data-backed web application in the remaining hackathon window.  
 **Team:** four human teammates working concurrently; up to five AI coding agents/subscriptions can assist.  

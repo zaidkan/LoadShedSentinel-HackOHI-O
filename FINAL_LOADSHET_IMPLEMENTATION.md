@@ -7,6 +7,8 @@
 
 > **Read first — rubric-aligned update (Oct 24, 2026):** Keep the existing two-sided LoadShed Sentinel concept and original four-person ownership. The official AEP sponsor brief makes *customers* the primary audience; the pole/sensor and crew-triage systems are the engineering differentiator, but must **feed a complete customer journey**: customer selects an anonymized location → outage risk/confidence → changing restoration range → preparation → alert eligibility and four messages. In addition, prove the six published **HackOHI/O judging criteria** through a working demo, documented tests, and judge-visible evidence (see rubric crosswalk below). Do not pivot to a generic chatbot or add unvalidated ML merely for a rubric label.
 
+> **Data-driven implementation update (Oct 24):** This is the current canonical plan. Section 3 now records the local archive audit and prioritized grid interactions. Deliver real supply paths, affected-household simulation and multi-fault restoration playback before optional historical overlays or additional visual effects. These are implementation requirements, not completed app features.
+
 ## 0. EXECUTIVE BUILD ORDERS (PIN THIS IN TEAM CHAT)
 
 ### Exactly what you're building
@@ -224,6 +226,56 @@ flowchart TD
 - For public map, generalized/obfuscated IDs and shapes; keep operator-only technical fields on server.
 - Create deterministic fallback `DEMO-CIRCUIT-A` with 1 feeder, 3 transformers, 12 illustrative anonymous homes only if real organizer topology is insufficient or unsafe to expose; mark the fallback `modeled_topology`.
 - If full GIS is huge, generate a small **real example subnet** selected by a valid upstream path; preserve source attribution and filters.
+
+### Local archive audit — verified baseline, October 24, 2026
+
+Inspection of the checked-in `aep_challenge_hack26/data/` archives established these counts. They describe the supplied extracts, not AEP's full operating territory. GIS counts are records/segments, not necessarily unique physical sites.
+
+| Source layer | Records | Useful verified fields |
+|---|---:|---|
+| Customer | 117,642 | `premise_nu`, `aep_xfmr_l`, `circuit_id`, `kind_of_se` |
+| Transformer | 26,959 | `location_n`, `upstream_l`, phase specifications, mounting, voltage |
+| Pole | 107,013 | location, height, class, material, installation/manufacturing fields |
+| Primary lines | 62,788 | circuit, mounting, phase/conductor specifications, length fields |
+| Secondary lines | 127,403 | circuit, service usage, mounting, conductor specifications |
+| Fuse bank | 7,616 | location, upstream reference, normal position, phase specifications |
+| Recloser bank | 331 | location, type, normal position, upstream reference |
+| Switch | 900 | location, circuit, normal position; upstream reference is empty in this extract |
+| ARCOS damage | 1,659 | asset/damage class, circuit, report/repair dates, access and special equipment |
+| Hospitals / fire stations / ambulance facilities | 5 / 37 / 10 | facility geometry and attributes; electrical connectivity unverified |
+| Upstream text | 117,599 | one distinct premise key per line; ordered transformer/protection/breaker entries |
+
+**Measured key coverage:**
+
+- Customer `aep_xfmr_l` equals transformer `location_n` for **117,615 / 117,642 customer rows**; **25,303 distinct referenced location keys** match. Transformer `location_n` has 26,950 distinct values across 26,959 rows, so key existence is not proof of an unambiguous physical-asset join. Flag duplicate keys and resolve by valid circuit/phase context or abstain.
+- Upstream text has **117,599 distinct premise keys**, of which **117,595** appear in Customer `premise_nu`. **47 customer rows have no text path; 4 text keys have no customer row.** Preserve IDs as strings, including leading zeroes.
+- Ordered paths contain **2–13 equipment entries**, including transformer, fuse, hydraulic/electronic recloser, step equipment, sectionalizer and circuit breaker. A text relationship is not a measured line segment or live energized state.
+- Damage records include **704 primary, 355 pole, 280 fuse-bank, 156 secondary and 74 transformer** assessments, plus other categories. **535** assessments say access issues = Yes; special equipment is populated in **286** rows.
+- Report dates span **2022-10-01 to 2026-08-18**. Report/repair columns are DBF date-only values, unsuitable for precise hourly duration labels. Outage and incident identifier columns are all zero; `Event` is always `Default`. Do not use those fields to group independent storms.
+- Some installation dates contain `19000101` placeholders. Exclude sentinel/unknown dates from asset-age features. Service type is customer-connection context, not proof that every upstream segment is underground.
+- The customer layer contains life-support flags and precise locations. Do not export those flags, infer medical needs, or expose private household locations in the public demo. Use synthetic declared needs and generalized map positions. Public facility proximity does not establish electrical dependence or emergency availability.
+
+This is a source-data audit, not a claim that the application's import pipeline or electrical model is implemented. Reproduce these checks in `pipeline/inspect_assets.py` and keep an audit report with archive hashes, field mappings, duplicate keys, CRS and rejected matches.
+
+### Priority interactions — use the grid data throughout the product
+
+| Priority | Interaction | Build requirement | Owner |
+|---|---|---|---|
+| P0 | Select home, reveal supply path | Draw the supplied ordered equipment path with public tokens. Distinguish GIS geometry from relational links; mark gaps and ambiguous joins. | 1 graph, 3 visualization, 4 selection |
+| P0 | Click an asset, simulate failure | Use a reverse index from equipment to unique premises. Highlight affected premises from the selected fault set; a clicked pole/line without validated connectivity must remain an explicitly inferred or unsupported case. | 1 impact index, 2 scenario rules, 3 controls |
+| P0 | Restore in stages | Support simultaneous upstream and local faults. Completing one repair only restores a premise when all modeled blocking faults on its path are cleared and an explicit simulation status event authorizes restoration. | 2 scheduler, 4 orchestration, 3 playback |
+| P0 | Explain the repair range | Show workbook sheet/row, task quantity, direct effort, single 4.5 multiplier, non-overlapping access adders, crew assumptions, queue and dependencies. Separate workload from elapsed time. | 2 calculation, 4 customer explanation |
+| P1 | Compare neighboring homes | Pick two validated paths that diverge at a protective device; explain the first meaningful divergence. Nearby geometry alone cannot justify the explanation. | 1 comparison, 3/4 views |
+| P1 | Historical damage overlay | Filter by asset class, circuit and report-date range. Show counts and exposure-normalized rates only with comparable denominators and units. Label historical coverage and sample size; no calibrated outage probabilities. | 1 analytics, 3 map |
+| P1 | Household guidance follows repairs | Recompute preparation, battery planning and alert eligibility from the selected premise's remaining constraints and declared needs. | 4 |
+
+**Core impact rule:** for each selected fault, obtain its validated dependent premise set. Affected premises are the **union** of those sets, never the sum of per-fault counts. On repair completion, recompute remaining blockers for every premise. A repaired local transformer cannot restore a home behind an unresolved upstream fault. A hypothetical outage footprint must be labeled simulated; static normal switch positions are not live telemetry.
+
+**Restoration timing rule:** represent repairs as tasks with prerequisites and compatible crew resources. Under a declared schedule, a task starts after its prerequisites and crew availability permit. Household restoration follows the last required blocking repair and explicit re-energization event. Parallel task durations are not blindly added; crew allocation is not assumed infinitely divisible. Produce fast/expected/difficult schedules using declared assumptions. This does not certify alternate-feed switching or power-flow feasibility.
+
+**Damage matching rule:** retain original ARCOS class, match method and distance. `NEAR_FID` is an export-local identifier until its target layer is verified. A point near a pole does not prove which conductor or transformer failed. Confirm CRS/units before spatial matching and report ambiguous/unmatched records. If needed, demonstrate a simulated fault on a validated equipment path while showing historical damage as separate context.
+
+**Scope order:** one selected subnet and the three P0 interactions first. Preserve transformer 3D, sensing concept and both product views. Historical overlays and richer comparison controls follow the integrated vertical slice; do not attempt to render all 117k premises in the browser.
 
 ### Pre-storm outage-risk algorithm
 
@@ -561,6 +613,19 @@ export interface ScenarioSnapshot {
 }
 ```
 
+### Grid interaction contract additions — freeze with the integrator
+
+Keep the existing fixture compatible: these are additive optional fields until all owners migrate. Use an explicit version such as `grid_v2`; in that mode the following fields are required and validated together:
+
+- `selected_supply_path`: public premise token, ordered equipment tokens, relationship provenance, path completeness and ambiguity status.
+- `active_faults[]`: fault token, asset token, damage class, state (`ACTIVE` / `REPAIRING` / `CLEARED` / `UNKNOWN`), evidence references and simulated/confirmed-in-scenario provenance.
+- `premise_states[]`: token, modeled state, remaining blocking fault tokens, restoration interval and coverage limitations. Existing `affected_premise_tokens` is derived from these states, never independently edited.
+- `repair_tasks[]`: task token, fault token, prerequisite task tokens, capability requirements, allocated crew resource, planned start/end range, labor source references and completion status.
+- `impact_summary`: distinct known affected count, restored-in-scenario count, unknown coverage count and graph scope. Customer-safe views must omit other households' individual states and private locations.
+- `comparison` (optional): two premise tokens, shared upstream devices, differing branch devices, explanation and completeness caveats.
+
+Reset/advance already control playback. Add typed action bodies for `simulate_fault`, `start_repair` and `complete_repair`, with scenario revision checks; return a single updated snapshot. Replaying identical actions must not duplicate alerts. Derive customer visibility from that snapshot. Pure graph helpers `get_supply_path`, `get_dependents`, `compare_paths` and `remaining_blockers` belong to Teammate 1; scheduling belongs to Teammate 2; route/schema ownership stays with Teammate 4.
+
 ### API endpoints (must all return typed JSON)
 
 | Method | Endpoint | Caller / use | Owner |
@@ -689,7 +754,7 @@ simulate_energy(node_config, weather_scenario, event_window) -> EnergyResult
 
 ---
 
-## 10. FOUR DEMO SCENARIOS + ONE PRE-STORM WALKTHROUGH
+## 10. FIVE DEMO SCENARIOS + ONE PRE-STORM WALKTHROUGH
 
 **Every scenario has a source manifest:** official AEP GIS/topology/damage records where actually used; modeled pole telemetry; scenario-controlled work and status events. Label each clearly. Do **not** claim scenarios occurred in real AEP operations.
 
@@ -700,6 +765,18 @@ simulate_energy(node_config, weather_scenario, event_window) -> EnergyResult
 | **S2 — serious equipment condition** | sustained temp rise, sensor anomaly, reports; *later simulated crew confirms transformer damage* | first “possible equipment issue”; then “replacement confirmed” on status update | from assessor/line crew to replacement-capable crew/materials after confirmation; updated interval | estimate-updated message, prepare for changed duration |
 | **S3 — upstream feeder interruption** | broad meter losses + upstream protection event; local transformer telemetry ordinary | feeder-level issue likely; **do not** condemn local transformer | feeder investigation, no local transformer shipment | explain why multiple homes are dark; update supply-area ETR |
 | **S4 — contradictory/missing data** | cutout state missing, delayed AMI event, conflicting reported restoration | insufficient evidence; request review and source refresh | initial damage assessor; no confident crew-package or ETR claim | explicit uncertainty/fallback; no premature restored alert |
+
+### S5 — multi-fault staged restoration (required data-driven demo)
+
+Choose a validated upstream device and one downstream transformer with resolved customer joins. Select homes sharing the upstream device, including homes on a different transformer. Generate two clearly labeled scenario faults: one at the shared upstream device and one at the selected local transformer. Use distinct premise sets; do not invent a direct primary-line-to-device association.
+
+1. Select a home and reveal its real supplied path; show the 3D transformer associated with that selection.
+2. Activate both faults. Highlight the union of affected premises and show each selected home's remaining blockers.
+3. Complete the upstream repair with an explicit simulated restoration event. Homes with no remaining blocker return; homes behind the local fault stay out. Update their estimates and messages.
+4. Complete the local repair. Restore the remaining homes and append their restoration alerts exactly once.
+5. Replay in the opposite repair order: completing the local task first must leave those homes out until the upstream blocker clears.
+
+**Video change:** use S5 for the main incident sequence in section 13. Within the existing three-minute budget, show partial restoration at 1:30–1:58 and the selected customer's remaining constraint at 1:58–2:29. Replace part of the existing scenario walkthrough; do not extend the recording. S1–S4 remain regression/control cases.
 
 **Why these matter:** Judges can see actual decision-making based on changing inputs, not static “AI says 90% destroyed” theater. The same incident affects 3D, network, crew, repair and customer pages.
 
@@ -735,6 +812,16 @@ simulate_energy(node_config, weather_scenario, event_window) -> EnergyResult
 - [ ] **S10:** AEP import report shows source shapes, rows, columns, join coverage and known unmapped locations. No 25,298-join claim without check.
 - [ ] **S11:** Math ledger: correct Wh/day and no unsupported 68-day field endurance; workbook hours remain typed/units checked.
 - [ ] **S12:** Browser and backend run from clean checkout with documented one-command startup; screenshots or recorded video show complete user journey.
+
+### Data-driven feature acceptance gates (planned tests)
+
+- [ ] **G1 — Coverage and ambiguity:** reproduce audited key counts; reject ambiguous transformer matches and preserve leading-zero premise IDs. Out-of-scope/missing paths show unknown rather than an invented link.
+- [ ] **G2 — Union counting:** overlapping fault footprints count each premise once; counts come from the same graph revision as the map.
+- [ ] **G3 — Both repair orders:** upstream-first produces partial restoration; local-first leaves upstream-blocked homes out. Completing the final blocker requires an explicit simulation restoration event.
+- [ ] **G4 — Scheduling:** tasks sharing a crew cannot overlap; parallel compatible crews can overlap; prerequisites constrain start times. Crew changes update ranges without treating all work as perfectly parallel.
+- [ ] **G5 — Compare paths:** verified branch divergence explains differing scenario states; nearby but unlinked premises show incomplete evidence.
+- [ ] **G6 — Provenance:** history overlay never appears as live damage; date-only records never become fabricated hourly targets; inferred line/pole matches remain labeled.
+- [ ] **G7 — Privacy and notifications:** snapshot responses respect customer/operator visibility; partial restoration sends messages only to newly restored eligible premises; replay/reset has documented deduplication behavior.
 
 ### Engineering validation beyond superficial green tests
 
@@ -991,7 +1078,7 @@ Create Vite frontend via `npm create vite@latest web -- --template react-ts`, an
 
 | Statement | Allowed status today |
 |---|---|
-| “AEP provides distribution GIS, topology, damage and labor reference files” | **Verified repository inventory; row schemas still require local check** |
+| “AEP provides distribution GIS, topology, damage and labor reference files” | **Verified inventory and local field/key audit in section 3; app ingestion still requires implementation** |
 | “We use AEP challenge fields and graph joins to calculate risk/restoration” | **Only once the corresponding code and data imports are actually running** |
 | “Our 3D sensor readings are data collected from AEP poles” | **FALSE — modeled future node unless real feed actually available** |
 | “Our engine can recommend crew *capabilities* under scenarios” | **Feasible demo; needs real labels/field evaluation for effectiveness** |
