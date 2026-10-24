@@ -6,6 +6,7 @@ export interface CustomerSnapshotView {
   selected_premise_token: string;
   timestamp_utc: string;
   status: 'NORMAL' | 'AT_RISK' | 'OUTAGE' | 'UNDER_REVIEW' | 'RESTORED';
+  impact_source?: ScenarioSnapshot['impact_source'];
   customer_risk: {
     band: 'LOW' | 'MODERATE' | 'HIGH' | 'UNKNOWN';
     drivers: string[];
@@ -40,6 +41,7 @@ export interface ScenarioMeta {
   description: string;
   cutout_status: string;
   expected_affected: number;
+  impact_scope?: string;
   status: string;
 }
 
@@ -69,11 +71,11 @@ export async function fetchScenarios(): Promise<ScenarioMeta[]> {
   return res.json();
 }
 
-export async function selectScenario(scenarioId: string): Promise<ScenarioSnapshot> {
+export async function selectScenario(scenarioId: string, assetToken?: string): Promise<ScenarioSnapshot> {
   const res = await fetch('/api/scenario/select', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ scenario_id: scenarioId }),
+    body: JSON.stringify({ scenario_id: scenarioId, ...(assetToken ? { asset_token: assetToken } : {}) }),
   });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
   return res.json();
@@ -135,5 +137,18 @@ export async function advanceScenario(params: {
     body: JSON.stringify(params),
   });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+  return res.json();
+}
+
+export interface AEPSourceAsset {
+  asset_token: string;
+  kind: 'TRANSFORMER' | 'CIRCUIT_BREAKER';
+  dependent_premises_in_sample: number;
+  full_source_known_dependent_count: number | null;
+}
+
+export async function fetchAEPAssets(): Promise<AEPSourceAsset[]> {
+  const res = await fetch('/api/aep/assets');
+  if (!res.ok) throw new Error('AEP source data unavailable: ' + res.status);
   return res.json();
 }
