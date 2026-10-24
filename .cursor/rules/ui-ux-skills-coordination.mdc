@@ -1,0 +1,32 @@
+---
+description: Coordinates Impeccable, Apple Design, and Oxfords for UI/UX work. Apply when designing, reviewing, auditing, or polishing interfaces—not for backend-only tasks.
+globs: ["**/*.tsx", "**/*.jsx", "**/*.vue", "**/*.svelte", "**/*.swift", "**/*.css", "**/*.html"]
+alwaysApply: false
+---
+
+# UI/UX skills (this project)
+
+Use project skills only when the task is interface design, review, or polish. Do **not** load large reference trees for unrelated coding.
+
+| Skill | Path | When to use |
+| --- | --- | --- |
+| **Impeccable** | `.cursor/skills/impeccable/SKILL.md` | Primary: hierarchy, typography, spacing, motion, audits, general frontend quality. Run `impeccable context` once per UI session. |
+| **Apple Design** | `.cursor/skills/apple-design/SKILL.md` (also `.agents/skills/apple-design`) | Apple platforms (iOS, macOS, React Native, SwiftUI): HIG compliance, native patterns, accessibility. Load only the HIG pages the screen needs via `references/hig-lookup.md`. |
+| **Oxfords** | `skills/oxfords/SKILL.md` | QA pass: anti–AI-slop patterns, empty/error/loading states, responsive and a11y gaps. Run `node skills/oxfords/scripts/check.mjs <path>` on touched UI. |
+
+## Priority when guidance conflicts
+
+1. This repo’s explicit requirements and any established design system (`DESIGN.md`, tokens, brand).
+2. Accessibility, usability, and functional correctness.
+3. **Apple Design** for Apple-native or React Native surfaces (platform conventions win over generic visual taste).
+4. **Impeccable** for visual craft and layout refinement.
+5. **Oxfords** anti-patterns—apply in context; do not override intentional brand identity.
+
+Do not force Apple chrome onto ordinary web dashboards. Do not apply Oxfords palette defaults when the project already defines colors.
+
+## Discovery (lazy loading)
+
+- Read only each skill’s `SKILL.md` first; open reference files for the current surface only.
+- Impeccable references live under `.cursor/skills/impeccable/reference/`.
+- Apple HIG pages: `.agents/skills/apple-design/references/hig/` (3–6 files per review, never the whole directory).
+- Oxfords references: `skills/oxfords/references/` (one file matching build vs review vs mobile vs landing).
