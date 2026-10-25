@@ -8,8 +8,8 @@ export function SiteFooter({ disclosure, compact = false }: { disclosure?: strin
       {compact ? null : <div className="site-footer-close">
         <p className="display display-l">Restore<CornerDownRight className="hook" aria-hidden="true" />with evidence</p>
         <div className="site-footer-actions">
-          <Link to="/operator" className="btn btn--accent">Operator console<CornerDownRight aria-hidden="true" /></Link>
-          <Link to="/customer" className="btn">Customer view</Link>
+          <Link to="/customer" className="btn btn--accent">Customer view<CornerDownRight aria-hidden="true" /></Link>
+          <Link to="/operator" className="btn">Operator console</Link>
         </div>
       </div>}
       <div className="site-footer-grid">
@@ -17,8 +17,8 @@ export function SiteFooter({ disclosure, compact = false }: { disclosure?: strin
         <nav aria-label="Footer">
           <ul>
             <li><Link to="/">Overview</Link></li>
-            <li><Link to="/operator">Operator console</Link></li>
             <li><Link to="/customer">Customer view</Link></li>
+            <li><Link to="/operator">Operator console</Link></li>
             <li><a href="https://github.com/hackohio/aep_challenge_hack26" target="_blank" rel="noreferrer">AEP challenge data<span className="sr-only"> (opens in a new tab)</span></a></li>
           </ul>
         </nav>

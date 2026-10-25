@@ -6,8 +6,8 @@ import './shell.css';
 
 const NAV: Array<{ to: RoutePath; label: string }> = [
   { to: '/', label: 'Overview' },
-  { to: '/operator', label: 'Operator' },
   { to: '/customer', label: 'Customer' },
+  { to: '/operator', label: 'Operator' },
 ];
 
 export function Wordmark() {
