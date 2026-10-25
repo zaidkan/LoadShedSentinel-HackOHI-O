@@ -1,96 +1,119 @@
-# LoadShed Sentinel — three-minute, four-speaker recording script
+# LoadShed Sentinel — three-minute, four-speaker script
 
-**Locked edit:** 00:00–03:00, exactly 180 seconds. **Spoken budget:** 400 words. Read only the four quoted narration blocks. All labels, screen cues, formulas and variation notes are silent production instructions.
+Revised October 25, 2026 against `OHIO Judging Rubric.xlsx`, worksheet **Judging Rubric**, rows 5–10, the AEP Data Guide, and implementation commit `bb4482d`.
 
-Source reviewed: `e98af3e5c6ef192ab7103d0482dac557bb5d997c`, including the Person 5 remediation ledger and implementation. This is a verified edit schedule; the recording team must check the actual exported duration.
+**Spoken budget:** 403 words. Read only the four blockquotes. Counts by Person 1–4: **92 / 100 / 108 / 103**. Screen cues, tables and Q&A notes are not spoken. Rehearse and verify the exported video's actual duration. This revision changes the script only.
 
 | Speaker | Slot | Duration | Narration | Delivery window | Silent handoff / hold |
-|---|---|---:|---:|---|---|
-| Person 1 — Data & Topology | 00:00–00:40 | 40 s | 89 words | 00:00–00:38 | 00:38–00:40 |
-| Person 2 — Twin & Labor Engine | 00:40–01:25 | 45 s | 95 words | 00:40–01:23 | 01:23–01:25 |
-| Person 3 — Utility Interface & Controls | 01:25–02:15 | 50 s | 109 words | 01:25–02:13 | 02:13–02:15 |
-| Person 4 — Customer Concierge & Orchestration | 02:15–03:00 | 45 s | 107 words | 02:15–02:58 | 02:58–03:00 |
-| **Total** | **00:00–03:00** | **180 s** | **400 words** | **172 s voice** | **8 s holds** |
+| --- | --- | --- | --- | --- | --- |
+| Person 1 — Data & Topology | 00:00–00:40 | 40 s | 92 words | 00:00–00:38 | 00:38–00:40 |
+| Person 2 — Twin & Labor Engine | 00:40–01:25 | 45 s | 100 words | 00:40–01:23 | 01:23–01:25 |
+| Person 3 — Utility Interface & Controls | 01:25–02:15 | 50 s | 108 words | 01:25–02:13 | 02:13–02:15 |
+| Person 4 — Customer Concierge & Orchestration | 02:15–03:00 | 45 s | 103 words | 02:15–02:58 | 02:58–03:00 |
+| Total | 00:00–03:00 | 180 s | 403 words | 172 seconds | 8 seconds |
 
-Record each voice to its delivery window. Titles sit over existing footage; transitions fit inside the holds. No extra intro, credits or speech after 03:00.
-
-### Capture preparation
-
-Use the live website for selectors, the twin, sliders, household controls and alert plan. Use short, clearly labelled **SOURCE EVIDENCE** inserts for offline counts/allowlists, **ENGINE DEMONSTRATION — illustrative scheduler inputs** for hospital priority, and **API DEMONSTRATION** inserts for session isolation/restoration gates. Capture real outputs without inventing interface elements.
-
-Choose `confirmed_replacement`. Start at three workers and zero access hours. The 25-kVA rating is a declared workbook category, not a verified rating of the selected GIS asset. Keep **AEP source sample**, **modeled telemetry**, **scenario planning** and **demo delivery** labels readable. Facility links are ASSUMED proximity associations; map arrows indicate upstream/downstream dependency, not measured current. Physical substation connectivity remains unknown beyond circuit-breaker path termination.
-
-At this revision, the live hospital comparison is disabled even on hospital-associated assets: `engine/scenarios.py` checks `facility_type == 'hospital'`, while actual facility records use `kind == 'HOSPITAL'`. Use the real scheduler with explicitly illustrative inputs for the comparison insert: a three-person shared crew, hospital task 3 person-hours, routine task 6 person-hours, identical zero prerequisites. Do not represent that insert as a live website result. A separately corrected and verified build can substitute its real comparison card.
-
-Pre-record Scenario 4 (`insufficient_evidence`), then return to replacement for Person 3. Prepare session and gate inserts in a separate session so they do not change the main take. For persistence, use a browser with local storage available; show checked needs surviving a refresh. For retry, briefly fail only the battery request, capture its inline error, restore connectivity, press Retry and wait for a fresh result. Use synthetic household declarations.
+Use `confirmed_replacement` for the numeric demonstration. Start with three workers and zero additional access hours. Keep the same selected equipment and premise through the operator/customer handoff. Leave a short hold at each speaker change and end by 03:00.
 
 ## 00:00–00:40 — Person 1 — Data & Topology
 
-**Spoken narration**
+> A storm leaves families asking whether power will fail, how long repairs could take, and how to prepare. We examined outage maps, equipment monitoring tools and battery apps. We chose to connect repair reasoning with household decisions. LoadShed Sentinel combines electrical engineering, geographic data and accessible communication. We validated over one hundred seventeen thousand supplied upstream paths offline. This website uses sixteen anonymized premises, with dependencies traced to circuit breakers. Its map shows source relationships, not live electricity. Critical facilities have approximate spatial associations; private customer coordinates stay out of public responses.
 
-> LoadShed Sentinel connects grid context with repair planning and household preparation. We ingest A E P geographic information system data and supplied upstream paths, preserving source lineage. Offline, we validated one hundred seventeen thousand five hundred forty nine premise paths ending at circuit breakers. Our live challenge subnet contains sixteen anonymous premises. Fifty two public critical facilities cover hospitals, fire and ambulance services. Their nearest transformer links are declared spatial assumptions, not verified electrical connections. Privacy allowlists keep customer coordinates and private operator attributes out of public customer responses.
+**Screen cues**
 
-**Screen cues, not spoken**
+- **00:00–00:10:** Title, household questions, actual customer page.
+- **00:10–00:20:** Brief research comparison from `research/COMPETITOR_MATRIX.md`. Show categories examined and the chosen integration. Omit unsupported blanket claims about competitor capabilities.
+- **00:20–00:38:** Utility map and anonymous trace. Caption: **117,549 accepted paths offline; 16 premises in this demo; endpoint: circuit breaker**. Source insert: **52 public facilities: 5 hospital, 37 fire, 10 ambulance**. Facility links are assumed proximity, not verified electrical service.
+- **00:38–00:40:** Map hold and speaker change.
 
-- **00:00–00:12:** Title over Utility Console; show source/provenance labels and an anonymous premise dependency trace.
-- **00:12–00:25:** SOURCE EVIDENCE: **117,549 accepted premise paths → circuit breakers; offline pipeline**. Cut back to **selected 16-premise challenge subnet** in the live demo.
-- **00:25–00:38:** SOURCE EVIDENCE: **52 public facilities: 5 hospital, 37 fire, 10 ambulance; ASSUMED nearest-transformer associations**. Show the customer-projection allowlist summary and a sanitized customer response.
-- **00:38–00:40:** Hold the dependency trace; hand off.
-
-[UI Variation Note] Replace crops or aggregate inserts if labels move. Preserve source lineage, offline/runtime scope, assumed facility links and customer-projection privacy. Do not display raw household coordinates or private operator payloads.
+[UI Variation Note] The customer premise text field changes the trace only. Establish incident context using the equipment selector before the customer handoff; do not describe typing a premise as updating its complete forecast.
 
 ## 00:40–01:25 — Person 2 — Twin & Labor Engine
 
-**Spoken narration**
+> We asked: does an open fuse prove the transformer needs replacement? We tested local protection, upstream interruption and contradictory evidence. The system separates those explanations and withholds estimates when repair scope is unknown. Our three dimensional twin makes the evidence visible. Testing also exposed a labor units problem: a bank is not automatically one construction unit. We now require an explicit component count. For a declared twenty five kilovolt ampere replacement, workbook installation and removal hours total about two direct hours. Applying four point five once gives eight point nine seven person hours. Three workers give approximately three expected hours.
 
-> This three dimensional distribution twin shows the cutout open, closed or unknown, with modeled sensor evidence. For a declared twenty five kilovolt ampere replacement, workbook cells C twenty one and D twenty one supply installation and removal labor. Multiply their sum by four point five once: eight point nine seven person hours. This illustrative scheduler comparison shows hospital first versus unprioritized work, with shared crew constraints. These are planning assumptions, not dispatch orders. In Scenario four, contradictory evidence triggers epistemic abstention: status under review, risk unknown, no numerical restoration estimate and no confirmed outage alert.
+**Screen cues**
 
-**Screen cues, not spoken**
+- **00:40–00:53:** Short clips of local protection, upstream interruption and insufficient evidence. Show **UNDER_REVIEW**, unknown risk and unavailable restoration time in the last case.
+- **00:53–01:03:** 3D cutout and modeled evidence. Caption the actual lesson: **Bank count ≠ component count. Require explicit units.**
+- **01:03–01:23:** Return to replacement and expand assumptions. Show **(C21 + D21) × 4.5 = 8.973957 person-hours; ÷ 3 workers = 2.991319 expected hours**, from `Labor time material related`. Caption: **Declared 25-kVA component; category-average labor; associated hardware and assessment excluded.**
+- **01:23–01:25:** Calculation hold.
 
-- **00:40–00:50:** Show the distribution transformer, Inspect cutout, brief orbit and state labels. Use prepared OPEN/CLOSED/UNKNOWN cuts with modeled evidence labels.
-- **00:50–01:04:** Overlay **(C21 + D21) × 4.5 = 8.973957 ≈ 8.97 person-hours**, sheet `Labor time material related`. Show declared 25-kVA category and **8.973957 ÷ 3 = 2.991319 labor-only hours**; person-hours and elapsed hours have different units.
-- **01:04–01:13:** ENGINE DEMONSTRATION — illustrative scheduler inputs: at three workers/zero access, show **1.0 h hospital-first vs 3.0 h unprioritized**, both **3.0 h total**. Show identical prerequisites and shared crew. These task workloads are an illustrative scheduling example, separate from the workbook transformer package.
-- **01:13–01:23:** Scenario 4 insert: `insufficient_evidence` / **Contradictory Telemetry (Abstention)**. Show **UNDER_REVIEW**, **UNKNOWN** risk, unavailable restoration range and suppressed confirmed-outage notification. Do not imply a known affected count.
-- **01:23–01:25:** Hold the abstention state; cut back to replacement at Person 3's start.
-
-[UI Variation Note] The brief's requested **45-degree cutout** conflicts with this revision: `web/src/three/visual-state.ts` sets `OPEN.angle = -2.05` radians, approximately **117.5°**, and CLOSED to zero. Use the truthful state labels in narration; a 45° caption requires a separately changed and verified build. Preserve the workbook calculation and Scenario 4 abstention if panels move. Replace the illustrative scheduler insert with the real comparison card only after the facility-field mismatch above is fixed and verified; recount any narration change.
+[UI Variation Note] Use OPEN/CLOSED/UNKNOWN without promising a hinge angle. The requested **45-degree cutout** differs from this revision: `OPEN.angle = -2.05` radians, about 117.5 degrees; use a 45-degree caption only after a separately changed and verified build. Conditions are modeled and replacement is declared, not an observed AEP outage or physical sensor demonstration. Keep person-hours distinct from elapsed hours.
 
 ## 01:25–02:15 — Person 3 — Utility Interface & Controls
 
-**Spoken narration**
+> Here, changing crew size or access delay recalculates the planning range. Six workers reduce expected repair time to one and a half hours. Add two access hours, and it becomes three and a half. Lower and upper estimates keep uncertainty visible. Step restoration adds another decision: which section should return first? In this illustrated planning example, one three person crew has three person hours of hospital work and six of routine work. Hospital first restores that branch after one hour instead of three, with the same total effort. Actual switching requires verified isolation and dispatcher approval. This example explains the priority tradeoff separately from the working repair calculator.
 
-> The operator heads up display brings evidence and controls beside the asset. Our scalable vector graphics feeder circuit map shows directional flow through dependency arrows, not live electrical current. Crew size ranges from two to eight; access delay from zero to twenty four hours. Moving either slider recalculates the shared planning range. Six workers and two access hours yield about three point five expected hours here. Session identifiers isolate incident state between independent demo sessions. Rapid selections keep the latest response. Restoration is gated: a premature restored request is rejected until the modeled repair package is cleared and explicit simulated operator authorization is recorded. No field switching is authorized.
+**Screen cues**
 
-**Screen cues, not spoken**
+- **01:25–01:42:** Real crew/access sliders, bounded at **2–8** workers and **0–24 h** access: **3 workers / 0 h → 2.99 h expected; 6 / 0 → 1.50 h; 6 / 2 → 3.50 h**. Wait for requests to complete. Keep low/expected/high visible.
+- **01:42–02:08:** Cut to a slide outside application chrome, labeled **Illustrative planning example — not a live app result**. Use the comparison below.
+- **02:08–02:13:** Return to the app and open Customer Concierge with the same incident and 3.50-hour expected result.
+- **02:13–02:15:** Hold the matching range.
 
-- **01:25–01:36:** Show evidence/hypotheses in the operator HUD, then the **SVG Feeder Circuit Map** with upstream → downstream arrows and equipment glyph selection.
-- **01:36–01:51:** Replacement sliders: show **2–8** workers and **0–24 h** access bounds. Capture **3 / 0 → 2.99 h**, **6 / 0 → 1.50 h**, **6 / 2 → 3.50 h**. Wait for completed updates; keep lower/expected/upper assumptions visible.
-- **01:51–01:58:** API DEMONSTRATION: two independently initialized browser contexts, distinct **X-Session-ID** headers, different scenario states. Show the real response labels; avoid exposing session tokens. A separately captured rapid-selection take ends on the latest chosen scenario, reflecting the response-generation guard. Preserve the main replacement session at six workers/two access hours.
-- **01:58–02:13:** API DEMONSTRATION: with current incident/revision, request `status="RESTORED"` before completing blockers → **HTTP 400**. Clear valid scenario `completed_task_ids` without authorization → **HTTP 400**. Record explicit simulated authorization, then request RESTORED → accepted, cutout CLOSED. Use actual required task IDs from `SCENARIO_BLOCKERS`; label the entire sequence **simulated operator authorization**. Retain successful responses as capture evidence.
-- **02:13–02:15:** Hold the gate result; cut to the main replacement session's customer view.
+**Planning-example slide**
 
-[UI Variation Note] Adjust crops, never the slider bounds, session-header meaning or two restoration prerequisites. The API gate sequence is an evidence insert, not a fictional operator button. Use independently initialized contexts rather than assuming duplicated tabs receive new session IDs. If numeric planning output changes in a verified build, revise the spoken example and recount within the same 50-second slot.
+| Order | Hour 0–1 | Hour 1–2 | Hour 2–3 | Hospital branch restored |
+| --- | --- | --- | --- | --- |
+| Hospital first | Hospital repair | Routine repair | Routine repair | Hour 1 |
+| Routine first | Routine repair | Routine repair | Hospital repair | Hour 3 |
+
+Assumptions: one three-person crew; nine adjusted person-hours; branches independently repairable after isolation. The 3/6 person-hours are illustrative, not sourced workbook tasks; do not multiply by 4.5 again. Isolation/clearance and authorization are assumed with zero extra duration for this example. Hospital-first prioritizes assumed healthcare benefit. Routine-first could restore more premises earlier if that branch serves more customers; no verified customer counts or facility service links are asserted here.
+
+[UI Variation Note] The application's hospital comparison currently does not activate because its source-field filter mismatches the facility schema. Present this as a labeled planning slide, not a screenshot or claim of a working app panel. It is not a verified switching plan.
 
 ## 02:15–03:00 — Person 4 — Customer Concierge & Orchestration
 
-**Spoken narration**
+> The customer sees a risk band, its contributing factors, planning assumptions and the same incident estimate. Risk uses declared wind, temperature, load and equipment health inputs; it is not a calibrated probability. Household needs tailor preparation for medication, mobility and essential power. Battery capacity and appliance load change conservative backup runtime. Alert rules explain eligibility, proposed channels and escalation, with messages simulated. Our next integration connects ARCOS damage through pole and phase attributes, structure drawings and reviewed material quantities to repair scheduling. This prototype demonstrates a feasible foundation for helping households prepare and operators explain changing estimates, while keeping uncertainty and privacy visible.
 
-> The live Customer Concierge follows the same incident and authoritative revision through a sanitized projection. Household needs persist in this browser across navigation and refresh: life critical medical devices, medication refrigeration and mobility support. The battery calculator combines capacity, usable fraction and essential load, then keeps a fifteen percent runtime reserve. If calculation or guidance fails, an inline retry makes recovery visible. Our proactive alert plan shows eligibility, simulated text and push channels, and milestone updates. Escalation is explicitly a demonstration preview: it would increase notification cadence for confirmed outage or critical priority. It connects to neither emergency services nor live dispatch. Transparent planning supports practical preparation.
+**Screen cues**
 
-**Screen cues, not spoken**
+- **02:15–02:29:** Actual risk drivers, confidence, planning range and source disclosure for the same incident.
+- **02:29–02:40:** Toggle a household need and change battery capacity or load. Show real guidance/runtime updates. Guidance currently adapts to declared needs; do not claim it also responds to risk or restoration duration.
+- **02:40–02:48:** Actual eligibility, proposed channels/cadence/escalation, and demo history or its empty state. No real SMS delivery is implied.
+- **02:48–02:58:** Diagram labeled **Next integration**: **ARCOS damage → direct pole match or declared nearest-pole assumption → pole/phase attributes → representative structure → reviewed material quantities → workbook labor → dependency-aware scheduling**. Return to customer view for the final sentence.
+- **02:58–03:00:** Silent title/customer-benefit hold; end picture and audio by **03:00**.
 
-- **02:15–02:24:** Live customer page: same incident/revision and **3.50 h expected** as the main six-worker/two-access-hour replacement session. Keep confidence, assumptions and demo disclosure visible.
-- **02:24–02:35:** Check **Life-Critical Medical Device**, **Refrigerated Medicine (Insulin)** and **Mobility & Accessibility Needs**; show tailored guidance. Refresh and show the checked needs restored from browser storage. Do not imply medical power guarantees or server-side household storage.
-- **02:35–02:45:** Change battery capacity/load; show usable energy, theoretical runtime and conservative runtime with **15% reserve**. Brief prepared failed-request take shows the battery error and **Retry**, followed by a fresh successful result. Guidance has its own inline Retry.
-- **02:45–02:58:** **Alert Delivery & Eligibility Plan**: eligible recipient, simulated SMS/push, milestone cadence and server-supplied escalation policy. Keep **Simulated demonstration preview** and **not connected to live 911 or dispatchers** readable. Use actual demo history or empty state; no real alert is sent.
-- **02:58–03:00:** Silent closing frame: “Transparent planning. Practical preparation.” End picture and sound at exactly **03:00**.
+[UI Variation Note] Retain supplied uncertainty labels. Household battery runtime and sensor-node charge are separate models. Conceptual diagrams explain the intended extension; they do not represent completed integration.
 
-[UI Variation Note] Keep the actual household checkboxes, persistence proof, battery reserve, recoverable error and preview-only escalation in view when layouts change. Recut successful calculations after Retry; never present a stale value as recovered. Household storage is browser-local; incident isolation uses session storage and X-Session-ID. Household runtime and sensor-node battery telemetry are separate models.
+## Detailed rubric coverage
 
-### Word count and timecode verification
+The workbook contains six tabs, including alternate rubric-development sheets. This script uses **Judging Rubric**, rows 5–10, which have 1–5 descriptors. The final criterion is titled **Navigating challenges** in this workbook. These are evidence targets, not predicted scores.
 
-**Verified planned total: 400 spoken words; 180 seconds.** Counts by Person 1–4: **89 / 95 / 109 / 107**. Speaker durations are **40 + 45 + 50 + 45 = 180 seconds**, with contiguous boundaries at **00:40, 01:25, 02:15 and 03:00**. Delivery windows total **172 seconds**; four two-second holds total **8 seconds**. Exactly four bracketed UI variation tags accompany the four segments.
+| Criterion | What the highest descriptor rewards | Evidence in this script |
+| --- | --- | --- |
+| Innovation — B5:G5 | Research and analysis of accepted solutions, then exploration of alternatives. | Person 1 names researched categories and the chosen repair-to-household approach. Keep the actual comparison ready. |
+| Curiosity — B6:G6 | Identifying knowledge gaps and acting on a plan to explore them. | Person 2 asks whether an open fuse establishes replacement and shows contrasting cases. |
+| Communication — B7:G7 | Essential functional prototype elements plus visual explanation. | Real calculator interaction, a visible labor calculation and an explicitly illustrated priority tradeoff. |
+| Project Breadth and Complexity — B8:G8 | Synthesis across humanities, science and engineering with a useful new result. | Electrical engineering, GIS dependencies, labor planning and accessible household communication. Explain how these inform one another. |
+| Impact — B9:G9 | A detailed, justified concept with potential value that is feasible to develop. | Specific household needs, backup-runtime interaction, explainable estimates and a limited next integration. No measured benefit is asserted. |
+| Navigating challenges — B10:G10 | Reflection on failure followed by an alternative that improves the result. | Actual ambiguous-bank unit issue, explicit component-count correction and regression checks. |
 
-Count only whitespace-delimited words in the four quoted narration blocks. Numbers, units and cell references are spelled as spoken; A E P denotes three letters. Recount after any wording substitution. The accompanying private delivery verifier checks the count, timing table, segment boundaries and variation tags; run `python3 verification/verify_script.py` from the delivery staging root. It is a delivery aid, not a required application command.
+## Q&A notes
 
-Rehearse each voice against its locked window and trim pauses before changing wording. Inspect the final exported media duration and play its ending: the script verifies the planned 03:00 hard stop, while actual recording/export duration remains to be checked.
+- **What works today?** Source-sample dependency tracing, modeled fault differentiation, workbook-backed transformer component estimates, crew/access sensitivity, needs-based guidance, battery calculations and simulated notifications.
+- **What remains?** Hospital comparison integration, a complete ARCOS-to-structure work package, premise entry that updates the entire answer, and risk/duration-dependent preparation. The priority slide is illustrative.
+- **What did you learn from failure?** A bank count does not establish component construction units. The mapper now requires an explicit construction-unit count. Evidence: `pipeline/import_labor.py`, the ambiguous-bank check in `tests/test_engine.py`, and the corresponding correction in commit `3153034`.
+- **Why no estimate in protection/unknown cases?** No verified repair package has been selected, so the model leaves duration unavailable.
+- **Does doubling crew halve real repair time?** The demo assumes divisible component labor. Skill mix, equipment, access and safety constraints can prevent linear improvement.
+- **How would it scale?** Expand validated source coverage beyond the sixteen-premise runtime slice, review approximate facility links and connect work packages to actual repair dependencies. The large offline extract is not evidence of territory-wide runtime operation.
+- **Did users validate it?** No direct customer feedback or measured savings is established in the repository. Do not invent interviews, sponsor endorsement or field results.
+
+## Recording verification
+
+Verify four quoted narration blocks, contiguous 40/45/50/45-second slots, a total spoken budget near 400 words, and an exported duration at most 180 seconds. Keep the actual calculator take showing updated values. Label conceptual inserts **Illustrative planning example** and **Next integration**.
+
+Do not claim a completely green test suite. Current verification found 119 backend tests and 72 subtests passing, one Windows/POSIX permission assertion failure, a passing production build, and a Node frontend session-storage assertion failure. Those are separate checks.
+
+
+## Additional capture details retained from the parallel main-branch revision
+
+These are production/Q&A options, not additional narration or extra time beyond the three-minute edit. Substitute a prepared insert for an existing shot if needed. The prior script reviewed `e98af3e5c6ef192ab7103d0482dac557bb5d997c`; retain its evidence only where the current recording reproduces the behavior.
+
+- **Session isolation and rapid selections:** Use two independently initialized browser contexts with distinct X-Session-ID headers and different scenario states. Do not expose tokens or assume a duplicated tab creates a new session. A rapid-selection take must finish on the latest chosen scenario. Keep the main six-worker/two-access-hour take unchanged.
+- **Restoration gates:** Label an API insert **simulated operator authorization**. Using the current incident/revision, show a premature RESTORED request rejected; clear valid SCENARIO_BLOCKERS task IDs and show restoration still rejected without authorization; record explicit simulated authorization, then capture accepted restoration and CLOSED cutout. Use real responses, not a fictional operator button.
+- **Customer persistence:** Demonstrate medical, refrigerated-medication and mobility declarations surviving refresh when browser storage is available. Household storage is browser-local; incident state uses session storage and X-Session-ID. Preserve the authoritative incident/revision across operator and customer views.
+- **Battery reserve and retry:** Show the 15% conservative runtime reserve. In a prepared take, fail only a calculation request, capture its inline error, restore connectivity and press Retry. Record the fresh result. Guidance has its own retry path. Never present an old value as a recovered calculation.
+- **Abstention and escalation:** In Scenario 4 show UNDER_REVIEW, UNKNOWN risk, no numerical duration and no confirmed-outage alert. Escalation is a demonstration preview, disconnected from emergency services and live dispatch. Use actual history or its empty state.
+
+Run `python verification/verify_script.py` after narration edits to regenerate the timing metadata. It verifies the planned **03:00** endpoint and word counts; the recording team must still check exported media duration.

@@ -1,7 +1,7 @@
 {
   "passed": true,
   "total_seconds": 180,
-  "total_spoken_words": 400,
+  "total_spoken_words": 403,
   "delivery_seconds": 172,
   "silent_seconds": 8,
   "segments": [
@@ -11,9 +11,9 @@
       "start": "00:00",
       "end": "00:40",
       "duration_seconds": 40,
-      "spoken_words": 89,
+      "spoken_words": 92,
       "delivery_seconds": 38,
-      "words_per_delivery_minute": 140.53
+      "words_per_delivery_minute": 145.26
     },
     {
       "speaker": 2,
@@ -21,9 +21,9 @@
       "start": "00:40",
       "end": "01:25",
       "duration_seconds": 45,
-      "spoken_words": 95,
+      "spoken_words": 100,
       "delivery_seconds": 43,
-      "words_per_delivery_minute": 132.56
+      "words_per_delivery_minute": 139.53
     },
     {
       "speaker": 3,
@@ -31,9 +31,9 @@
       "start": "01:25",
       "end": "02:15",
       "duration_seconds": 50,
-      "spoken_words": 109,
+      "spoken_words": 108,
       "delivery_seconds": 48,
-      "words_per_delivery_minute": 136.25
+      "words_per_delivery_minute": 135.0
     },
     {
       "speaker": 4,
@@ -41,9 +41,9 @@
       "start": "02:15",
       "end": "03:00",
       "duration_seconds": 45,
-      "spoken_words": 107,
+      "spoken_words": 103,
       "delivery_seconds": 43,
-      "words_per_delivery_minute": 149.3
+      "words_per_delivery_minute": 143.72
     }
   ],
   "word_count_rule": "Whitespace-delimited words in the four quoted narration blocks only; numeric facts spelled out.",
