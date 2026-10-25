@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { ScenarioSnapshot } from '../../../contracts/types';
 import {
   fetchAEPAssets,
@@ -41,8 +41,10 @@ export function IncidentProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [connectionError, setConnectionError] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const mutationSeq = useRef(0);
 
   const retry = useCallback(async () => {
+    const seq = mutationSeq.current;
     setLoading(true);
     setConnectionError(false);
     try {
@@ -53,10 +55,12 @@ export function IncidentProvider({ children }: { children: ReactNode }) {
       ]);
       setScenarios(scenarioList);
       setAepAssets(assets);
+      if (seq !== mutationSeq.current) return;
       setSnapshot(current);
       setActiveAssetToken(current?.impact_source?.fault_asset_token || '');
       if (current?.scenario_id) setSelectedScenarioId(current.scenario_id);
     } catch (error) {
+      if (seq !== mutationSeq.current) return;
       console.error('Failed to initialize app:', error);
       setConnectionError(true);
     } finally {
@@ -67,51 +71,60 @@ export function IncidentProvider({ children }: { children: ReactNode }) {
   useEffect(() => { void retry(); }, [retry]);
 
   const chooseScenario = useCallback(async (scenarioId: string) => {
+    const seq = ++mutationSeq.current;
     setBusy(true);
     setActionError(null);
     try {
       const next = await selectScenario(scenarioId);
+      if (seq !== mutationSeq.current) return false;
       setSnapshot(next);
       setSelectedScenarioId(scenarioId);
       setActiveAssetToken(next.impact_source?.fault_asset_token || '');
       return true;
     } catch (error) {
+      if (seq !== mutationSeq.current) return false;
       console.error('Failed to select scenario:', error);
       setActionError('That scenario could not be loaded. The previous incident is still shown.');
       return false;
     } finally {
-      setBusy(false);
+      if (seq === mutationSeq.current) setBusy(false);
     }
   }, []);
 
   const chooseAsset = useCallback(async (assetToken: string) => {
+    const seq = ++mutationSeq.current;
     setBusy(true);
     setActionError(null);
     try {
       const next = await selectScenario(selectedScenarioId, assetToken);
+      if (seq !== mutationSeq.current) return;
       setSnapshot(next);
       setActiveAssetToken(next.impact_source?.fault_asset_token || '');
     } catch (error) {
+      if (seq !== mutationSeq.current) return;
       console.error('Failed to select AEP asset:', error);
       setActionError('That equipment could not be simulated. The previous incident is still shown.');
     } finally {
-      setBusy(false);
+      if (seq === mutationSeq.current) setBusy(false);
     }
   }, [selectedScenarioId]);
 
   const reset = useCallback(async () => {
+    const seq = ++mutationSeq.current;
     setBusy(true);
     setActionError(null);
     try {
       const next = await resetScenario();
+      if (seq !== mutationSeq.current) return;
       setSnapshot(next);
       if (next?.scenario_id) setSelectedScenarioId(next.scenario_id);
       setActiveAssetToken(next?.impact_source?.fault_asset_token || '');
     } catch (error) {
+      if (seq !== mutationSeq.current) return;
       console.error('Failed to reset scenario:', error);
       setActionError('Reset failed. The current incident is unchanged.');
     } finally {
-      setBusy(false);
+      if (seq === mutationSeq.current) setBusy(false);
     }
   }, []);
 

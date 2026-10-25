@@ -116,7 +116,7 @@ export function UtilityPage({ snapshot, onSnapshotChange, onSelectScenario }: Ut
         />
       </section>
       <section className="utility-review-section" aria-labelledby="utility-supply-heading">
-        <div className="utility-section-heading"><h2 id="utility-supply-heading">Supply path</h2><p>Traced dependency tree from transmission and circuit breaker to premises.</p></div>
+        <div className="utility-section-heading"><h2 id="utility-supply-heading">Supply path</h2><p>Supplied dependency paths from circuit breaker to sample premises; upstream connection beyond breaker unknown.</p></div>
         <SupplyPath snapshot={snapshot} />
       </section>
       <section className="utility-review-section" aria-labelledby="utility-feeder-heading">
