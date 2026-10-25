@@ -498,3 +498,118 @@ def preparedness_guidance(req: PreparednessRequest):
     return {
         "guidance": generate_preparedness_guidance(needs)
     }
+
+
+# Pre-fault condition screening is independent of the incident simulator. Running
+# a preventive replay never declares an outage or mutates the incident snapshot.
+PREVENTIVE_PROFILES = [
+    {"id": "normal", "label": "Healthy operating changes", "description": "Load and ambient changes without persistent deterioration."},
+    {"id": "warming", "label": "Developing thermal trend", "description": "Persistent temperature departure from a contextual baseline."},
+    {"id": "persistent_multisensor", "label": "Corroborated condition change", "description": "Persistent thermal, vibration and acoustic indications for utility review."},
+    {"id": "storm_ready", "label": "Storm preparation", "description": "Declared weather scenario increases readiness without confirming an outage."},
+    {"id": "unknown", "label": "Unavailable telemetry", "description": "Insufficient or unhealthy sensing must remain unknown."},
+]
+
+
+def _preventive_source_context(asset_token: Optional[str]) -> dict:
+    source = get_aep_impact()
+    try:
+        context = source.scenario_context("local_protection", asset_token)
+    except (UnknownAEPAsset, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {
+        "asset_token": context["current_asset_id"],
+        "provenance": "aep_challenge", "scope": "selected_subnet",
+        "dependent_premises_in_sample": len(context["local_premise_tokens"]),
+        "sample_premise_count": len(source.paths),
+        "is_observed_outage": False,
+    }
+
+
+@app.get("/api/preventive/profiles")
+def preventive_profiles():
+    return {"profiles": PREVENTIVE_PROFILES, "readings_provenance": "modeled_sensor",
+            "is_live_sensor_stream": False}
+
+
+class PreventiveRequest(BaseModel):
+    model_config = {"extra": "forbid", "allow_inf_nan": False}
+    asset_token: Optional[str] = None
+    profile_id: str = "persistent_multisensor"
+    readings: Optional[List[dict]] = None
+    as_of_utc: Optional[str] = None
+    wind_mph: Optional[float] = None
+
+
+@app.post("/api/preventive/assess")
+def preventive_assessment(req: PreventiveRequest):
+    from engine.preventive import assess_preventive, demo_profile
+
+    if req.profile_id not in {profile["id"] for profile in PREVENTIVE_PROFILES}:
+        raise HTTPException(status_code=422, detail="Unknown preventive replay profile")
+    if req.readings is not None and (not req.as_of_utc or not 1 <= len(req.readings) <= 500):
+        raise HTTPException(status_code=422, detail="Custom readings require as_of_utc and 1..500 observations")
+    if req.wind_mph is not None and not 0 <= req.wind_mph <= 200:
+        raise HTTPException(status_code=422, detail="wind_mph must be within 0..200")
+    source = _preventive_source_context(req.asset_token)
+    try:
+        inputs = demo_profile(req.profile_id, source["asset_token"], as_of_utc=req.as_of_utc)
+        inputs["dependency_context"] = {
+            "affected_count_in_sample": source["dependent_premises_in_sample"],
+            "scope": "selected_subnet", "provenance": "aep_challenge",
+        }
+        if req.readings is not None:
+            inputs["readings"] = req.readings
+            # Caller observations must not inherit weather from a demo profile.
+            inputs.pop("weather", None)
+        if req.as_of_utc is not None:
+            inputs["as_of_utc"] = req.as_of_utc
+        if req.wind_mph is not None:
+            inputs["weather"] = {"wind_mph": req.wind_mph, "provenance": "scenario"}
+        assessment = assess_preventive(inputs)
+    except (ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    priority = assessment.get("condition_priority", "UNKNOWN")
+    readiness = assessment.get("readiness", "UNKNOWN")
+    if priority == "UNKNOWN":
+        message = "Monitoring data is insufficient. Service and future outage timing cannot be inferred from this replay."
+    elif priority == "INSPECT":
+        message = "A modeled condition change warrants utility review. No outage is confirmed and a failure time is not known."
+    elif readiness == "PREPARE":
+        message = "The declared storm scenario supports reviewing household preparation. It does not establish that your power will go out."
+    else:
+        message = "Continue routine monitoring. No outage or failure time is predicted by this replay."
+    return {
+        "assessment": assessment, "source_context": source,
+        "input_series": inputs["readings"],
+        "customer_advisory": {"message": message, "outage_confirmed": False,
+                              "failure_time_utc": None, "physical_service_status": "UNKNOWN", "delivery_mode": "demo"},
+        "profile_id": req.profile_id,
+        "input_origin": "provided_readings" if req.readings is not None else "modeled_sensor_replay",
+        "disclosure": "Source-derived AEP dependencies; modeled or caller-supplied sensor readings. Thresholds are demonstration assumptions, not field-calibrated failure probabilities. No dispatch or external messages occur.",
+    }
+
+
+class ResponseComparisonRequest(BaseModel):
+    model_config = {"extra": "forbid", "allow_inf_nan": False}
+    inputs: dict
+    asset_token: Optional[str] = None
+
+
+@app.post("/api/response/compare")
+def response_comparison(req: ResponseComparisonRequest):
+    from engine.response_comparison import compare_response
+
+    source = _preventive_source_context(req.asset_token)
+    inputs = dict(req.inputs)
+    try:
+        result = compare_response(inputs)
+    except (ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {**result, "source_context": source}
+
+
+@app.get("/api/response/benchmark")
+def response_benchmark():
+    from engine.response_comparison import benchmark_response
+    return benchmark_response()

@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CustomerPage } from './pages/CustomerPage';
 import { UtilityPage } from './pages/UtilityPage';
+import { PreventivePage } from './pages/PreventivePage';
 import { fetchCurrentScenario, fetchScenarios, selectScenario, resetScenario, fetchAEPAssets, ScenarioMeta, AEPSourceAsset } from './services/api';
 import type { ScenarioSnapshot } from '../../contracts/types';
-import { Zap, Home, RefreshCw, Layers } from 'lucide-react';
+import { Zap, Home, RefreshCw, Layers, Activity } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'customer' | 'utility'>('utility');
+  const [activeTab, setActiveTab] = useState<'customer' | 'utility' | 'preventive'>('preventive');
   const [snapshot, setSnapshot] = useState<ScenarioSnapshot | null>(null);
   const [scenarios, setScenarios] = useState<ScenarioMeta[]>([]);
   const [aepAssets, setAepAssets] = useState<AEPSourceAsset[]>([]);
@@ -110,6 +111,7 @@ export const App: React.FC = () => {
 
           {/* Demonstration Scenario Selector */}
           <div className="flex min-w-0 w-full lg:w-auto flex-wrap items-center gap-2">
+            {activeTab !== 'preventive' && <>
             <div className="flex min-w-0 max-w-full items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
               <Layers className="w-3.5 h-3.5 text-blue-400" />
               <span className="text-slate-400 hidden sm:inline">Scenario:</span>
@@ -152,9 +154,18 @@ export const App: React.FC = () => {
             >
               <RefreshCw className="w-3 h-3" /> Reset
             </button>
+            </>}
 
             {/* Screen Switcher */}
             <div className="flex items-center gap-1 bg-slate-950/60 p-1 rounded-lg border border-slate-800 lg:ml-2 max-w-full flex-wrap">
+              <button
+                onClick={() => setActiveTab('preventive')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition ${
+                  activeTab === 'preventive' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Activity className="w-3.5 h-3.5" /> Prevention & Evidence
+              </button>
               <button
                 onClick={() => setActiveTab('utility')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold transition ${
@@ -182,7 +193,7 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="min-w-0 flex-1 pb-12">
-        {snapshot?.impact_source && (
+        {activeTab !== 'preventive' && snapshot?.impact_source && (
           <p className="mx-auto max-w-7xl px-4 pt-3 text-xs text-slate-400" role="status">
             AEP supplied-path sample · {snapshot.impact_source.sample_premise_count} premises ·
             {snapshot.status === 'UNDER_REVIEW' ? ' affected count unknown; ' : ` ${snapshot.affected_premise_tokens.length} simulated dependent premises; `}
@@ -204,6 +215,8 @@ export const App: React.FC = () => {
           <div className="flex items-center justify-center min-h-[400px] text-slate-500">
             Loading LoadShed Sentinel...
           </div>
+        ) : activeTab === 'preventive' ? (
+          <PreventivePage assets={aepAssets} />
         ) : activeTab === 'customer' ? (
           <CustomerPage
             key={`${snapshot.incident_id}-${snapshot.revision}-${snapshot.current_asset_id}`}

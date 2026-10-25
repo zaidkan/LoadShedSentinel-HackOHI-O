@@ -1,0 +1,62 @@
+{
+  "provenance": "modeled_sensor",
+  "disclosure": "All sensor values are invented demonstrations, not AEP sensor records or labeled failures. Public asset identifiers are supplied and verified by the caller. No future failure event is an input.",
+  "as_of_utc": "2026-10-24T22:00:00Z",
+  "profiles": {
+    "normal": {
+      "title": "Stable condition despite rising ambient temperature and load",
+      "offset_minutes": [-70, -60, -50, -40, -30, -20, -10, 0],
+      "temperature_c": [45, 46, 50, 54, 58, 62, 66, 70],
+      "ambient_c": [25, 26, 28, 30, 32, 34, 36, 38],
+      "load_pct": [50, 50, 60, 70, 80, 90, 100, 110],
+      "vibration_mm_s": [1, 1, 1.1, 1, 0.9, 1, 1.1, 1],
+      "acoustic_anomaly": [false, false, false, false, false, false, false, false],
+      "sensor_health": ["OK", "OK", "OK", "OK", "OK", "OK", "OK", "OK"],
+      "wind_mph": 10
+    },
+    "warming": {
+      "title": "Increasing residual temperature with quiet mechanical indicators",
+      "offset_minutes": [-70, -60, -50, -40, -30, -20, -10, 0],
+      "temperature_c": [45, 45, 46, 48, 50, 51, 54, 57],
+      "ambient_c": [25, 25, 25, 25, 25, 25, 25, 25],
+      "load_pct": [50, 50, 50, 50, 50, 50, 50, 50],
+      "vibration_mm_s": [1, 1, 1, 1.1, 1, 1.1, 1, 1],
+      "acoustic_anomaly": [false, false, false, false, false, false, false, false],
+      "sensor_health": ["OK", "OK", "OK", "OK", "OK", "OK", "OK", "OK"],
+      "wind_mph": 10
+    },
+    "persistent_multisensor": {
+      "title": "Persistent residual heating with vibration and acoustic changes",
+      "offset_minutes": [-70, -60, -50, -40, -30, -20, -10, 0],
+      "temperature_c": [45, 45, 47, 50, 54, 57, 60, 62],
+      "ambient_c": [25, 25, 25, 25, 25, 25, 25, 25],
+      "load_pct": [50, 50, 50, 50, 50, 50, 50, 50],
+      "vibration_mm_s": [1, 1, 1.1, 1.4, 1.7, 2, 2.2, 2.4],
+      "acoustic_anomaly": [false, false, false, false, true, true, true, true],
+      "sensor_health": ["OK", "OK", "OK", "OK", "OK", "OK", "OK", "OK"],
+      "wind_mph": 10
+    },
+    "storm_ready": {
+      "title": "Stable condition with an elevated declared wind scenario",
+      "offset_minutes": [-70, -60, -50, -40, -30, -20, -10, 0],
+      "temperature_c": [45, 45, 45, 45, 45, 45, 45, 45],
+      "ambient_c": [25, 25, 25, 25, 25, 25, 25, 25],
+      "load_pct": [50, 50, 50, 50, 50, 50, 50, 50],
+      "vibration_mm_s": [1, 1, 1, 1, 1, 1, 1, 1],
+      "acoustic_anomaly": [false, false, false, false, false, false, false, false],
+      "sensor_health": ["OK", "OK", "OK", "OK", "OK", "OK", "OK", "OK"],
+      "wind_mph": 50
+    },
+    "unknown": {
+      "title": "Unhealthy sensors cannot establish condition",
+      "offset_minutes": [-70, -60, -50, -40, -30, -20, -10, 0],
+      "temperature_c": [45, 45, 45, 45, 45, 45, 45, 45],
+      "ambient_c": [25, 25, 25, 25, 25, 25, 25, 25],
+      "load_pct": [50, 50, 50, 50, 50, 50, 50, 50],
+      "vibration_mm_s": [1, 1, 1, 1, 1, 1, 1, 1],
+      "acoustic_anomaly": [false, false, false, false, false, false, false, false],
+      "sensor_health": ["OK", "OK", "DEGRADED", "DEGRADED", "DEGRADED", "OFFLINE", "OFFLINE", "OFFLINE"],
+      "wind_mph": 50
+    }
+  }
+}

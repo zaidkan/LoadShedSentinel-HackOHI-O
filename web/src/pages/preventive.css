@@ -1,0 +1,53 @@
+.preventive-page { max-width: 1240px; margin: 0 auto; padding: 28px 20px; color: #cbd5e1; }
+.preventive-intro, .preventive-section-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+.preventive-intro { margin-bottom: 24px; }
+.preventive-page h1 { font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 750; color: #f8fafc; margin: 4px 0 10px; line-height: 1.18; }
+.preventive-page h2 { font-size: 1.25rem; font-weight: 700; color: #f1f5f9; margin: 4px 0 12px; }
+.preventive-page h3 { font-weight: 700; color: #f1f5f9; margin: 8px 0; }
+.preventive-page p { line-height: 1.65; margin-bottom: 12px; }
+.preventive-eyebrow { color: #75d7c5; font-size: .7rem; letter-spacing: .13em; font-weight: 750; margin-bottom: 4px !important; }
+.preventive-badge { border: 1px solid #36586a; border-radius: 8px; padding: 7px 11px; color: #a3ded9; background: #0d2633; font-size: .75rem; }
+.preventive-card { margin-bottom: 22px; border: 1px solid #2b3c52; background: #101b2d; border-radius: 14px; padding: 24px; min-width: 0; }
+.preventive-controls { display: flex; flex-wrap: wrap; gap: 12px; }
+.preventive-page label { display: flex; flex-direction: column; gap: 7px; font-size: .8rem; color: #abbacf; min-width: 0; }
+.preventive-page select, .preventive-page input { min-height: 44px; border: 1px solid #394c64; border-radius: 7px; padding: 9px 11px; background: #091322; color: #eff6ff; max-width: 100%; min-width: 0; font-size: .86rem; }
+.preventive-page select:focus-visible, .preventive-page input:focus-visible, .preventive-page summary:focus-visible, .preventive-page a:focus-visible { outline: 2px solid #70daca; outline-offset: 3px; }
+.preventive-controls select { max-width: 320px; }
+.preventive-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 22px 0; }
+.preventive-metrics > div { border: 1px solid #2d455b; border-radius: 9px; padding: 15px; background: #0a1524; min-width: 0; }
+.preventive-metrics span { display: block; font-size: .75rem; color: #94a6bd; }
+.preventive-metrics strong { display: block; font-size: clamp(1rem, 2vw, 1.45rem); font-weight: 700; color: #b5f2df; margin-top: 6px; text-transform: capitalize; overflow-wrap: anywhere; }
+.preventive-metrics small { display: block; color: #8ca2ba; margin-top: 7px; font-size: .7rem; }
+.preventive-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; }
+.preventive-trend { border: 1px solid #2b4058; background: #091624; border-radius: 9px; padding: 15px; }
+.preventive-trend figcaption { font-size: .9rem; font-weight: 650; color: #deebf8; margin-bottom: 6px; }
+.preventive-trend svg { width: 100%; height: auto; }
+.preventive-trend svg text { fill: #a4b9cf; font-size: 12px; }
+.preventive-trend p, .preventive-note { font-size: .77rem; color: #92a8bf; }
+.preventive-indicators { margin: 14px 0; }
+.preventive-indicators li { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 8px 0; border-bottom: 1px solid #273b50; font-size: .78rem; }
+.preventive-indicators b { color: #abd9d1; font-weight: 600; }
+.preventive-actions { border-left: 2px solid #365a6a; padding-left: 22px; }
+.preventive-actions ul, .preventive-page details ul { list-style: disc; padding-left: 20px; line-height: 1.7; font-size: .85rem; }
+.preventive-actions p { font-size: .87rem; }
+.preventive-page details { border-top: 1px solid #2b4058; padding-top: 12px; margin-top: 14px; font-size: .85rem; }
+.preventive-page summary { cursor: pointer; color: #99ceee; padding: 8px 0; }
+.preventive-assumptions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+.preventive-assumptions fieldset { border: 1px solid #30475e; border-radius: 9px; padding: 16px; grid-column: span 1; display: grid; gap: 13px; min-width: 0; }
+.preventive-assumptions fieldset:first-of-type { grid-column: 1 / 2; }
+.preventive-assumptions fieldset:last-of-type { grid-column: 2 / 4; }
+.preventive-assumptions legend { color: #e1edf9; padding: 0 7px; font-weight: 650; }
+.preventive-assumptions fieldset p { font-size: .75rem; color: #8fa7bf; }
+.preventive-evidence a, .preventive-page details a { color: #8ecbef; text-decoration: underline; text-underline-offset: 3px; }
+.preventive-error { color: #f7bd9d; background: #361e1c; padding: 12px; border-radius: 7px; overflow-wrap: anywhere; }
+@media (max-width: 720px) {
+  .preventive-page { padding: 20px 12px; }
+  .preventive-card { padding: 18px 14px; }
+  .preventive-grid { grid-template-columns: 1fr; }
+  .preventive-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .preventive-controls, .preventive-controls label { width: 100%; }
+  .preventive-controls select { width: 100%; max-width: none; }
+  .preventive-assumptions { grid-template-columns: 1fr; }
+  .preventive-assumptions fieldset:first-of-type, .preventive-assumptions fieldset:last-of-type { grid-column: auto; }
+  .preventive-actions { padding-left: 14px; }
+}
