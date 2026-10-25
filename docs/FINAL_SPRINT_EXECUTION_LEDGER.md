@@ -33,3 +33,10 @@
   - Lane W1 (Aj): `LRP-140` Independent Person 5 overnight recheck & regression audit.
   - Lane W3 (Bob): `LRP-141` Operator dashboard information & UX redesign.
   - Lane W4 (Zk): `LRP-142` Customer dashboard information & UX redesign (including A3 async abort guard).
+- `2026-10-25T00:24:04-04:00`: Integrated Hb's `LRP-139` patch on `main` (commit `36d4e6c`):
+  - A1: Staged session mutation and atomic commit on advance (no state poisoning on 400).
+  - A2: Fixed hospital priority comparison join (`kind.upper() == 'HOSPITAL'`).
+  - A4: Serialized same-session mutations with `asyncio.Lock()`.
+  - A5: Enforced CLOSED cutout requirement on RESTORED status.
+  - A6: True LRU cache eviction enforcing 50 session cap.
+  - Verification: 136/136 Python tests pass exit 0 (16 new regression tests); Vite build clean in 3.83s; Frontend tests 4/4 pass exit 0.
