@@ -24,7 +24,7 @@ export function SentinelPreviewPage() {
       <header className="sp-topbar">
         <span className="sp-brand">LoadShed <strong>Sentinel</strong></span>
         <span className="sp-badge">Model preview · hero mode</span>
-        <a className="sp-back" href="#">Back to console</a>
+        <a className="sp-back" href="#/operator">Back to console</a>
       </header>
       <div className="sp-copy">
         <p className="sp-eyebrow">Grid-edge sensing concept</p>

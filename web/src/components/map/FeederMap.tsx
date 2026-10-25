@@ -152,12 +152,12 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
   const inspect = (token: string) => { setInspected(token); setHovered(null); };
   return <section className="utility-feeder utility-panel" aria-labelledby={`${uid}-heading`}>
     <div className="utility-panel-heading"><div><h3 id={`${uid}-heading`}>Feeder circuit map</h3><p>Selected sample · supplied upstream relationships</p></div><span className="utility-badge utility-badge-neutral">Topology only</span></div>
-    <div className="utility-feeder-body" ref={host}>
-      {loadFailed ? <div className="utility-feeder-empty" role="alert"><p>Feeder context could not be loaded. The incident assessment above remains available.</p>{topology === undefined ? <button type="button" onClick={() => setAttempt(value => value + 1)}>Retry topology</button> : <p>Supply a valid GeoJSON FeatureCollection.</p>}</div>
-        : !parsed ? <div className="utility-feeder-empty" role="status"><p>Loading feeder context…</p><p>Fetching sanitized equipment locations and dependencies.</p></div>
-        : !parsed.nodes.length && !parsed.links.length ? <div className="utility-feeder-empty" role="status"><p>No equipment geometry supplied.</p><p>Use the incident evidence above; this map cannot locate the asset. Topology status: {parsed.status}.</p></div>
+    <div className="feeder-body" ref={host}>
+      {loadFailed ? <div className="feeder-empty" role="alert"><p>Feeder context could not be loaded. The incident assessment above remains available.</p>{topology === undefined ? <button type="button" onClick={() => setAttempt(value => value + 1)}>Retry topology</button> : <p>Supply a valid GeoJSON FeatureCollection.</p>}</div>
+        : !parsed ? <div className="feeder-empty" role="status"><p>Loading feeder context…</p><p>Fetching sanitized equipment locations and dependencies.</p></div>
+        : !parsed.nodes.length && !parsed.links.length ? <div className="feeder-empty" role="status"><p>No equipment geometry supplied.</p><p>Use the incident evidence above; this map cannot locate the asset. Topology status: {parsed.status}.</p></div>
         : <>
-          <svg viewBox={`0 0 ${width} 300`} className="utility-feeder-svg" role="group" aria-labelledby={`${uid}-title ${uid}-description`}>
+          <svg viewBox={`0 0 ${width} 300`} className="feeder-svg" role="group" aria-labelledby={`${uid}-title ${uid}-description`}>
             <title id={`${uid}-title`}>Feeder network topology</title><desc id={`${uid}-description`}>Arrows show supplied upstream to downstream relationships, not measured power flow. Focus or select equipment to inspect it. Only the current asset has a supplied cutout state.</desc>
             <defs><marker id={`${uid}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5 0 10Z" fill="currentColor" /></marker></defs>
             {parsed.links.map((link, index) => {
@@ -168,7 +168,7 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
                 const length = Math.hypot(end[0] - before[0], end[1] - before[1]);
                 if (length > 25) positions[positions.length - 1] = [end[0] - (end[0] - before[0]) * 25 / length, end[1] - (end[1] - before[1]) * 25 / length];
               }
-              return <polyline key={index} className={`utility-feeder-link${link.directed ? '' : ' utility-feeder-link-unknown'}`} points={positions.map(p => p.join(',')).join(' ')} markerEnd={link.directed ? `url(#${uid}-arrow)` : undefined}><title>{link.directed ? `${link.upstream} supplies ${link.downstream} · topology only` : 'Link direction unavailable'}</title></polyline>;
+              return <polyline key={index} className={`feeder-link${link.directed ? '' : ' feeder-link--unknown'}`} points={positions.map(p => p.join(',')).join(' ')} markerEnd={link.directed ? `url(#${uid}-arrow)` : undefined}><title>{link.directed ? `${link.upstream} supplies ${link.downstream} · topology only` : 'Link direction unavailable'}</title></polyline>;
             })}
             {parsed.nodes.map(node => {
               const base = project!(node.position);
@@ -178,23 +178,23 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
               const selected = node.token === snapshot.current_asset_id;
               const description = `${node.token} · ${node.label} · ${selected ? CUTOUT_TEXT[snapshot.cutout_status] : 'Energization not supplied'}`;
               return <g key={node.token} transform={`translate(${x} ${y})`} role="button" tabIndex={0} aria-label={description} aria-pressed={active?.token === node.token}
-                className={`utility-feeder-node${selected ? ` utility-feeder-current utility-feeder-${snapshot.cutout_status.toLowerCase()}` : ''}`}
+                className="feeder-node" data-current={selected || undefined} data-state={selected ? snapshot.cutout_status.toLowerCase() : undefined}
                 onMouseEnter={() => setHovered(node.token)} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(node.token)} onBlur={() => setHovered(null)}
                 onClick={() => inspect(node.token)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); inspect(node.token); } }}>
-                <title>{description}</title><circle className="utility-feeder-hit" r="22" />{selected ? <circle className="utility-feeder-selection" r="18" /> : null}<g className="utility-feeder-symbol"><NodeSymbol kind={node.kind} /></g>
+                <title>{description}</title><circle className="feeder-hit" r="22" />{selected ? <circle className="feeder-selection" r="18" /> : null}<g className="feeder-symbol"><NodeSymbol kind={node.kind} /></g>
                 <text y="37" textAnchor="middle">{selected ? 'Current asset' : node.kind === 'other' ? 'Equipment' : node.kind.charAt(0).toUpperCase() + node.kind.slice(1)}</text>
               </g>;
             })}
           </svg>
-          <div className="utility-feeder-inspector">
+          <div className="feeder-inspector">
             <label htmlFor={`${uid}-inspect`}>Inspect equipment</label>
-            <select id={`${uid}-inspect`} value={active?.token || ''} onChange={event => inspect(event.target.value)}>{parsed.nodes.map(node => <option key={node.token} value={node.token}>{node.token} · {node.label}</option>)}</select>
+            <select className="select" id={`${uid}-inspect`} value={active?.token || ''} onChange={event => inspect(event.target.value)}>{parsed.nodes.map(node => <option key={node.token} value={node.token}>{node.token} · {node.label}</option>)}</select>
             <p role="status" aria-live="polite">{active ? <><strong>{active.label}</strong><span>{active.token === snapshot.current_asset_id ? CUTOUT_TEXT[snapshot.cutout_status] : 'Energization not supplied for this equipment.'}</span></> : 'No equipment points supplied.'}</p>
           </div>
         </>}
     </div>
-    {parsed ? <div className="utility-feeder-notes">
-      <p className="utility-feeder-legend"><span>Arrow: upstream → downstream</span><span>Outline: current asset</span><span>Other equipment: state not supplied</span></p>
+    {parsed ? <div className="feeder-notes">
+      <p className="feeder-legend"><span>Arrow: upstream → downstream</span><span>Outline: current asset</span><span>Other equipment: state not supplied</span></p>
       {!current ? <p role="status">Current asset {snapshot.current_asset_id} is not located in this topology slice.</p> : null}
       <details><summary>Geometry coverage & source</summary>
         {parsed.missing.length ? <p>Missing equipment geometry: {parsed.missing.join(', ')}.</p> : null}

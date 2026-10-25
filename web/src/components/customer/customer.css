@@ -6,6 +6,7 @@
   max-width: var(--page-max);
   margin: 0 auto;
   padding: var(--space-8) var(--gutter) var(--space-9);
+  background: var(--paper);
   color: var(--customer-copy);
   font-family: var(--font-body);
   font-size: var(--text-body);

@@ -173,7 +173,8 @@ await check('a rejected lazy scene renders the 2D diagram, disables 3D controls,
 });
 
 await check('all four hash routes render through the real lazy App/Root and history listeners', async () => {
-  const window = { ...events(), location: { hash: '#/operator', pathname: '/' }, scrollTo: noop };
+  const window = { ...events(), location: { hash: '#/operator', pathname: '/' }, scrollTo: noop,
+    history: { state: null, replaceState(state) { this.state = state; } } };
   const document = { getElementById: () => ({}), title: '' };
   let rootElement, releasePages;
   const gate = new Promise(resolve => { releasePages = resolve; });
