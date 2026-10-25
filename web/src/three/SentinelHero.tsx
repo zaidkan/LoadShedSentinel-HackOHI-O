@@ -1,8 +1,9 @@
-import { forwardRef, lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { forwardRef, lazy, Suspense, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { webglAvailable } from './sentinel/hooks';
 import type { SentinelFocus } from './sentinel/catalog';
 import type { SubjectOffset } from './sentinel/CameraDirector';
 import type { SentinelSceneHandle } from './sentinel/SentinelScene';
+import './sentinel-hero.css';
 
 const SentinelScene = lazy(() => import('./sentinel/SentinelScene'));
 
@@ -45,8 +46,10 @@ export const SentinelHero = forwardRef<SentinelSceneHandle, SentinelHeroProps>(f
     return () => observer.disconnect();
   }, []);
   const unavailable = !supported || failed;
+  const subject = subjectOffset ?? offset;
+  const fallbackPosition = { '--subject-x': subject.x, '--subject-y': subject.y } as CSSProperties;
   return <div ref={container} className={['sentinel-hero', className].filter(Boolean).join(' ')}>
-    {unavailable ? <div className="sentinel-hero-fallback"><p role="status">The interactive 3D view is unavailable on this device.</p></div> :
+    {unavailable ? <div className="sentinel-hero-fallback" style={fallbackPosition}><p role="status">The interactive 3D view is unavailable on this device.</p></div> :
       <Suspense fallback={null}>
         <SentinelScene
           ref={ref}
@@ -55,7 +58,7 @@ export const SentinelHero = forwardRef<SentinelSceneHandle, SentinelHeroProps>(f
           onFocusChange={onFocusChange}
           intro={intro}
           hotspots={hotspots}
-          subjectOffset={subjectOffset ?? offset}
+          subjectOffset={subject}
           label="Illustrative 3D model of a utility pole with a distribution transformer, protective cutout, solar module and the Sentinel sensing node"
           onUnavailable={() => setFailed(true)}
           onIntroComplete={onIntroComplete}
