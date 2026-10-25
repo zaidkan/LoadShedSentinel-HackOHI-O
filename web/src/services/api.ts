@@ -68,13 +68,30 @@ export interface PreparednessGuidance {
   detail: string;
 }
 
+let _memorySessionId: string | null = null;
+
 export function getSessionId(): string {
-  let sid = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('loadshed_session_id') : null;
+  let sid: string | null = null;
+  if (typeof sessionStorage !== 'undefined') {
+    try {
+      sid = sessionStorage.getItem('loadshed_session_id');
+    } catch {
+      sid = null;
+    }
+  }
+  if (!sid) {
+    sid = _memorySessionId;
+  }
   if (!sid) {
     sid = 'sess_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('loadshed_session_id', sid);
+      try {
+        sessionStorage.setItem('loadshed_session_id', sid);
+      } catch {
+        // quota or security error fallback to memory
+      }
     }
+    _memorySessionId = sid;
   }
   return sid;
 }
