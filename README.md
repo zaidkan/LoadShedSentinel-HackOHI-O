@@ -47,6 +47,17 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
 
 ## 📋 HackOHI/O Judging & Documentation Package
 
+**Submission:** HackOHI/O 2026 AEP track projects MUST be submitted through the
+**official Google Form distributed via the hackathon Discord** by **October 25,
+2026, 10:00 a.m. EDT**. Devpost entries are not considered. Include a video of
+**at most 3 minutes**, the project description and repository/documentation links;
+verify access and save the form receipt. Judges watch the prerecorded video in
+the assigned Zoom session, then hold Q&A. Disclose prior work and identify event
+contributions. See the [official submission requirements](https://hackohio2026.devpost.com/),
+[prior-work rules](https://hackohio2026.devpost.com/rules) and
+[launch checklist](docs/LAUNCH_CHECKLIST.md). The form link must come from Discord;
+repository completion alone does not establish submission.
+
 All six HackOHI/O judging criteria are rigorously crosswalked to verifiable CLI commands, code files, and test results:
 
 - 📊 **[Judge Evidence Crosswalk](docs/judge_evidence.md)**: Tabular matrix proving Innovation, Curiosity, Communication, Breadth & Complexity, Impact, and Growth Mindset.
@@ -113,6 +124,64 @@ curl 'http://localhost:8000/api/topology/lookup?premise_id=PREM-000001'
 # 4. Calculate home battery runtime
 curl -X POST http://localhost:8000/api/customer/battery-runtime -H "Content-Type: application/json" -d '{"capacity_wh":1000,"usable_fraction":0.85,"device_w":120,"inverter_efficiency":0.85,"reserve_margin_pct":0.15}'
 ```
+
+---
+
+## Critical facilities and outage-risk assumptions
+
+The public sample now links **52 source facility records** (5 hospital, 37 fire,
+10 ambulance) to the nearest geolocated transformer **within the selected slice**.
+Facility points are reprojected from the supplied EPSG:3857 horizontal coordinates
+to WGS84 (EPSG:4326); NAVD88 elevation is not used for horizontal proximity.
+Equipment geometry in this public sample is already generalized to 0.02 degrees.
+Ties use the asset token. Anonymous source-record tokens, facility type, rounded
+kilometre distance and the association basis are saved; names, addresses, source
+IDs and facility coordinates are omitted. Records are not deduplicated sites.
+
+These are **assumed spatial links**, including distant matches, with no distance
+cutoff. They do not prove which equipment actually serves a facility. Each anchor
+and its upstream equipment receive `critical_facilities` and
+`critical_facility_count` tags using the union of supplied paths through that
+anchor. Alternate paths remain ambiguous; live switching or electrical flow is
+not inferred. `source_impact.critical_facility_impact` exposes this separate,
+anonymous dependency assumption for planning. It does not add facility records
+to the 16-premise count or establish observed facility outages.
+
+Rebuild the public associations with the supplied archives present:
+
+```bash
+python -m pipeline.link_facilities
+# Optional full private graph: source equipment geometry, same association rule.
+python -m pipeline.build_graph --output-dir data/processed
+```
+
+The private graph still contains raw technical identifiers and must not be served.
+Rebuilding it also tags critical facilities; old graphs without associations report
+critical facility coverage as `UNKNOWN`.
+
+`engine.outage_risk.calculate_outage_risk` takes `wind_kph`,
+`ambient_temperature_c`, `transformer_load_factor` (relative to rating) and
+`health_index` (0 worst, 100 healthy). All are **declared scenario inputs** in the
+current demo. Each contributes 0, 1 or 2 points:
+
+| Factor | 1 point | 2 points |
+|---|---|---|
+| Wind | >=35 km/h | >=65 km/h |
+| Ambient temperature | <=0 or >=35 C | <=-15 or >=40 C |
+| Transformer load factor | >=0.85 | >=1.10 |
+| Health index | <=70 | <=40 |
+
+Each factor uses its highest matching level; sum 0–2 is LOW, 3–5 MODERATE,
+6–8 HIGH. Drivers expose each value, contribution and total. Missing, invalid or
+conflicting inputs return UNKNOWN. Thresholds are prototype design assumptions,
+not calibrated probabilities, utility limits or a utility forecast. A confirmed
+incident does not force a HIGH contextual band. This rule is separate from
+preventive condition priority and restoration readiness.
+
+Scenario generation accepts a complete `risk_inputs` context override; no API
+request control for those inputs is added here. Defaults explicitly declare wind
+70 km/h, ambient 35 C, load 0.95 and health 80 (MODERATE); the replacement scenario
+declares load 1.15 and health 35 (HIGH). Conflicting evidence withholds the band.
 
 ---
 

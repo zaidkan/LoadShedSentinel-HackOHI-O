@@ -20,14 +20,23 @@ LAYERS = {
     "Recloser_Bank_Clip": ("Data2.zip", "recloser"),
     "Switch_Clip": ("Data2.zip", "switch"),
 }
+FACILITY_WKT = 'PROJCS["WGS_1984_Web_Mercator_Auxiliary_Sphere",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.017453292519943295]],PROJECTION["Mercator_Auxiliary_Sphere"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",0.0],PARAMETER["Standard_Parallel_1",0.0],PARAMETER["Auxiliary_Sphere_Type",0.0],UNIT["Meter",1.0]],VERTCS["NAVD_1988",VDATUM["North_American_Vertical_Datum_1988"],PARAMETER["Vertical_Shift",0.0],PARAMETER["Direction",1.0],UNIT["Meter",1.0]]'
+FACILITY_LAYERS = {"Hospitals_Medic_Pairwis_Clip": "HOSPITAL",
+                   "Fire_Stations_E_Pairwis_Clip": "FIRE",
+                   "Ambulance_Servi_Pairwis_Clip": "AMBULANCE"}
 CUSTOMER_FIELDS = {"premise_nu", "aep_xfmr_l", "circuit_id"}
 ASSET_FIELDS = {"id", "location_n", "circuit_id", "aep_statio", "upstream_l",
                 "eo_source_", "device_typ"}
 
 
 def point_records(stream, crs_wkt):
-    """Only supplied WGS84 point layers are supported; unknown CRS fails closed."""
-    if not crs_wkt.startswith('GEOGCS["GCS_WGS_1984"'):
+    """WGS84 points or the exact supplied facility Web Mercator CRS.
+
+    Reproject horizontal EPSG:3857 metres to EPSG:4326; ignore NAVD88 height
+    because only horizontal proximity is used. Unknown projections fail closed.
+    """
+    projected = crs_wkt == FACILITY_WKT
+    if not projected and not crs_wkt.startswith('GEOGCS["GCS_WGS_1984"'):
         raise ValueError("Unsupported CRS: geographic WGS84 required; no implicit projection")
     header = stream.read(100)
     if len(header) != 100 or struct.unpack_from(">i", header)[0] != 9994:
@@ -52,6 +61,10 @@ def point_records(stream, crs_wkt):
             point = None
         elif kind in (1, 11, 21) and len(record) >= 20:
             x, y = struct.unpack_from("<dd", record, 4)
+            if projected:
+                if not (math.isfinite(x) and math.isfinite(y) and abs(x) <= math.pi * 6378137 and abs(y) <= math.pi * 6378137):
+                    raise ValueError("Invalid Web Mercator point")
+                x, y = math.degrees(x / 6378137), math.degrees(math.atan(math.sinh(y / 6378137)))
             if not (math.isfinite(x) and math.isfinite(y) and -180 <= x <= 180 and -90 <= y <= 90):
                 raise ValueError("Invalid WGS84 point")
             point = [x, y]
@@ -59,6 +72,30 @@ def point_records(stream, crs_wkt):
             raise ValueError("Unsupported point record")
         yield index, point
         index += 1
+
+
+def load_critical_facilities(data_dir=DEFAULT_DATA):
+    """Read all supplied facility records without importing names/addresses/IDs.
+
+    Returned WGS84 geometry is private working data; publish only associations.
+    Tokens identify source records, not deduplicated physical facilities.
+    """
+    facilities = []
+    with zipfile.ZipFile(source_archives(data_dir)[0]) as archive:
+        for layer, kind in FACILITY_LAYERS.items():
+            crs = archive.read(layer + ".prj").decode("utf8")
+            if crs != FACILITY_WKT:
+                raise ValueError("Unexpected facility CRS")
+            with archive.open(layer + ".dbf") as stream:
+                indices = [index for index, _ in dbf_records(stream, columns=set())]
+            with archive.open(layer + ".shp") as stream:
+                points = dict(point_records(stream, crs))
+            for index in indices:
+                if index not in points or points[index] is None:
+                    raise ValueError("Missing critical facility geometry")
+                facilities.append({"facility_token": f"CF-{kind}-{index + 1:03d}", "kind": kind,
+                                   "point": points[index], "source_crs": "EPSG:3857 + NAVD88"})
+    return facilities
 
 
 def load_gis(data_dir=DEFAULT_DATA):

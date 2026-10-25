@@ -32,6 +32,13 @@ export interface CustomerSnapshotView {
     value: string | number | boolean | null;
     unit?: string;
   }>;
+  alert_plan?: {
+    eligible: boolean;
+    recipient_role: string;
+    channels: string[];
+    cadence_policy: string;
+    suppression_reason: string | null;
+  };
   disclosure: string;
 }
 
@@ -127,6 +134,10 @@ export async function resetScenario(): Promise<ScenarioSnapshot> {
 }
 
 export async function advanceScenario(params: {
+  incident_id?: string;
+  expected_revision?: number;
+  crew_size?: number;
+  access_hours?: number;
   status?: string;
   cutout_status?: string;
   restoration_summary?: string;

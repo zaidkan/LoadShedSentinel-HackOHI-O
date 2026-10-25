@@ -82,6 +82,10 @@ export interface ScenarioSnapshot {
   hypotheses: Hypothesis[];
   crew_recommendation: CrewPackage;
   restoration: Restoration;
+  planning_inputs?: {
+    crew_size: number;
+    access_hours: number;
+  };
   solar: SolarNode;
   affected_premise_tokens: string[];
   impact_source?: {

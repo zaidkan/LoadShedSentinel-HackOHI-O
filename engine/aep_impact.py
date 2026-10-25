@@ -10,6 +10,8 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+from engine.topology import tag_critical_facilities
+
 BUNDLE_PATH = Path(__file__).resolve().parent.parent / "data" / "processed" / "network_bundle.json"
 
 
@@ -38,6 +40,9 @@ class AEPImpact:
                 raise ValueError("Path lacks AEP provenance")
             for token in tokens:
                 self.reverse[token].add(premise)
+        self.critical_facility_summary = tag_critical_facilities(
+            self.assets, list(self.paths.values()), bundle.get("critical_facility_associations", []),
+            path_key="asset_tokens")
         self.default_premise = sorted(self.paths)[0]
 
     @classmethod
@@ -48,6 +53,13 @@ class AEPImpact:
         if asset_token not in self.assets:
             raise UnknownAEPAsset("Asset not found in the validated AEP sample")
         return sorted(self.reverse[asset_token])
+
+    def affected_critical_facilities(self, asset_token: str) -> dict:
+        if asset_token not in self.assets:
+            raise UnknownAEPAsset("Asset not found in the validated AEP sample")
+        records = self.assets[asset_token]["critical_facilities"]
+        return {**self.critical_facility_summary, "facility_count": len(records),
+                "critical_facilities": records}
 
     def _on_path(self, premise: str, kind: str) -> str:
         tokens = self.paths[premise]["asset_tokens"]
@@ -99,6 +111,7 @@ class AEPImpact:
                 "affected_count_in_sample": len(affected),
                 "sample_premise_count": len(self.paths),
                 "full_source_known_dependent_count": node.get("full_source_known_count"),
+                "critical_facility_impact": self.affected_critical_facilities(selected_asset),
             },
         }
 
@@ -106,7 +119,9 @@ class AEPImpact:
         return [
             {"asset_token": token, "kind": node["kind"],
              "dependent_premises_in_sample": len(self.reverse[token]),
-             "full_source_known_dependent_count": node.get("full_source_known_count")}
+             "full_source_known_dependent_count": node.get("full_source_known_count"),
+             "critical_facility_count": node["critical_facility_count"],
+             "critical_facility_status": self.critical_facility_summary["status"]}
             for token, node in sorted(self.assets.items())
             if node["kind"] in ("TRANSFORMER", "CIRCUIT_BREAKER")
         ]

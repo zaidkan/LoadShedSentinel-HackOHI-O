@@ -3,12 +3,105 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from collections import defaultdict
 from pathlib import Path
 
 
+FACILITY_BASIS = "nearest_transformer_in_slice_then_union_of_supplied_paths"
+
+
+def _wgs84(point):
+    if (not isinstance(point, (list, tuple)) or len(point) != 2 or
+            any(isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) for v in point) or
+            not (-180 <= point[0] <= 180 and -90 <= point[1] <= 90)):
+        raise ValueError("Expected finite WGS84 longitude/latitude")
+    return point
+
+
+def _distance_km(a, b):
+    lon1, lat1, lon2, lat2 = map(math.radians, (*a, *b))
+    h = math.sin((lat2 - lat1) / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2
+    return 6371.0088 * 2 * math.asin(math.sqrt(min(1, max(0, h))))
+
+
+def link_critical_facilities(nodes, paths, facilities, *, point_key="point", path_key="asset_ids"):
+    """Approximate nearest transformer IN THIS SLICE, never a verified service join.
+
+    Exact facility geometry stays local. Saved distances are rounded to kilometres;
+    sample equipment geometry may already be generalized. No maximum-distance
+    cutoff: all supplied records are associated, including distant slice matches.
+    """
+    used = {key for path in paths for key in path[path_key]}
+    candidates = {key: _wgs84(n[point_key]) for key, n in nodes.items()
+                  if key in used and n["kind"] in ("TRANSFORMER", "Distribution") and n.get(point_key) is not None}
+    if facilities and not candidates:
+        raise ValueError("No geolocated feeding transformer in topology slice")
+    records = []
+    for facility in facilities:
+        point = _wgs84(facility["point"])
+        # ponytail: O(facilities * transformers), sufficient for 52 records;
+        # use a spatial index if the facility catalog grows materially.
+        nearest = min(candidates, key=lambda key: (_distance_km(point, candidates[key]), nodes[key]["asset_token"]))
+        records.append({"facility_token": facility["facility_token"], "kind": facility["kind"],
+                        "nearest_asset_token": nodes[nearest]["asset_token"],
+                        "distance_km": round(_distance_km(point, candidates[nearest])),
+                        "basis": FACILITY_BASIS, "status": "ASSUMED",
+                        "source_crs": facility["source_crs"], "matching_crs": "EPSG:4326",
+                        "equipment_geometry": "generalized" if point_key == "coordinates" else "source"})
+    return records
+
+
+def tag_critical_facilities(nodes, paths, records, *, path_key="asset_ids"):
+    """Tag anchors and upstream nodes using only supplied paths through each anchor.
+
+    Multiple paths through one transformer remain ambiguous: union their explicit
+    upstream assets, without traversing unrelated graph edges or claiming power flow.
+    """
+    if not isinstance(records, list) or any(not isinstance(record, dict) for record in records):
+        raise ValueError("Expected critical facility association records")
+    by_token = {node["asset_token"]: key for key, node in nodes.items()}
+    feeding = defaultdict(set)
+    for path in paths:
+        ids = path[path_key]
+        for i, key in enumerate(ids):
+            if nodes[key]["kind"] in ("TRANSFORMER", "Distribution"):
+                feeding[key].update(ids[i:])
+    seen = set()
+    tags = defaultdict(list)
+    for record in records:
+        token, kind = record.get("facility_token"), record.get("kind")
+        if (kind not in ("HOSPITAL", "FIRE", "AMBULANCE") or not isinstance(token, str) or
+                not re.fullmatch(r"CF-" + kind + r"-[0-9]{3,6}", token) or token in seen):
+            raise ValueError("Invalid or duplicate anonymous critical facility")
+        seen.add(token)
+        nearest = record.get("nearest_asset_token")
+        if not isinstance(nearest, str):
+            raise ValueError("Invalid critical facility anchor token")
+        anchor = by_token.get(nearest)
+        distance = record.get("distance_km")
+        if (anchor not in feeding or isinstance(distance, bool) or not isinstance(distance, (int, float)) or
+                not math.isfinite(distance) or distance < 0 or record.get("basis") != FACILITY_BASIS or
+                record.get("status") != "ASSUMED" or record.get("matching_crs") != "EPSG:4326" or
+                record.get("source_crs") != "EPSG:3857 + NAVD88" or
+                record.get("equipment_geometry") not in ("source", "generalized")):
+            raise ValueError("Invalid critical facility spatial association")
+        # Explicit allowlist excludes names, addresses, raw IDs and coordinates.
+        safe = {key: record[key] for key in ("facility_token", "kind", "nearest_asset_token", "distance_km",
+                                             "basis", "status", "source_crs", "matching_crs", "equipment_geometry")}
+        for key in feeding[anchor]:
+            tags[key].append(safe)
+    for key, node in nodes.items():
+        node["critical_facilities"] = sorted(tags[key], key=lambda r: r["facility_token"])
+        node["critical_facility_count"] = len(tags[key])
+    return {"status": "ASSUMED" if records else "UNKNOWN", "facility_count": len(seen),
+            "basis": FACILITY_BASIS,
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. "
+                          "Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor."}
+
+
 class Topology:
-    def __init__(self, graph):
+    def __init__(self, graph, facilities=None):
         self.graph = graph
         self.nodes = graph["nodes"]
         self.paths = graph["paths"]
@@ -28,6 +121,21 @@ class Topology:
                 raise ValueError("Persisted premise token disagrees with catalog")
             for key in ids:
                 self.reverse[key].add(premise)
+
+        if facilities is not None:
+            graph["critical_facility_associations"] = link_critical_facilities(
+                self.nodes, list(self.paths.values()), facilities)
+        self.critical_facility_summary = tag_critical_facilities(
+            self.nodes, list(self.paths.values()), graph.get("critical_facility_associations", []))
+
+    def affected_critical_facilities(self, asset_ids):
+        values = list(asset_ids) if isinstance(asset_ids, (list, tuple, set)) else [asset_ids]
+        keys = [self._asset(value) for value in values]
+        records = {r["facility_token"]: r for key in keys if key in self.nodes
+                   for r in self.nodes[key]["critical_facilities"]}
+        return {**self.critical_facility_summary,
+                "status": "UNKNOWN" if any(key not in self.nodes for key in keys) else self.critical_facility_summary["status"],
+                "facility_count": len(records), "critical_facilities": [records[k] for k in sorted(records)]}
 
     @classmethod
     def load(cls, path):
@@ -75,6 +183,7 @@ class Topology:
                 "unknown_asset_count": unknown_count,
                 "coverage_partial": bool(self.graph.get("rejected")),
                 "basis": "union_of_validated_supplied_paths",
+                "critical_facility_impact": self.affected_critical_facilities(values),
                 "disclosure": "Hypothetical dependency footprint; not an observed outage or complete service-territory count."}
 
     def safe_geojson(self, premise, max_premises=12):

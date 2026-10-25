@@ -9,7 +9,7 @@ from pathlib import Path
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from pipeline.import_gis import load_gis, match_equipment
+from pipeline.import_gis import load_gis, match_equipment, load_critical_facilities
 from pipeline.inspect_assets import DEFAULT_DATA, inspect_assets, source_archives, write_json
 from pipeline.parse_upstream import load_upstream
 
@@ -91,7 +91,8 @@ def main():
     parser.add_argument("--max-premises", type=int, default=12)
     args = parser.parse_args()
     graph = build_graph(load_upstream(source_archives(args.data_dir)[2]), load_gis(args.data_dir))
-    topology = Topology(graph)
+    topology = Topology(graph, load_critical_facilities(args.data_dir))
+    graph["summary"]["critical_facility_association"] = topology.critical_facility_summary
     # The private graph contains raw identifiers. Publish only network.geojson, never this directory.
     private_dir = args.output_dir / "private"
     private_dir.mkdir(parents=True, exist_ok=True, mode=0o700)

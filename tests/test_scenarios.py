@@ -75,24 +75,29 @@ class ScenarioTests(unittest.TestCase):
         self.assertEqual(snap.affected_premise_tokens, [])
         self.assertEqual(snap.notifications, [])
 
-    def test_person_hours_and_ordered_scenario_ranges(self):
-        expected = {'local_protection': (4.5, 2.25), 'upstream_feeder': (13.5, 4.5), 'confirmed_replacement': (27, 9)}
-        for name, (labor, duration) in expected.items():
-            snap = self.generate(name)
-            plan = snap.restoration
-            self.assertEqual(plan.kind, 'scenario_planning')
-            self.assertEqual(plan.labor_work_hours, labor)
-            self.assertEqual(plan.expected_hours, duration)
-            self.assertEqual(plan.labor_work_unit, 'person-hours')
-            self.assertLess(plan.lower_hours, plan.expected_hours)
-            self.assertGreater(plan.upper_hours, plan.expected_hours)
-            self.assertIn('illustrative', ' '.join(plan.assumptions).lower())
-            self.assertIn('not workbook', ' '.join(plan.assumptions).lower())
+    def test_selected_workbook_replacement_has_ordered_scenario_ranges(self):
+        plan = self.generate('confirmed_replacement').restoration
+        self.assertEqual(plan.kind, 'scenario_planning')
+        self.assertAlmostEqual(plan.labor_work_hours, 8.973957446808507)
+        self.assertAlmostEqual(plan.expected_hours, 2.991319148936169)
+        self.assertEqual(plan.labor_work_unit, 'person-hours')
+        self.assertLess(plan.lower_hours, plan.expected_hours)
+        self.assertGreater(plan.upper_hours, plan.expected_hours)
+        source = ' '.join(plan.assumptions)
+        for text in ['25', 'C21', 'D21', 'replace', 'construction_unit', 'not verified', 'crew_size=3']:
+            self.assertIn(text, source)
+
+    def test_unselected_repairs_have_no_invented_duration(self):
+        for name in ['local_protection', 'upstream_feeder']:
+            plan = self.generate(name).restoration
+            self.assertEqual(plan.kind, 'unavailable')
+            self.assertIsNone(plan.expected_hours)
+            self.assertIsNone(plan.labor_work_hours)
 
     def test_crew_and_delays_recompute_with_no_double_indirect_allowance(self):
         snap = self.generate('confirmed_replacement', {'crew_size': 6, 'queue_hours': 2, 'access_hours': [1, 2, 3]})
-        self.assertEqual(snap.restoration.expected_hours, 8.5)  # 27 / 6 + 2 + 2
-        self.assertEqual(snap.restoration.labor_work_hours, 27)
+        self.assertAlmostEqual(snap.restoration.expected_hours, 5.4956595744680845)
+        self.assertAlmostEqual(snap.restoration.labor_work_hours, 8.973957446808507)
         with self.assertRaises(ValueError): self.generate('local_protection', {'travel_hours': 1})
 
     def test_context_ids_timestamps_and_support_refs_are_consistent(self):

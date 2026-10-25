@@ -39,6 +39,7 @@ GEOJSON_PATH = os.path.join(BASE_DIR, "..", "data", "processed", "network.geojso
 
 # In-memory runtime state
 _current_snapshot: ScenarioSnapshot = None
+_current_context: Optional[dict] = None
 _fsm = NotificationFSM()
 _topology_instance: Optional[Topology] = None
 _aep_impact_instance: Optional[AEPImpact] = None
@@ -143,19 +144,30 @@ class SelectScenarioRequest(BaseModel):
     scenario_id: str
     asset_token: Optional[str] = None
     premise_token: Optional[str] = None
+    crew_size: Optional[int] = None
+    access_hours: Optional[float] = None
 
 
 @app.post("/api/scenario/select")
 def select_scenario(req: SelectScenarioRequest):
     """Simulate a fault on selected AEP equipment, calculating dependent premises."""
-    global _current_snapshot, _fsm
+    global _current_snapshot, _current_context, _fsm
     if req.scenario_id not in SCENARIO_IDS:
         raise HTTPException(status_code=400, detail="Unknown scenario")
     try:
         context = get_aep_impact().scenario_context(req.scenario_id, req.asset_token, req.premise_token)
+        if req.crew_size is not None:
+            if req.crew_size < 1 or req.crew_size > 100:
+                raise HTTPException(status_code=400, detail="crew_size must be between 1 and 100")
+            context['crew_size'] = req.crew_size
+        if req.access_hours is not None:
+            if req.access_hours < 0 or req.access_hours > 720:
+                raise HTTPException(status_code=400, detail="access_hours must be between 0 and 720")
+            context['access_hours'] = req.access_hours
         snapshot = generate_scenario(req.scenario_id, context)
     except (UnknownAEPAsset, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    _current_context = context
     _current_snapshot = snapshot
 
     new_alerts = _fsm.evaluate_triggers(
@@ -189,11 +201,13 @@ class AdvanceRequest(BaseModel):
     status: Optional[str] = None
     cutout_status: Optional[str] = None
     restoration_summary: Optional[str] = None
+    crew_size: Optional[int] = None
+    access_hours: Optional[Union[float, List[float]]] = None
 
 @app.post("/api/scenario/advance")
 def advance_scenario(req: AdvanceRequest):
     """Advances scenario state and evaluates customer notification triggers."""
-    global _current_snapshot, _fsm
+    global _current_snapshot, _current_context, _fsm
     snap = get_snapshot()
     
     if req.incident_id and req.incident_id != snap.incident_id:
@@ -209,6 +223,36 @@ def advance_scenario(req: AdvanceRequest):
         if req.cutout_status not in VALID_CUTOUTS:
             raise HTTPException(status_code=400, detail=f"Invalid cutout_status '{req.cutout_status}'. Must be one of {sorted(VALID_CUTOUTS)}")
         snap.cutout_status = req.cutout_status
+
+    if req.crew_size is not None or req.access_hours is not None:
+        if req.crew_size is not None and (req.crew_size < 1 or req.crew_size > 100):
+            raise HTTPException(status_code=400, detail="crew_size must be between 1 and 100")
+        if req.access_hours is not None:
+            if isinstance(req.access_hours, (int, float)):
+                if req.access_hours < 0 or req.access_hours > 720:
+                    raise HTTPException(status_code=400, detail="access_hours must be between 0 and 720")
+            elif isinstance(req.access_hours, list):
+                if not all(isinstance(x, (int, float)) and 0 <= x <= 720 for x in req.access_hours):
+                    raise HTTPException(status_code=400, detail="access_hours elements must be between 0 and 720")
+            else:
+                raise HTTPException(status_code=400, detail="access_hours must be a number or list of numbers")
+
+        ctx = dict(_current_context or {})
+        if not ctx:
+            try:
+                ctx = get_aep_impact().scenario_context(snap.scenario_id)
+            except Exception:
+                ctx = {}
+        if req.crew_size is not None:
+            ctx['crew_size'] = req.crew_size
+        if req.access_hours is not None:
+            ctx['access_hours'] = req.access_hours
+        _current_context = ctx
+
+        updated_snap = generate_scenario(snap.scenario_id, ctx)
+        snap.restoration = updated_snap.restoration
+        snap.planning_inputs = updated_snap.planning_inputs
+
     snap.revision += 1
     
     # Evaluate notifications via FSM
@@ -226,8 +270,9 @@ def advance_scenario(req: AdvanceRequest):
 @app.post("/api/scenario/reset")
 def reset_scenario():
     """Resets scenario to base fixture state."""
-    global _current_snapshot, _fsm
+    global _current_snapshot, _current_context, _fsm
     _current_snapshot = _load_initial_snapshot()
+    _current_context = None
     _fsm = NotificationFSM()
     return _current_snapshot
 

@@ -76,6 +76,10 @@ class CustomerRisk(BaseModel):
     drivers: List[str] = Field(default_factory=list)
     confidence_kind: str
 
+class PlanningInputs(BaseModel):
+    crew_size: int
+    access_hours: Union[float, List[float]]
+
 class NotificationItem(BaseModel):
     type: str
     text: str
@@ -95,6 +99,7 @@ class ScenarioSnapshot(BaseModel):
     hypotheses: List[Hypothesis] = Field(default_factory=list)
     crew_recommendation: CrewPackage
     restoration: Restoration
+    planning_inputs: Optional[PlanningInputs] = None
     solar: SolarNode
     affected_premise_tokens: List[str] = Field(default_factory=list)
     impact_source: Optional[dict] = None

@@ -46,38 +46,56 @@
 - [x] **[UI Polish] Mobile Viewport & Map Target Bounds**:
   - Ensure SVG feeder map and 3D console preserve min 44px touch targets and zero horizontal scroll overflow on 390px mobile viewports.
 
+### Phase 1D: Workbook Labor Sourcing, Criticality Scheduling & Facility Linking (Latest Audit Remediations)
+- [x] **[Labor #2 / Sourced Workbook Rates]**:
+  - Wire workbook-backed 25-kVA transformer replacement package (sheet `Labor time material related!`, install `C21=1.188085` + removal `D21=0.806128` × 4.5 multiplier = 8.973957 person-hours, 2.991319 hours with 3 lineworkers) into `confirmed_replacement` scenario with exact workbook citations and rating disclaimer.
+- [x] **[Labor #4 / Criticality-Aware Task Scheduling]**:
+  - Update `schedule_tasks` in `engine/restoration.py` to prioritize critical facilities (hospital, fire, ambulance) over routine tasks, followed by customer counts, resolving tie-breaks deterministically.
+- [x] **[Labor #1 / Dynamic Sensitivity API & Controls]**:
+  - Connect `POST /api/scenario/advance` and `POST /api/scenario/select` to accept `crew_size` (2–8) and `access_hours` (0–24h) to dynamically recompute authoritative restoration duration and echo `planning_inputs`.
+  - Add interactive range sliders in `web/src/components/utility/PlanningPanels.tsx` and `UtilityPage.tsx` with revision synchronization.
+- [x] **[Data #1 / Critical Facility Spatial Linking]**:
+  - Associate 52 critical facilities (5 hospital, 37 fire, 10 ambulance) from AEP challenge data to nearest distribution transformer anchors in `pipeline/link_facilities.py` and `engine/aep_impact.py` with spatial proximity notes.
+- [x] **[Data #2 / Transparent Outage Risk Rule]**:
+  - Implement transparent point-based scoring in `engine/outage_risk.py` evaluating wind, ambient temperature, load factor, and health index into LOW, MODERATE, HIGH, or UNKNOWN bands with explicit drivers.
+- [x] **[Materials #2 / Customer Uncertainty Copy & Alert Plan UI]**:
+  - In `web/src/pages/CustomerPage.tsx`, update UNDER_REVIEW state copy to reflect active utility dispatch review, pending field verification, and display server-supplied `alert_plan` card with channels, cadence policy, and suppression reason.
+
 ---
 
 ## 2. Pre-Launch Verification Gate (Release Criteria)
 
 - [x] **Backend Test Suite**:
   - Execute `.venv/bin/pytest -o pythonpath=. tests/`.
-  - Pass 100% of tests with exit code 0 (88/88 passed).
+  - Pass 100% of tests with exit code 0 (111/111 passed).
 - [x] **Frontend Production Build**:
   - Execute `cd web && npm run build` (`tsc && vite build`).
-  - Strict TypeScript check and clean bundle generation with exit code 0 (built in 1.98s).
+  - Strict TypeScript check and clean bundle generation with exit code 0 (built in 2.26s).
 - [x] **End-to-End Browser Playwright Suite**:
-  - Run Playwright test script across all 4 scenarios, asset switches, mobile viewport, and WebGL 2D fallback.
-  - 11/11 browser test cases pass exit 0.
+  - Run Playwright test script across all 4 scenarios, asset switches, crew/access sensitivity controls, customer concierge sync, and mobile viewports.
+  - 13/13 browser test cases pass exit 0.
 - [x] **Git Working Tree Cleanliness**:
   - All code formatted and committed to `main`.
-  - Pushed to remote GitHub (`zaidkan/Hackathon.git` at `46bccd7`).
 
 ---
 
 ## 3. Launch Execution (Competition Day)
 
 - [ ] **Demonstration Video Recording**:
-  - Follow 3-minute storyboard in `docs/demo_script.md` (395 words, 8 segments).
+  - Record a video no longer than 3 minutes; follow the storyboard in `docs/demo_script.md` (395 words, 8 segments).
   - Walk through:
     1. Incident 1 (`INC-2026-0881`): Cutout switch blown, 45° drop, core healthy, 2-person fuse link crew.
     2. Incident 2 (`INC-2026-0894`): Upstream breaker trip, closed cutout, avoids false transformer replacement.
     3. Feeder Circuit Map & Premise Topology Trace (`PREM-000001` to Breaker).
     4. Customer Concierge: Household battery calculator & refrigerated medicine/accessibility guidance.
-- [ ] **Devpost Portal Submission**:
-  - Submit repository link: `https://github.com/zaidkan/Hackathon.git`.
-  - Attach 3-minute video URL (YouTube / Vimeo unlisted).
-  - Include `docs/judge_evidence.md` crosswalk in project description.
+- [ ] **Official Google Form Submission (distributed via Discord)**:
+  - HackOHI/O 2026 AEP track submissions MUST use the official Google Form posted in the hackathon Discord. Devpost entries are not considered for judging or prizes.
+  - Submit by **October 25, 2026, 10:00 a.m. EDT**. Obtain the actual form link from Discord; this checklist does not establish submission completion.
+  - Include project title/description, problem and solution, repository link (`https://github.com/zaidkan/Hackathon.git`), relevant documentation and a video of **at most 3 minutes**.
+  - Include the `docs/judge_evidence.md` crosswalk and disclose prior work versus contributions built during the event.
+  - Verify video/repository access and retain the form confirmation/receipt.
+  - Present the prerecorded video in the assigned Zoom session, followed by Q&A; judging uses the recording rather than a live demo.
+  - Sources: [official overview and submission requirements](https://hackohio2026.devpost.com/), [prior-work rules](https://hackohio2026.devpost.com/rules).
 
 ---
 

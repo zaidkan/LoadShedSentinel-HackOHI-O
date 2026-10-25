@@ -270,5 +270,20 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
         },
         "notifications": notifications_list,
         "public_evidence": customer_safe_evidence,
+        "alert_plan": {
+            "eligible": snapshot.status in ('OUTAGE', 'AT_RISK', 'UNDER_REVIEW'),
+            "recipient_role": "Verified premise contact (simulated)",
+            "channels": ["SMS", "Mobile Push (Simulated)"],
+            "cadence_policy": "Event declaration, verified ETR updates, and restoration completion",
+            "suppression_reason": None if snapshot.status in ('OUTAGE', 'AT_RISK', 'UNDER_REVIEW') else "Normal service operating conditions",
+            "basis": f"Validated electrical dependency to distribution asset {snapshot.current_asset_id}",
+            "channel": "SMS & Push Notification (Simulated)",
+            "cadence": "Dispatched at event declaration, critical ETR updates, and restoration completion",
+            "proactive_summary": (
+                "Eligible for automated updates during service anomalies."
+                if snapshot.status != 'NORMAL'
+                else "Standby mode: normal grid operation."
+            )
+        },
         "disclosure": snapshot.disclosure
     }

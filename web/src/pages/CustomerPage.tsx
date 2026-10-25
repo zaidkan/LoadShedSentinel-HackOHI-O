@@ -10,6 +10,17 @@ import {
   PreparednessGuidance,
 } from '../services/api';
 import { ShieldAlert, Battery, AlertTriangle, Clock, HeartPulse, CheckCircle2, Search, GitBranch } from 'lucide-react';
+import { humanize, numberText } from '../components/utility/presentation';
+
+const SERVICE_COPY = {
+  NORMAL: ['Service Operating Normally', 'Supply lines operating within normal load parameters.'],
+  AT_RISK: ['Service At Risk', 'Storm-related service risk identified; an outage is not confirmed.'],
+  OUTAGE: ['Service Disruption Active', 'Local protective equipment triggered. Utility dispatch investigating supply line.'],
+  UNDER_REVIEW: ['Incident Under Review', 'Incident under review by utility dispatch; field condition and ETR pending verification.'],
+  RESTORED: ['Service Restored', 'Utility dispatch reports service restored for this simulated incident.'],
+} as const;
+
+const planningHours = (value: number | null) => value === null || !Number.isFinite(value) ? 'Unavailable' : `${numberText(value)} hours`;
 
 export interface CustomerPageProps {
   snapshot: ScenarioSnapshot;
@@ -199,18 +210,16 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               snapshot?.status === 'RESTORED' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
               'bg-blue-500/20 text-blue-400 border border-blue-500/30'
             }`}>
-              {snapshot?.status || 'NORMAL'}
+              {snapshot?.status || 'UNKNOWN'}
             </span>
           </div>
 
           <div className="text-xl font-bold text-white mb-2">
-            {snapshot?.status === 'OUTAGE' ? 'Service Disruption Active' : 'Service Operating Normally'}
+            {snapshot ? SERVICE_COPY[snapshot.status][0] : 'Service Status Unavailable'}
           </div>
 
           <p className="text-sm text-slate-400 mb-4">
-            {snapshot?.status === 'OUTAGE'
-              ? 'Local protective equipment triggered. Utility dispatch investigating supply line.'
-              : 'Supply lines operating within normal load parameters.'}
+            {snapshot ? SERVICE_COPY[snapshot.status][1] : 'Unable to load the current service status.'}
           </p>
 
           {snapshot?.impact_source && (
@@ -228,11 +237,20 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               <div>
                 <div className="text-xs text-slate-400">Estimated Planning Range</div>
                 <div className="text-sm font-semibold text-slate-200">
-                  {snapshot.restoration_planning.expected_hours
-                    ? `~${snapshot.restoration_planning.expected_hours} hours (${snapshot.restoration_planning.lower_hours ?? 1}h - ${snapshot.restoration_planning.upper_hours ?? 4}h range)`
+                  {snapshot.restoration_planning.expected_hours !== null
+                    ? `~${planningHours(snapshot.restoration_planning.expected_hours)} (${planningHours(snapshot.restoration_planning.lower_hours)} – ${planningHours(snapshot.restoration_planning.upper_hours)} range)`
                     : 'Awaiting crew assessment'}
                 </div>
+                <p className="text-xs text-slate-400 mt-1">Basis: {humanize(snapshot.restoration_planning.kind)}. Planning duration, not a guaranteed restoration time.</p>
               </div>
+            </div>
+          )}
+          {snapshot?.restoration_planning && (
+            <div className="mt-4 text-sm text-slate-300">
+              <h3 className="font-semibold mb-2">Planning assumptions</h3>
+              {snapshot.restoration_planning.assumptions.length > 0
+                ? <ul className="list-disc pl-5 space-y-1">{snapshot.restoration_planning.assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}</ul>
+                : <p>No planning assumptions supplied.</p>}
             </div>
           )}
         </div>
@@ -247,6 +265,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           </div>
 
           <div className="text-xl font-bold text-white mb-2">Contributing Factors</div>
+          <p className="text-sm text-slate-300 mb-3">Confidence kind: {snapshot?.customer_risk.confidence_kind ? humanize(snapshot.customer_risk.confidence_kind).replace(/^./, char => char.toUpperCase()) : 'Unavailable'}</p>
           <ul className="space-y-1.5 text-sm text-slate-300">
             {snapshot?.customer_risk?.drivers?.map((d, i) => (
               <li key={i} className="flex items-center gap-2">
@@ -257,6 +276,24 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           </ul>
         </div>
       </div>
+
+      <div role="note" className="text-sm text-slate-300 space-y-2">
+        <h2 className="font-semibold text-white">Source disclosure</h2>
+        <p>{snapshot?.disclosure || 'Source disclosure unavailable.'}</p>
+      </div>
+
+      <section className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4" aria-labelledby="customer-alert-plan-heading">
+        <h2 id="customer-alert-plan-heading" className="text-lg font-bold text-white">Alert Delivery &amp; Eligibility Plan</h2>
+        <p className="text-sm text-slate-300">Demo delivery only. No SMS or mobile push is sent, and contact verification is not performed.</p>
+        <dl className="space-y-3 text-sm">
+          <div><dt className="font-semibold text-white">Eligibility</dt><dd className="text-slate-300">{snapshot?.alert_plan ? snapshot.alert_plan.eligible ? 'Eligible for demo updates' : 'Not currently eligible for demo updates' : 'Eligibility not supplied'}</dd></div>
+          <div><dt className="font-semibold text-white">Selected premise recipient</dt><dd className="text-slate-300">{snapshot?.selected_premise_token || 'Unavailable'}</dd></div>
+          <div><dt className="font-semibold text-white">Recipient role (demo)</dt><dd className="text-slate-300">{snapshot?.alert_plan?.recipient_role ? humanize(snapshot.alert_plan.recipient_role) : 'Recipient role not supplied'}</dd></div>
+          <div><dt className="font-semibold text-white">Dispatch channel</dt><dd className="text-slate-300">{snapshot?.alert_plan?.channels?.length ? snapshot.alert_plan.channels.join(' / ') : 'Channel not supplied'}</dd></div>
+          <div><dt className="font-semibold text-white">Milestone cadence</dt><dd className="text-slate-300">{snapshot?.alert_plan?.cadence_policy || 'Milestone cadence not supplied'}</dd></div>
+        </dl>
+        {snapshot?.alert_plan?.suppression_reason && <p className="text-sm text-amber-300">Suppression reason: {snapshot.alert_plan.suppression_reason}</p>}
+      </section>
 
       {/* Step 4: Household Needs Declaration */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg space-y-4">
