@@ -1,12 +1,10 @@
 from __future__ import annotations
-import math
 from typing import List, Dict, Optional, Literal, Set
 from datetime import datetime, timezone
 from api.schemas import (
     CustomerRisk,
     NotificationItem,
     ScenarioSnapshot,
-    RiskBand,
     SnapshotStatus
 )
 
@@ -155,7 +153,6 @@ class NotificationFSM:
     """
     def __init__(self):
         self._sent_keys: Set[str] = set()
-        self._last_etag: Optional[str] = None
 
     def evaluate_triggers(
         self,
@@ -215,7 +212,6 @@ class NotificationFSM:
                     sent_at_utc=timestamp_utc
                 ))
                 self._sent_keys.add(estimate_key)
-                self._last_etag = etag
 
         # 4. RESTORATION_COMPLETE trigger
         restored_key = f"{premise_token}:{incident_id}:RESTORATION_COMPLETE"
@@ -251,17 +247,6 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
                 "label": getattr(e, "label", getattr(e, "kind", ""))
             })
     
-    risk_dict = (
-        snapshot.customer_risk.model_dump()
-        if hasattr(snapshot.customer_risk, "model_dump")
-        else snapshot.customer_risk.dict()
-    )
-    
-    notifications_list = [
-        (n.model_dump() if hasattr(n, "model_dump") else n.dict())
-        for n in snapshot.notifications
-    ]
-    
     risk_band = getattr(snapshot.customer_risk, "band", "UNKNOWN")
     is_eligible = (
         snapshot.status in ('OUTAGE', 'AT_RISK', 'UNDER_REVIEW')
@@ -291,7 +276,7 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
         "timestamp_utc": snapshot.timestamp_utc,
         "status": snapshot.status,
         "impact_source": snapshot.impact_source,
-        "customer_risk": risk_dict,
+        "customer_risk": snapshot.customer_risk.model_dump(),
         "restoration_planning": {
             "kind": snapshot.restoration.kind,
             "lower_hours": snapshot.restoration.lower_hours,
@@ -300,7 +285,7 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
             "assumptions": customer_safe_assumptions,
             "last_updated_utc": snapshot.restoration.last_updated_utc
         },
-        "notifications": notifications_list,
+        "notifications": [n.model_dump() for n in snapshot.notifications],
         "public_evidence": customer_safe_evidence,
         "alert_plan": {
             "eligible": is_eligible,

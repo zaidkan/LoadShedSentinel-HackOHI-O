@@ -160,12 +160,7 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
             ]
             hosp_plan = schedule_tasks(hosp_tasks, planning)
 
-            unp_tasks = [
-                dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
-                     criticality=['routine'], customer_count=len(footprint), dependencies=[]),
-                dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
-                     criticality=['routine'], customer_count=0, dependencies=[])
-            ]
+            unp_tasks = [{**task, 'criticality': ['routine']} for task in reversed(hosp_tasks)]
             unp_plan = schedule_tasks(unp_tasks, planning)
 
             restoration['priority_comparison'] = {

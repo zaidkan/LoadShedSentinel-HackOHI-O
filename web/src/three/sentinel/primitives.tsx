@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, type ReactNode, type RefObject } from 'react';
-import { CatmullRomCurve3, LatheGeometry, Mesh, Quaternion, TubeGeometry, Vector2, Vector3, type Group, type Material, type Object3D } from 'three';
+import { CatmullRomCurve3, LatheGeometry, Mesh, Quaternion, TubeGeometry, Vector2, Vector3, type Material, type Object3D } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import type { Vec3 } from './layout';
 import { MaterialKit, type Highlight } from './materials';
@@ -99,4 +99,3 @@ export function Hex({ position, rotation, radius = 0.014, height = 0.01, materia
 }
 
 export interface PartProps { highlight: Highlight }
-export type GroupRef = RefObject<Group>;

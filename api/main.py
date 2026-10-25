@@ -7,13 +7,13 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from threading import Lock
-from typing import Dict, Any, Optional, List, Union, Set
+from typing import Dict, Optional, List, Union, Set
 from fastapi import FastAPI, HTTPException, Query, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
-from api.schemas import ScenarioSnapshot, CustomerRisk
+from api.schemas import ScenarioSnapshot
 from engine.customer import (
     project_customer_view,
     calculate_battery_runtime,
@@ -43,7 +43,6 @@ app.add_middleware(
 BASE_DIR = os.path.dirname(__file__)
 FIXTURE_PATH = os.path.join(BASE_DIR, "..", "fixtures", "scenario_fixture.json")
 TOPOLOGY_PATH = os.path.join(BASE_DIR, "..", "data", "processed", "private", "topology.json")
-GEOJSON_PATH = os.path.join(BASE_DIR, "..", "data", "processed", "network.geojson")
 
 # Session state dataclass
 @dataclass
@@ -334,35 +333,20 @@ async def _advance_scenario(req: AdvanceRequest, session: SessionState):
     premise_blockers = get_premise_blockers(snap)
     all_known_blockers = {b for blist in premise_blockers.values() for b in blist}
 
-    # Handle explicit blocker completion / authorization events
+    # Demo authorization defaults omitted/empty lists to all known entries.
+    task_ids = req.completed_task_ids
+    premise_tokens = req.authorized_premises
     if req.action == "record_demo_authorization" or req.record_demo_authorization:
-        if req.completed_task_ids:
-            for cid in req.completed_task_ids:
-                if cid not in all_known_blockers:
-                    raise HTTPException(status_code=400, detail=f"Unknown blocking task: {cid}")
-            completed_task_ids.update(req.completed_task_ids)
-        else:
-            completed_task_ids.update(all_known_blockers)
-
-        if req.authorized_premises:
-            for p in req.authorized_premises:
-                if p not in premise_blockers:
-                    raise HTTPException(status_code=400, detail=f"Unknown premise token for authorization: {p}")
-            authorized_premise_tokens.update(req.authorized_premises)
-        else:
-            authorized_premise_tokens.update(premise_blockers.keys())
-    else:
-        if req.completed_task_ids is not None:
-            for cid in req.completed_task_ids:
-                if cid not in all_known_blockers:
-                    raise HTTPException(status_code=400, detail=f"Unknown blocking task: {cid}")
-            completed_task_ids.update(req.completed_task_ids)
-
-        if req.authorized_premises is not None:
-            for p in req.authorized_premises:
-                if p not in premise_blockers:
-                    raise HTTPException(status_code=400, detail=f"Unknown premise token for authorization: {p}")
-            authorized_premise_tokens.update(req.authorized_premises)
+        task_ids = task_ids or all_known_blockers
+        premise_tokens = premise_tokens or premise_blockers.keys()
+    for cid in task_ids or ():
+        if cid not in all_known_blockers:
+            raise HTTPException(status_code=400, detail=f"Unknown blocking task: {cid}")
+    completed_task_ids.update(task_ids or ())
+    for p in premise_tokens or ():
+        if p not in premise_blockers:
+            raise HTTPException(status_code=400, detail=f"Unknown premise token for authorization: {p}")
+    authorized_premise_tokens.update(premise_tokens or ())
 
     # P0-01: Restoration authorization gating via evaluate_restoration
     if req.status == "RESTORED":
@@ -526,8 +510,7 @@ class PreparednessRequest(BaseModel):
 @app.post("/api/customer/preparedness")
 def preparedness_guidance(req: PreparednessRequest):
     """Generates household-specific safety and preparedness recommendations."""
-    needs_data = req.model_dump() if hasattr(req, "model_dump") else req.dict()
-    needs = HouseholdNeeds(**needs_data)
+    needs = HouseholdNeeds(**req.model_dump())
     return {
         "guidance": generate_preparedness_guidance(needs)
     }

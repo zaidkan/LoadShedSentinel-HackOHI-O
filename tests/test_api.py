@@ -276,6 +276,40 @@ def _application_state(session):
                               notifications=vars(session.fsm)))
 
 
+@pytest.mark.parametrize('authorization', [
+    {}, {'action': 'record_demo_authorization'}, {'record_demo_authorization': True},
+])
+def test_authorization_lists_preserve_manual_and_demo_semantics(authorization):
+    headers, session = _selected_session()
+    blockers = api.get_premise_blockers(session.snapshot)
+    tasks = next(iter(blockers.values()))
+    premises = list(blockers)
+    before = _application_state(session)
+    rejected = client.post('/api/scenario/advance', headers=headers, json={
+        **authorization, 'completed_task_ids': ['unknown-task'], 'authorized_premises': ['P-UNKNOWN'],
+    })
+    assert rejected.status_code == 400
+    assert rejected.json()['detail'] == 'Unknown blocking task: unknown-task'
+    assert _application_state(session) == before
+
+    partial = client.post('/api/scenario/advance', headers=headers, json={
+        **authorization, 'completed_task_ids': tasks[:1], 'authorized_premises': premises[:1],
+    })
+    assert partial.status_code == 200
+    assert session.completed_task_ids == set(tasks[:1])
+    assert session.authorized_premise_tokens == set(premises[:1])
+    assert client.post('/api/scenario/advance', headers=headers,
+                       json={'status': 'RESTORED'}).status_code == 400
+
+    for lists in ({}, {'completed_task_ids': [], 'authorized_premises': []}):
+        headers, session = _selected_session()
+        response = client.post('/api/scenario/advance', headers=headers, json={
+            **authorization, **lists, 'status': 'RESTORED',
+        })
+        assert response.status_code == (200 if authorization else 400)
+        assert session.snapshot.status == ('RESTORED' if authorization else 'OUTAGE')
+
+
 @pytest.mark.parametrize('payload', [
     {'status': 'RESTORED', 'action': 'record_demo_authorization', 'access_hours': [1, 2]},
     {'action': 'record_demo_authorization', 'authorized_premises': ['P-UNKNOWN']},

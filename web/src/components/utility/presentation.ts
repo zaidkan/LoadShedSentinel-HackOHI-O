@@ -18,14 +18,6 @@ export function utcText(value: string): string {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? 'Timestamp unavailable' : new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' }).format(date) + ' UTC';
 }
-/** Compact UTC stamp for dense rows: "Oct 24 · 18:00 UTC". */
-export function utcShort(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return 'Time unavailable';
-  const day = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(date);
-  const time = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }).format(date);
-  return `${day} · ${time} UTC`;
-}
 export function evidenceValue(value: string | number | boolean | null): string {
   return value === null ? 'Unavailable' : typeof value === 'number' ? numberText(value, 2) : typeof value === 'boolean' ? value ? 'Yes' : 'No' : value;
 }
@@ -40,21 +32,6 @@ export const tokenTail = (token: string) => `…${token.slice(-8)}`;
 export const rangeHoursText = (lower: number | null | undefined, upper: number | null | undefined) =>
   lower === null || lower === undefined || upper === null || upper === undefined || !Number.isFinite(lower) || !Number.isFinite(upper)
     ? 'Unavailable' : `${numberText(lower, 2)}–${numberText(upper, 2)} h`;
-
-/** Hours in plain words for customers: 2.25 → "2 hours 15 minutes". */
-export function hoursWords(value: number | null | undefined): string {
-  if (value === null || value === undefined || !Number.isFinite(value)) return 'unknown';
-  const totalMinutes = Math.round(value * 60);
-  const hours = Math.floor(totalMinutes / 60), minutes = totalMinutes % 60;
-  const parts = [hours ? `${hours} ${hours === 1 ? 'hour' : 'hours'}` : '', minutes ? `${minutes} min` : ''].filter(Boolean);
-  return parts.join(' ') || 'under a minute';
-}
-
-export function clockAfter(startUtc: string, hours: number | null | undefined): string | null {
-  const start = new Date(startUtc);
-  if (Number.isNaN(start.getTime()) || hours === null || hours === undefined || !Number.isFinite(hours)) return null;
-  return new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }).format(new Date(start.getTime() + hours * 3_600_000)) + ' UTC';
-}
 
 export function scoreText(scoreType: string, score: number | null): string {
   if (scoreType === 'calibrated_probability' && score !== null && Number.isFinite(score) && score >= 0 && score <= 1) return `Calibrated probability · ${numberText(score * 100)}%`;
