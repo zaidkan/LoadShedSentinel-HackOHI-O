@@ -20,6 +20,8 @@ export interface SentinelAssemblyProps {
   reducedMotion: boolean;
   interactive: boolean;
   igniteDelay?: number;
+  structureFocused?: boolean;
+  hoveredPart?: SentinelPartId | null;
   onSelect?: (part: SentinelPartId) => void;
 }
 
@@ -32,7 +34,7 @@ const accent = new Color(ACCENT);
 const caution = new Color(CUTOUT_VISUAL.OPEN.color);
 
 /** Illustrative procedural assembly, not a surveyed installation or construction model. */
-export function SentinelAssembly({ mode, focus, cutoutStatus, link, reducedMotion, interactive, igniteDelay = 0, onSelect }: SentinelAssemblyProps) {
+export function SentinelAssembly({ mode, focus, cutoutStatus, link, reducedMotion, interactive, igniteDelay = 0, structureFocused = false, hoveredPart = null, onSelect }: SentinelAssemblyProps) {
   const highlights = useMemo(() => Object.fromEntries([...SENTINEL_PART_IDS, 'structure'].map(id => [id, createHighlight()])) as Record<HighlightKey, Highlight>, []);
   const hovered = useRef<SentinelPartId | null>(null);
   const pulse = useRef(0);
@@ -45,7 +47,7 @@ export function SentinelAssembly({ mode, focus, cutoutStatus, link, reducedMotio
     invalidate();
   }, [cutoutStatus, invalidate, reducedMotion]);
 
-  useEffect(() => { invalidate(); }, [focus, invalidate]);
+  useEffect(() => { invalidate(); }, [focus, hoveredPart, structureFocused, invalidate]);
   useEffect(() => () => { gl.domElement.style.cursor = ''; }, [gl]);
 
   useFrame((state, delta) => {
@@ -56,10 +58,10 @@ export function SentinelAssembly({ mode, focus, cutoutStatus, link, reducedMotio
     if (pulse.current > 0) moving = true;
     for (const key of [...SENTINEL_PART_IDS, 'structure'] as HighlightKey[]) {
       const h = highlights[key];
-      const focused = focus === key;
-      const isHovered = hovered.current === key;
+      const focused = structureFocused ? key === 'structure' : focus === key;
+      const isHovered = hovered.current === key || hoveredPart === key;
       let rim = key === 'structure' ? 0 : focused ? emphasis.focusRim : isHovered ? emphasis.hoverRim : 0;
-      const dim = focus !== 'overview' && !focused ? emphasis.dim : 0;
+      const dim = (structureFocused || focus !== 'overview') && !focused ? emphasis.dim : 0;
       if (key === 'cutout' && mode === 'inspection') {
         const flash = 0.5 * Math.sin(pulse.current * Math.PI);
         rim = Math.max(rim, (cutoutStatus === 'OPEN' ? 0.16 : 0) + flash);
@@ -85,10 +87,10 @@ export function SentinelAssembly({ mode, focus, cutoutStatus, link, reducedMotio
   const out = (part: SentinelPartId) => () => {
     if (hovered.current === part) { hovered.current = null; gl.domElement.style.cursor = ''; invalidate(); }
   };
-  const target = (id: SentinelPartId, children: ReactNode) => <group name={`part-${id}`} onClick={select(id)} onPointerOver={over(id)} onPointerOut={out(id)}>{children}</group>;
+  const target = (id: SentinelPartId, children: ReactNode) => <group name={`part-${id}`} userData={{ sentinelPart: id === 'sentinel' ? 'sensor-pod' : id === 'solar' ? 'solar-panel' : id }} onClick={select(id)} onPointerOver={over(id)} onPointerOut={out(id)}>{children}</group>;
 
   return <group name="illustrative-pole-assembly">
-    <Pole highlight={highlights.structure} />
+    <group userData={{ sentinelPart: 'pole' }}><Pole highlight={highlights.structure} /></group>
     {target('crossarm', <Crossarm highlight={highlights.crossarm} />)}
     {target('transformer', <Transformer highlight={highlights.transformer} />)}
     {target('cutout', <Cutout highlight={highlights.cutout} status={cutoutStatus} reducedMotion={reducedMotion} />)}

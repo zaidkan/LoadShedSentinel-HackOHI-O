@@ -1,9 +1,10 @@
-import { Component, useEffect, useMemo, useRef, useState, type ErrorInfo, type MutableRefObject, type ReactNode } from 'react';
+import { Component, useEffect, useLayoutEffect, useMemo, useRef, useState, type ErrorInfo, type MutableRefObject, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { CanvasTexture, MathUtils, Vector3, type Group, type Object3D, type Points } from 'three';
+import { CanvasTexture, MathUtils, Spherical, Vector3, type PerspectiveCamera, type Group, type Object3D, type Points } from 'three';
 import type { CutoutStatus } from '../../../contracts/types';
+import { assemblyBounds, fitBounds } from '../three/sentinel/framing';
 import { activeSentinelModel } from './registry';
 import type { CameraCommand, SentinelHotspot, SentinelModelDefinition, SentinelPartId, SentinelVariant } from './types';
 import './sentinel.css';
@@ -58,29 +59,45 @@ function ContextGuard({ onContextLost }: { onContextLost?: () => void }) {
   return null;
 }
 
-function InspectorRig({ model, command, reducedMotion }: { model: SentinelModelDefinition; command?: CameraCommand; reducedMotion: boolean }) {
+function InspectorRig({ model, command, reducedMotion, subject }: { model: SentinelModelDefinition; command?: CameraCommand; reducedMotion: boolean; subject: MutableRefObject<Group | null> }) {
   const { camera, gl, invalidate } = useThree();
   const controls = useRef<OrbitControls | null>(null);
   const goal = useRef<{ position: Vector3; target: Vector3 } | null>(null);
+  const size = useThree(state => state.size);
+  useLayoutEffect(() => {
+    if (!subject.current) return;
+    const direction = controls.current ? camera.position.clone().sub(controls.current.target)
+      : new Vector3(...model.cameras.inspector.position).sub(new Vector3(...model.cameras.inspector.target));
+    const angles = new Spherical().setFromVector3(direction);
+    const pose = fitBounds(assemblyBounds(subject.current), (camera as PerspectiveCamera).fov, size.width / size.height, angles.theta, angles.phi);
+    camera.position.copy(pose.position); camera.lookAt(pose.target);
+    goal.current = null;
+    if (controls.current) { controls.current.maxDistance = Math.max(model.orbit.maxDistance, pose.distance * 2); controls.current.target.copy(pose.target); controls.current.update(); }
+    invalidate();
+  }, [camera, invalidate, model, size.width, size.height, subject]);
   useEffect(() => {
     const orbit = new OrbitControls(camera, gl.domElement);
     controls.current = orbit;
-    orbit.target.set(...model.cameras.inspector.target);
-    Object.assign(orbit, model.orbit, { enablePan: false, enableDamping: false });
+    const center = subject.current ? assemblyBounds(subject.current).getCenter(new Vector3()) : new Vector3(...model.cameras.inspector.target);
+    orbit.target.copy(center);
+    Object.assign(orbit, model.orbit, { maxDistance: Math.max(model.orbit.maxDistance, camera.position.distanceTo(center) * 2), enablePan: false, enableDamping: false });
     const changed = () => invalidate();
     const interrupt = () => { goal.current = null; };
     orbit.addEventListener('change', changed);
     orbit.addEventListener('start', interrupt);
     orbit.update();
     return () => { orbit.removeEventListener('change', changed); orbit.removeEventListener('start', interrupt); orbit.dispose(); controls.current = null; };
-  }, [camera, gl, invalidate, model]);
+  }, [camera, gl, invalidate, model, subject]);
   useEffect(() => {
     const orbit = controls.current;
     if (!orbit || !command) return;
     let position: Vector3, target: Vector3;
     const focus = command.action === 'focus' && command.part ? model.parts[command.part]?.camera : undefined;
     if (command.action === 'reset' || (command.action === 'focus' && !focus)) {
-      position = new Vector3(...model.cameras.inspector.position); target = new Vector3(...model.cameras.inspector.target);
+      const direction = new Vector3(...model.cameras.inspector.position).sub(new Vector3(...model.cameras.inspector.target));
+      const angles = new Spherical().setFromVector3(direction);
+      const pose = fitBounds(assemblyBounds(subject.current!), (camera as PerspectiveCamera).fov, size.width / size.height, angles.theta, angles.phi);
+      position = pose.position; target = pose.target;
     } else if (focus) {
       position = new Vector3(...focus.position); target = new Vector3(...focus.target);
     } else {
@@ -94,7 +111,7 @@ function InspectorRig({ model, command, reducedMotion }: { model: SentinelModelD
       camera.position.copy(position); orbit.target.copy(target); orbit.update(); goal.current = null;
     } else goal.current = { position, target };
     invalidate();
-  }, [command, camera, invalidate, model, reducedMotion]);
+  }, [command, camera, invalidate, model, reducedMotion, size.width, size.height, subject]);
   useFrame((_, delta) => {
     const orbit = controls.current, next = goal.current;
     if (!orbit || !next) return;
@@ -110,18 +127,34 @@ function InspectorRig({ model, command, reducedMotion }: { model: SentinelModelD
   return null;
 }
 
-function HeroRig({ model, reducedMotion }: { model: SentinelModelDefinition; reducedMotion: boolean }) {
+function HeroRig({ model, reducedMotion, subject }: { model: SentinelModelDefinition; reducedMotion: boolean; subject: MutableRefObject<Group | null> }) {
   const { camera, gl, invalidate } = useThree();
   const controls = useRef<OrbitControls | null>(null);
+  const size = useThree(state => state.size);
+  const fitted = useRef<{ target: Vector3; position: Vector3 } | null>(null);
+  useLayoutEffect(() => {
+    if (!subject.current) return;
+    const bounds = assemblyBounds(subject.current);
+    if (bounds.isEmpty()) return;
+    const direction = controls.current ? camera.position.clone().sub(controls.current.target)
+      : new Vector3(...model.cameras.hero.position).sub(new Vector3(...model.cameras.hero.target));
+    const angles = new Spherical().setFromVector3(direction);
+    const pose = fitBounds(bounds, (camera as PerspectiveCamera).fov, size.width / size.height, angles.theta, angles.phi);
+    fitted.current = pose;
+    camera.position.copy(pose.position);
+    camera.lookAt(pose.target);
+    if (controls.current) { controls.current.target.copy(pose.target); controls.current.update(); }
+    invalidate();
+  }, [camera, invalidate, model, size.width, size.height, subject]);
   useEffect(() => {
-    const pose = model.cameras.hero;
-    camera.position.set(...pose.position);
-    camera.lookAt(...pose.target);
+    const pose = fitted.current ?? { position: new Vector3(...model.cameras.hero.position), target: new Vector3(...model.cameras.hero.target) };
+    camera.position.copy(pose.position);
+    camera.lookAt(pose.target);
     // Touch drags must keep scrolling the page, so orbiting is offered to fine pointers only.
     if (!window.matchMedia('(pointer: fine)').matches) { invalidate(); return; }
     const orbit = new OrbitControls(camera, gl.domElement);
     controls.current = orbit;
-    orbit.target.set(...pose.target);
+    orbit.target.copy(pose.target);
     orbit.update();
     const polar = orbit.getPolarAngle();
     Object.assign(orbit, { enableZoom: false, enablePan: false, enableDamping: !reducedMotion, dampingFactor: 0.07, rotateSpeed: 0.5, minPolarAngle: polar - 0.25, maxPolarAngle: polar + 0.18 });
@@ -245,6 +278,7 @@ export function SentinelStage({
   variant, cutoutStatus, label, model = activeSentinelModel, detail = 'full', reducedMotion = false, activePart = null,
   hotspots = [], command, scrollProgress, paused = false, onPartHover, onPartSelect, onContextLost,
 }: SentinelStageProps) {
+  const subject = useRef<Group>(null);
   const ModelComponent = model.Component;
   const hero = variant === 'hero';
   const pose = model.cameras[variant];
@@ -273,7 +307,7 @@ export function SentinelStage({
       <directionalLight position={[-4, 4, -3]} intensity={1.3} color="#b8a8ff" />
     </>}
     <HeroMotion reducedMotion={!hero || reducedMotion} scrollProgress={scrollProgress}>
-      <group
+      <group ref={subject}
         onPointerOver={event => { const part = pointerPart(event); if (part) { document.body.style.cursor = 'pointer'; onPartHover?.(part); } }}
         onPointerOut={event => { event.stopPropagation(); document.body.style.cursor = ''; onPartHover?.(null); }}
         onClick={event => { const part = pointerPart(event); if (part) onPartSelect?.(part); }}
@@ -283,7 +317,7 @@ export function SentinelStage({
       {hotspots.length ? <Hotspots model={model} hotspots={hotspots} activePart={activePart} onHover={onPartHover} onSelect={onPartSelect} compact={!hero} /> : null}
     </HeroMotion>
     {hero ? <Motes count={detail === 'low' ? 90 : 220} reducedMotion={reducedMotion} /> : <ContactShadow radius={2.4} />}
-    {hero ? <HeroRig model={model} reducedMotion={reducedMotion} /> : <InspectorRig model={model} command={command} reducedMotion={reducedMotion} />}
+    {hero ? <HeroRig model={model} reducedMotion={reducedMotion} subject={subject} /> : <InspectorRig model={model} command={command} reducedMotion={reducedMotion} subject={subject} />}
     <ContextGuard onContextLost={onContextLost} />
   </Canvas>;
 }

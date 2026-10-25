@@ -1,7 +1,7 @@
 import { Component, forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState, type ErrorInfo, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { PerformanceMonitor } from '@react-three/drei';
-import { NeutralToneMapping } from 'three';
+import { NeutralToneMapping, type Group } from 'three';
 import type { CutoutStatus } from '../../../../contracts/types';
 import { CameraDirector, type Director, type SubjectOffset } from './CameraDirector';
 import { Hotspots } from './Hotspots';
@@ -86,6 +86,8 @@ export const SentinelScene = forwardRef<SentinelSceneHandle, SentinelSceneProps>
   const container = useRef<HTMLDivElement>(null);
   const visible = useInView(container);
   const director = useRef<Director | null>(null);
+  const assembly = useRef<Group>(null);
+  const [hovered, setHovered] = useState<SentinelPartId | null>(null);
   const [ready, setReady] = useState(!intro || reducedMotion);
   const [constrained, setConstrained] = useState(false);
   const hero = mode === 'hero';
@@ -127,9 +129,11 @@ export const SentinelScene = forwardRef<SentinelSceneHandle, SentinelSceneProps>
           <ContextWatcher onLost={onLost} />
           <IntroExposure play={playIntro} exposure={EXPOSURE[mode]} duration={hero ? 1.6 : 0.7} />
           <Stage mode={mode} detail={detail} />
-          <SentinelAssembly mode={mode} focus={focus} cutoutStatus={cutoutStatus} link={link} reducedMotion={reducedMotion} interactive={interactive} igniteDelay={playIntro ? (hero ? 1.1 : 0.4) : 0} onSelect={select} />
-          <CameraDirector mode={mode} focus={focus} reducedMotion={reducedMotion} intro={playIntro} interactive={interactive} subjectOffset={subjectOffset} directorRef={director} onIntroComplete={handleIntroComplete} />
-          {hotspots ? <Hotspots focus={focus} ready={ready} onSelect={select} variant={mode} /> : null}
+          <group ref={assembly}>
+            <SentinelAssembly hoveredPart={hovered} mode={mode} focus={focus} cutoutStatus={cutoutStatus} link={link} reducedMotion={reducedMotion} interactive={interactive} igniteDelay={playIntro ? (hero ? 1.1 : 0.4) : 0} onSelect={select} />
+            {hotspots ? <Hotspots onHoverChange={setHovered} focus={focus} ready={ready} onSelect={select} variant={mode} /> : null}
+          </group>
+          <CameraDirector assemblyRef={assembly} mode={mode} focus={focus} reducedMotion={reducedMotion} intro={playIntro} interactive={interactive} subjectOffset={subjectOffset} directorRef={director} onIntroComplete={handleIntroComplete} />
           {hero && detail === 'high' ? <PerformanceMonitor onDecline={() => setConstrained(true)} /> : null}
         </DetailProvider>
       </Canvas>

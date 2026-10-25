@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, type MutableRefObject } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, type MutableRefObject, type RefObject } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import CameraControlsImpl from 'camera-controls';
-import { Box3, MathUtils, Matrix4, Quaternion, Raycaster, Sphere, Spherical, Vector2, Vector3, Vector4, type PerspectiveCamera } from 'three';
+import { Box3, MathUtils, Matrix4, Quaternion, Raycaster, Sphere, Spherical, Vector2, Vector3, Vector4, type PerspectiveCamera, type Group } from 'three';
 import { OVERVIEW_SHOT, PART_STAGING, type CameraShot, type SentinelFocus } from './parts';
+import { assemblyBounds, fitBounds } from './framing';
 import type { SentinelMode } from './Stage';
 
 CameraControlsImpl.install({ THREE: { Box3, MathUtils: { clamp: MathUtils.clamp }, Matrix4, Quaternion, Raycaster, Sphere, Spherical, Vector2, Vector3, Vector4 } });
@@ -38,6 +39,7 @@ export function framePose(shot: CameraShot, fov: number, aspect: number, offset:
 }
 
 interface CameraDirectorProps {
+  assemblyRef: RefObject<Group>;
   mode: SentinelMode;
   focus: SentinelFocus;
   reducedMotion: boolean;
@@ -48,7 +50,7 @@ interface CameraDirectorProps {
   onIntroComplete?: () => void;
 }
 
-export function CameraDirector({ mode, focus, reducedMotion, intro, interactive, subjectOffset, directorRef, onIntroComplete }: CameraDirectorProps) {
+export function CameraDirector({ assemblyRef, mode, focus, reducedMotion, intro, interactive, subjectOffset, directorRef, onIntroComplete }: CameraDirectorProps) {
   const camera = useThree(state => state.camera) as PerspectiveCamera;
   const gl = useThree(state => state.gl);
   const invalidate = useThree(state => state.invalidate);
@@ -60,7 +62,7 @@ export function CameraDirector({ mode, focus, reducedMotion, intro, interactive,
   const introCallback = useRef(onIntroComplete);
   introCallback.current = onIntroComplete;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     controls.connect(gl.domElement);
     controls.draggingSmoothTime = 0.12;
     controls.smoothTime = SMOOTH.interaction;
@@ -74,7 +76,7 @@ export function CameraDirector({ mode, focus, reducedMotion, intro, interactive,
     controls.truckSpeed = 1;
     controls.restThreshold = 0.003;
     controls.dollyToCursor = mode === 'inspection';
-    controls.setBoundary(new Box3(new Vector3(-1.6, 4.4, -1.6), new Vector3(1.6, 10, 1.6)));
+    if (assemblyRef.current) controls.setBoundary(assemblyBounds(assemblyRef.current).expandByScalar(1));
     const inspect = mode === 'inspection' && interactive;
     controls.mouseButtons.left = interactive ? ACTION.ROTATE : ACTION.NONE;
     controls.mouseButtons.right = inspect ? ACTION.TRUCK : ACTION.NONE;
@@ -100,14 +102,22 @@ export function CameraDirector({ mode, focus, reducedMotion, intro, interactive,
       gl.domElement.removeEventListener('wheel', wheel);
       controls.disconnect();
     };
-  }, [controls, gl, interactive, mode]);
+  }, [assemblyRef, controls, gl, interactive, mode]);
 
   useEffect(() => () => controls.dispose(), [controls]);
 
   const director = useMemo<Director>(() => ({
     goTo(target, options = {}) {
       const instant = options.instant || reducedMotion;
-      const pose = framePose(shotFor(mode, target), camera.fov, camera.aspect, live.current.offset);
+      const shot = shotFor(mode, target);
+      const bounds = target === 'overview' && assemblyRef.current ? assemblyBounds(assemblyRef.current) : null;
+      const pose = bounds && !bounds.isEmpty()
+        ? fitBounds(bounds, camera.fov, camera.aspect, shot.azimuth, shot.polar, live.current.offset)
+        : framePose(shot, camera.fov, camera.aspect, live.current.offset);
+      // Portrait fitting can legitimately need more distance than the former 11/15m cap.
+      controls.maxDistance = Math.max(controls.maxDistance, pose.distance * 2);
+      camera.far = Math.max(90, pose.distance * 3);
+      camera.updateProjectionMatrix();
       controls.smoothTime = options.smoothTime ?? SMOOTH.transition;
       live.current.userControlled = false;
       live.current.swayStart = performance.now();
@@ -127,16 +137,15 @@ export function CameraDirector({ mode, focus, reducedMotion, intro, interactive,
       void controls.dolly(direction * controls.distance * 0.22, !reducedMotion);
       invalidate();
     },
-  }), [camera, controls, invalidate, mode, reducedMotion]);
+  }), [assemblyRef, camera, controls, invalidate, mode, reducedMotion]);
 
   useEffect(() => { directorRef.current = director; return () => { if (directorRef.current === director) directorRef.current = null; }; }, [director, directorRef]);
 
   // Runs once per camera rig. Later focus and framing changes are handled by the effects below.
   const opening = useRef({ director, mode, intro: !live.current.introDone });
-  useEffect(() => {
+  useLayoutEffect(() => {
     const { director: rig, mode: openingMode, intro: playIntro } = opening.current;
     const l = live.current;
-    const home = shotFor(openingMode, l.focus);
     if (!playIntro) {
       rig.goTo(l.focus, { instant: true });
       l.introDone = true;
@@ -144,11 +153,7 @@ export function CameraDirector({ mode, focus, reducedMotion, intro, interactive,
       return undefined;
     }
     const hero = openingMode === 'hero';
-    const start = framePose({ ...home, azimuth: home.azimuth + (hero ? 0.95 : 0.35), polar: home.polar + (hero ? 0.18 : 0.08), radius: home.radius * (hero ? 1.55 : 1.18) }, camera.fov, camera.aspect, l.offset);
-    const settled = framePose(home, camera.fov, camera.aspect, l.offset);
-    void controls.setLookAt(start.position.x, start.position.y, start.position.z, start.target.x, start.target.y - (hero ? 0.5 : 0.15), start.target.z, false);
-    void controls.setFocalOffset(settled.focal.x, settled.focal.y, 0, false);
-    controls.update(0);
+    rig.goTo(l.focus, { instant: true });
     rig.goTo(l.focus, { smoothTime: hero ? SMOOTH.intro : SMOOTH.transition * 0.9 });
     const timer = window.setTimeout(() => { l.introDone = true; introCallback.current?.(); }, hero ? 1900 : 900);
     return () => window.clearTimeout(timer);
@@ -167,7 +172,7 @@ export function CameraDirector({ mode, focus, reducedMotion, intro, interactive,
     lastFrame.current = { width: size.width, height: size.height, offsetKey };
     const resized = previous.width !== size.width || previous.height !== size.height;
     if (!resized && previous.offsetKey === offsetKey) return;
-    if (!live.current.userControlled && live.current.introDone) director.goTo(live.current.focus, resized ? { instant: true } : undefined);
+    if ((resized || !live.current.userControlled) && live.current.introDone) director.goTo(live.current.focus, resized ? { instant: true } : undefined);
   }, [director, offsetKey, size.height, size.width]);
 
   useFrame((state, delta) => {

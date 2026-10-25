@@ -75,7 +75,7 @@ export function Crossarm({ highlight }: PartProps) {
       <Lathe profile={PIN_INSULATOR_PROFILE} material={kit.porcelain} position={topPinBase} segments={36} />
     </group>
     {conductors.map((origin, i) => <group key={i}>
-      <Cable points={spanPoints(origin, SPAN.far, SPAN.near, 0.9)} radius={detail === 'high' ? 0.0068 : 0.0095} material={conductorMaterial} tubular={detail === 'high' ? 140 : 48} radial={8} />
+      <Cable name="overhead-span" points={spanPoints(origin, SPAN.far, SPAN.near, 0.9)} radius={detail === 'high' ? 0.0068 : 0.0095} material={conductorMaterial} tubular={detail === 'high' ? 140 : 48} radial={8} />
       <mesh position={origin} material={kit.conductor}><torusGeometry args={[0.014, 0.0028, 6, 14]} /></mesh>
     </group>)}
   </group>;

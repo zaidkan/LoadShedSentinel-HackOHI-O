@@ -270,3 +270,6 @@ console.log('All frontend integration and customer dashboard checks passed.');
 
 // Route loading, graphics recovery, visibility and supply-path isolation.
 await import('./test-performance.mjs');
+
+// Actual assembly bounds, camera controls and marker geometry.
+await import('./test-framing.mjs');
