@@ -5,6 +5,7 @@ import { AssetViewport } from '../three/AssetViewport';
 import { FeederMap } from '../components/map/FeederMap';
 import { SupplyPath } from '../components/map/SupplyPath';
 import { TelemetryHUD } from '../components/utility/TelemetryHUD';
+import { FieldTriageCard } from '../components/utility/FieldTriageCard';
 import { EvidencePanel } from '../components/utility/EvidencePanel';
 import { PlanningPanels } from '../components/utility/PlanningPanels';
 import { DecisionSummary } from '../components/utility/DecisionSummary';
@@ -128,6 +129,7 @@ export function UtilityPage({ snapshot, onSnapshotChange, onSelectScenario }: Ut
       </section>
       <details className="utility-comparison"><summary>Compare demonstration scenarios</summary><CounterfactualCompareCard snapshot={snapshot} onSelectScenario={onSelectScenario} /></details>
       <SourceLegend snapshot={snapshot} />
+      <FieldTriageCard snapshot={snapshot} />
       <footer className="utility-footer"><span>Demonstration · operator review required · no live dispatch</span><span>{snapshot.incident_id} / revision {snapshot.revision}</span></footer>
     </div>
   </section>;

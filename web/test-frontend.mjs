@@ -16,6 +16,7 @@ const { build } = require('esbuild');
 await build({
   entryPoints: [
     resolve(root, 'src/components/utility/PlanningPanels.tsx'),
+    resolve(root, 'src/components/utility/FieldTriageCard.tsx'),
     resolve(root, 'src/components/utility/TelemetryHUD.tsx'),
     resolve(root, 'src/components/utility/EvidencePanel.tsx'),
     resolve(root, 'src/components/utility/CounterfactualCompareCard.tsx'),
@@ -32,6 +33,7 @@ await build({
   external: ['react', 'react/jsx-runtime', 'lucide-react', 'three', '@react-three/fiber', '@react-three/drei'],
 });
 
+const { FieldTriageCard } = require(resolve(root, 'dist-test/components/utility/FieldTriageCard.cjs'));
 const { PlanningPanels } = require(resolve(root, 'dist-test/components/utility/PlanningPanels.cjs'));
 const { TelemetryHUD } = require(resolve(root, 'dist-test/components/utility/TelemetryHUD.cjs'));
 const { EvidencePanel } = require(resolve(root, 'dist-test/components/utility/EvidencePanel.cjs'));
@@ -274,6 +276,53 @@ await regression('Customer light surface has readable heading/body/secondary ink
     assert.ok((Math.max(a, b) + .05) / (Math.min(a, b) + .05) >= 4.5, `${ink} on ${bg} needs 4.5:1`);
   }
 });
+const triage = snapshot => renderToStaticMarkup(React.createElement(FieldTriageCard, { snapshot }));
+await regression('Field triage shows modeled hybrid power, uplink, Wi-Fi and Jev engine', () => {
+  const html = triage(fixture);
+  for (const text of ['Solar + Liquid Energy Hybrid', 'Satellite Cloud Uplink + Local Crew Wi-Fi AP', 'Cloud Jev Decision-Native Model', 'TypeSafe AI; Non-LLM, sub-ms yes/no probabilities', 'Modeled Field Sensor Telemetry (Jev Decision Engine Gateway)', 'Modeled fixture probability 88%', 'modeled node link: online']) {
+    assert.ok(html.toLowerCase().includes(text.toLowerCase()), text);
+  }
+  assert.equal((html.match(/<li>/g) ?? []).length, 3);
+  assert.match(html, /aria-labelledby="field-triage-heading"/);
+});
+await regression('Jev fixture mappings match all four scenarios and preserve each binary score', () => {
+  const scenarios = {
+    local_protection: [['Cutout Fuse Gate Assembly', 'YES', 88], ['Transformer Secondary Bushing', 'NO', 12], ['Surge Arrester Ground Path', 'NO', 7]],
+    upstream_feeder: [['Upstream Lateral Tap / Recloser', 'YES', 91], ['Cutout Switch Terminal', 'NO', 15], ['Line Insulator Crossarm', 'NO', 9]],
+    confirmed_replacement: [['25-kVA Pole Transformer Core', 'YES', 96], ['Secondary Service Drop', 'YES', 78], ['Neutral Conductor Clamp', 'NO', 14]],
+    insufficient_evidence: [['Cutout Switch Air Gap', 'YES', 54], ['Primary Riser Cable Shield', 'NO', 42], ['Tank Ground Connection', 'NO', 28]],
+  };
+  for (const [scenario_id, expected] of Object.entries(scenarios)) {
+    const snapshot = { ...fixture, scenario_id, current_asset_id: 'CURRENT-ASSET', revision: 9 };
+    const before = JSON.stringify(snapshot), html = triage(snapshot);
+    assert.equal((html.match(/<li>/g) ?? []).length, 3);
+    for (const [name, decision, probability] of expected) {
+      assert.match(html, new RegExp(`<strong>${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</strong><span><b data-decision="${decision}">${decision}</b> · Modeled fixture probability ${probability}%`));
+    }
+    assert.match(html, /CURRENT-ASSET · revision 9/);
+    assert.match(html, /Deterministic scenario fixture/);
+    assert.equal(JSON.stringify(snapshot), before);
+  }
+});
+await regression('Unknown Jev scenarios show no predictions or made-up values', () => {
+  const html = triage({ ...fixture, scenario_id: 'unmapped_scenario' });
+  assert.match(html, /No Jev fixture is defined for unmapped_scenario/);
+  assert.doesNotMatch(html, /<li>|Modeled fixture probability \d+%/);
+});
+await regression('Jev triage labels the power, communications, engine and purpose as modeled', () => {
+  const html = triage(fixture);
+  for (const label of ['Power Source', 'Solar + Liquid Energy Hybrid', 'Comms', 'Satellite Cloud Uplink + Local Crew Wi-Fi AP', 'Cloud Jev Decision-Native Model', 'TypeSafe AI; Non-LLM, sub-ms yes/no probabilities']) assert.ok(html.includes(label), label);
+  assert.match(html, /Modeled Field Sensor Telemetry \(Jev Decision Engine Gateway\)/);
+  assert.match(html, /does not authorize work or switching/);
+});
+await regression('Field triage is wired at the bottom of the operator page only', async () => {
+  const operator = await readFile(resolve(root, 'src/pages/UtilityPage.tsx'), 'utf8');
+  const customer = await readFile(resolve(root, 'src/pages/CustomerPage.tsx'), 'utf8');
+  assert.ok(operator.indexOf('<FieldTriageCard snapshot={snapshot} />') > operator.indexOf('<SourceLegend snapshot={snapshot} />'));
+  assert.ok(operator.indexOf('<FieldTriageCard snapshot={snapshot} />') < operator.indexOf('<footer'));
+  assert.doesNotMatch(customer, /FieldTriageCard|field-triage/);
+});
+
 if (remediationFailures) throw new Error(`${remediationFailures} UI regressions failed`);
 
 // Customer household-generation races and loaded dashboard states.
