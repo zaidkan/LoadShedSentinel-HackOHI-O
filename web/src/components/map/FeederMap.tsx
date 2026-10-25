@@ -91,6 +91,31 @@ const CUTOUT_TEXT: Record<CutoutStatus, string> = {
   UNKNOWN: 'Cutout position unknown · energization unconfirmed',
 };
 
+const MAP_HEIGHT = 320, CELL_INSET_X = 96, CELL_INSET_Y = 56, CELL_STEP_X = 78, CELL_STEP_Y = 76;
+
+interface GeneralizedCell { key: string; position: Position; center: Position; width: number; height: number; tokens: string[] }
+
+/** Generalized coordinates put several devices in one grid cell; spread them inside the cell instead of stacking them. */
+function generalizedCells(topology: FeederTopology, project: (p: Position) => Position) {
+  const groups = new Map<string, MapNode[]>();
+  for (const node of topology.nodes) {
+    const key = node.position.join(',');
+    groups.set(key, [...(groups.get(key) ?? []), node]);
+  }
+  const placed = new Map<string, Position>(), cells: GeneralizedCell[] = [];
+  for (const [key, members] of groups) {
+    const center = project(members[0].position);
+    const columns = Math.min(members.length, 3), rows = Math.ceil(members.length / columns);
+    members.forEach((node, index) => {
+      const column = index % columns, row = Math.floor(index / columns);
+      const inRow = row === rows - 1 ? members.length - row * columns : columns;
+      placed.set(node.token, [center[0] + (column - (inRow - 1) / 2) * CELL_STEP_X, center[1] + (row - (rows - 1) / 2) * CELL_STEP_Y]);
+    });
+    if (members.length > 1) cells.push({ key, position: members[0].position, center, width: columns * CELL_STEP_X + 8, height: rows * CELL_STEP_Y + 10, tokens: members.map(node => node.token) });
+  }
+  return { placed, cells };
+}
+
 export interface FeederMapProps { snapshot: ScenarioSnapshot; topology?: unknown }
 
 /** Topology is optional for fixture/parent injection; otherwise load the sanitized public endpoint. */
@@ -119,21 +144,40 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
     if (data === undefined) return null;
     try { return parseFeederTopology(data); } catch { return null; }
   }, [data]);
-  const project = useMemo(() => parsed ? fitFeederCoordinates(parsed, width) : null, [parsed, width]);
+  const project = useMemo(() => {
+    if (!parsed) return null;
+    const base = fitFeederCoordinates(parsed, width - CELL_INSET_X * 2, MAP_HEIGHT - CELL_INSET_Y * 2);
+    return (p: Position): Position => { const [x, y] = base(p); return [x + CELL_INSET_X, y + CELL_INSET_Y]; };
+  }, [parsed, width]);
+  const cells = useMemo(() => parsed && project ? generalizedCells(parsed, project) : null, [parsed, project]);
   const loadFailed = (topology === undefined && failed) || (data !== undefined && !parsed);
   const current = parsed?.nodes.find(node => node.token === snapshot.current_asset_id);
   const active = parsed?.nodes.find(node => node.token === (hovered || inspected)) || current || parsed?.nodes[0];
   const inspect = (token: string) => { setInspected(token); setHovered(null); };
-  return <section className="utility-feeder utility-panel" aria-labelledby={`${uid}-heading`}>
-    <div className="utility-panel-heading"><div><h2 id={`${uid}-heading`}>Feeder circuit</h2><p>Equipment locations and upstream supply relationships</p></div><span className="utility-badge utility-badge-neutral">Topology</span></div>
-    <div className="utility-feeder-body" ref={host}>
-      {loadFailed ? <div className="utility-feeder-empty" role="status"><p>Network topology could not be loaded.</p>{topology === undefined ? <button type="button" onClick={() => setAttempt(value => value + 1)}>Retry topology</button> : <p>Supply a valid GeoJSON FeatureCollection.</p>}</div>
-        : !parsed ? <p className="utility-feeder-empty" role="status">Loading network topology…</p>
-        : !parsed.nodes.length && !parsed.links.length ? <p className="utility-feeder-empty" role="status">No equipment geometry supplied. Topology status: {parsed.status}.</p>
+  return <section className="console-block feeder" aria-labelledby={`${uid}-heading`}>
+    <header className="block-head block-head--split">
+      <div>
+        <h2 id={`${uid}-heading`} className="console-h2"><em>Equipment</em> locations</h2>
+        <p className="block-sub">Generalized positions of the sample equipment. Only the inspected asset carries a supplied cutout state.</p>
+      </div>
+      {parsed ? <span className="tag" data-source={parsed.provenance === 'aep_challenge' ? 'aep_challenge' : undefined}>{parsed.provenance === 'aep_challenge' ? 'AEP challenge' : parsed.provenance.replace(/_/g, ' ')}</span> : null}
+    </header>
+    <div className="feeder-body" ref={host}>
+      {loadFailed ? <div className="feeder-empty" role="status"><p>Network topology could not be loaded.</p>{topology === undefined ? <button type="button" className="btn btn--small" onClick={() => setAttempt(value => value + 1)}>Retry topology</button> : <p>Supply a valid GeoJSON FeatureCollection.</p>}</div>
+        : !parsed ? <p className="feeder-empty" role="status">Loading network topology…</p>
+        : !parsed.nodes.length && !parsed.links.length ? <p className="feeder-empty" role="status">No equipment geometry supplied. Topology status: {parsed.status}.</p>
         : <>
-          <svg viewBox={`0 0 ${width} 300`} className="utility-feeder-svg" role="group" aria-labelledby={`${uid}-title ${uid}-description`}>
-            <title id={`${uid}-title`}>Feeder network topology</title><desc id={`${uid}-description`}>Arrows show supplied upstream to downstream relationships, not measured power flow. Focus or select equipment to inspect it. Only the current asset has a supplied cutout state.</desc>
-            <defs><marker id={`${uid}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5 0 10Z" fill="currentColor" /></marker></defs>
+          <svg viewBox={`0 0 ${width} ${MAP_HEIGHT}`} className="feeder-svg" role="group" aria-labelledby={`${uid}-title ${uid}-description`}>
+            <title id={`${uid}-title`}>Equipment locations</title><desc id={`${uid}-description`}>Generalized equipment positions. Arrows, when supplied, show upstream to downstream relationships, not measured power flow. Focus or select equipment to inspect it. Only the current asset has a supplied cutout state.</desc>
+            <defs>
+              <marker id={`${uid}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5 0 10Z" fill="currentColor" /></marker>
+              <pattern id={`${uid}-grid`} width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" className="feeder-grid-line" /></pattern>
+            </defs>
+            <rect width={width} height={MAP_HEIGHT} fill={`url(#${uid}-grid)`} />
+            {cells?.cells.map(cell => <g key={cell.key} className="feeder-cell" aria-hidden="true">
+              <rect x={cell.center[0] - cell.width / 2} y={cell.center[1] - cell.height / 2 - 8} width={cell.width} height={cell.height + 32} rx="14" />
+              <text x={cell.center[0] - cell.width / 2 + 10} y={cell.center[1] - cell.height / 2 - 14}>Cell {cell.position[1].toFixed(2)}°, {cell.position[0].toFixed(2)}° · {cell.tokens.length} devices</text>
+            </g>)}
             {parsed.links.map((link, index) => {
               const positions = link.positions.map(p => project!(p));
               // Shorten the last segment so the arrow remains visible outside the node's hit area.
@@ -142,34 +186,35 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
                 const length = Math.hypot(end[0] - before[0], end[1] - before[1]);
                 if (length > 25) positions[positions.length - 1] = [end[0] - (end[0] - before[0]) * 25 / length, end[1] - (end[1] - before[1]) * 25 / length];
               }
-              return <polyline key={index} className={`utility-feeder-link${link.directed ? '' : ' utility-feeder-link-unknown'}`} points={positions.map(p => p.join(',')).join(' ')} markerEnd={link.directed ? `url(#${uid}-arrow)` : undefined}><title>{link.directed ? `${link.upstream} supplies ${link.downstream} · topology only` : 'Link direction unavailable'}</title></polyline>;
+              return <polyline key={index} className={`feeder-link${link.directed ? '' : ' feeder-link--unknown'}`} points={positions.map(p => p.join(',')).join(' ')} markerEnd={link.directed ? `url(#${uid}-arrow)` : undefined}><title>{link.directed ? `${link.upstream} supplies ${link.downstream} · topology only` : 'Link direction unavailable'}</title></polyline>;
             })}
             {parsed.nodes.map(node => {
-              const [x, y] = project!(node.position), selected = node.token === snapshot.current_asset_id;
+              const [x, y] = cells?.placed.get(node.token) ?? project!(node.position), selected = node.token === snapshot.current_asset_id;
               const description = `${node.token} · ${node.label} · ${selected ? CUTOUT_TEXT[snapshot.cutout_status] : 'Energization not supplied'}`;
               return <g key={node.token} transform={`translate(${x} ${y})`} role="button" tabIndex={0} aria-label={description} aria-pressed={active?.token === node.token}
-                className={`utility-feeder-node${selected ? ` utility-feeder-current utility-feeder-${snapshot.cutout_status.toLowerCase()}` : ''}`}
+                className="feeder-node" data-current={selected || undefined} data-state={selected ? snapshot.cutout_status.toLowerCase() : undefined}
                 onMouseEnter={() => setHovered(node.token)} onMouseLeave={() => setHovered(null)} onFocus={() => setHovered(node.token)} onBlur={() => setHovered(null)}
                 onClick={() => inspect(node.token)} onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); inspect(node.token); } }}>
-                <title>{description}</title><circle className="utility-feeder-hit" r="22" />{selected ? <circle className="utility-feeder-selection" r="18" /> : null}<g className="utility-feeder-symbol"><NodeSymbol kind={node.kind} /></g>
-                <text y="37" textAnchor="middle">{selected ? 'Current asset' : node.kind === 'other' ? 'Equipment' : node.kind.charAt(0).toUpperCase() + node.kind.slice(1)}</text>
+                <title>{description}</title><circle className="feeder-hit" r="22" />{selected ? <circle className="feeder-selection" r="18" /> : null}<g className="feeder-symbol"><NodeSymbol kind={node.kind} /></g>
+                <text y="34" textAnchor="middle">{selected ? 'Current asset' : node.kind === 'other' ? 'Equipment' : node.kind.charAt(0).toUpperCase() + node.kind.slice(1)}</text>
+                <text y="47" textAnchor="middle" className="feeder-token">…{node.token.slice(-8)}</text>
               </g>;
             })}
           </svg>
-          <div className="utility-feeder-inspector">
-            <label htmlFor={`${uid}-inspect`}>Inspect equipment</label>
-            <select id={`${uid}-inspect`} value={active?.token || ''} onChange={event => inspect(event.target.value)}>{parsed.nodes.map(node => <option key={node.token} value={node.token}>{node.token} · {node.label}</option>)}</select>
-            <p role="status" aria-live="polite">{active ? <><strong>{active.label}</strong><span>{active.token === snapshot.current_asset_id ? CUTOUT_TEXT[snapshot.cutout_status] : 'Energization not supplied for this equipment.'}</span></> : 'No equipment points supplied.'}</p>
+          <div className="feeder-inspector">
+            <label className="field-label" htmlFor={`${uid}-inspect`}>Inspect equipment</label>
+            <select id={`${uid}-inspect`} className="select mono" value={active?.token || ''} onChange={event => inspect(event.target.value)}>{parsed.nodes.map(node => <option key={node.token} value={node.token}>{node.token} · {node.label}</option>)}</select>
+            <p role="status" aria-live="polite">{active ? <><strong>{active.label.charAt(0) + active.label.slice(1).toLowerCase().replace(/_/g, ' ')}</strong><span className="mono">{active.token}</span><span>{active.token === snapshot.current_asset_id ? CUTOUT_TEXT[snapshot.cutout_status] : 'Energization not supplied for this equipment.'}</span></> : 'No equipment points supplied.'}</p>
           </div>
         </>}
     </div>
-    {parsed ? <div className="utility-feeder-notes">
-      <p className="utility-feeder-legend"><span>Arrow: upstream → downstream</span><span>Outline: current asset</span><span>Other equipment: state not supplied</span></p>
+    {parsed ? <div className="feeder-notes">
+      <p className="feeder-legend"><span>Arrow: upstream → downstream</span><span>Ring: current asset</span><span>Other equipment: state not supplied</span>{!parsed.links.length ? <span>No links supplied in this slice; see the supply path above</span> : null}</p>
       {!current ? <p role="status">Current asset {snapshot.current_asset_id} is not located in this topology slice.</p> : null}
-      {parsed.missing.length ? <p>Missing equipment geometry: {parsed.missing.join(', ')}.</p> : null}
+      {parsed.missing.length ? <p>Missing equipment geometry: <span className="mono">{parsed.missing.join(', ')}</span>.</p> : null}
       {parsed.omitted ? <p>{parsed.omitted} unsupported or invalid features omitted.</p> : null}
       <p>{parsed.policy} Links show topology, not surveyed conductors or live energized status.</p>
-      <p>Source: {parsed.provenance.replace(/_/g, ' ')} · Topology status: {parsed.status}</p>
+      <p>Topology status: {parsed.status.toLowerCase()}</p>
     </div> : null}
   </section>;
 }

@@ -40,13 +40,13 @@ export function RangeChart({ lower, expected, upper, label, markers = [], bandLa
       <div className="range-chart-grid" aria-hidden="true">{ticks.map(tick => <span key={tick} style={{ left: at(tick) }} />)}</div>
       <div className="range-chart-lane">
         {hasBand ? <div className="range-chart-band" style={{ left: at(lower), width: `calc(${at(upper)} - ${at(lower)})` }}>
-          <span className="range-chart-band-label">{bandLabel} · {numberText(lower)}–{numberText(upper)} h</span>
+          <span className="range-chart-band-label">{bandLabel} · {numberText(lower, 2)}–{numberText(upper, 2)} h</span>
         </div> : <p className="range-chart-empty">No range supplied</p>}
-        {finite(expected) ? <div className="range-chart-expected" style={{ left: at(expected) }}><span>Expected {numberText(expected)} h</span></div> : null}
+        {finite(expected) ? <div className="range-chart-expected" style={{ left: at(expected) }}><span>Expected {numberText(expected, 2)} h</span></div> : null}
       </div>
       {markers.map(marker => <div className="range-chart-lane range-chart-lane--bar" key={marker.label}>
         <div className="range-chart-bar" data-tone={marker.tone} style={{ width: at(marker.value) }} />
-        <span className="range-chart-bar-label">{marker.label} · {numberText(marker.value)} h</span>
+        <span className="range-chart-bar-label">{marker.label} · {numberText(marker.value, 2)} h</span>
       </div>)}
       <div className="range-chart-axis" aria-hidden="true">{ticks.map(tick => <span key={tick} style={{ left: at(tick) }}>{numberText(tick)} h</span>)}</div>
     </div>

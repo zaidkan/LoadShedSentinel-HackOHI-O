@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type MutableRefObject, type ReactNode } from 'react';
 import { ArrowDown, CornerDownRight } from 'lucide-react';
-import type { Provenance, ScenarioSnapshot } from '../../../contracts/types';
+import type { Provenance } from '../../../contracts/types';
 import { useIncident } from '../app/incident';
 import { useMotion } from '../app/motion';
 import { useReveal } from '../app/reveal';
@@ -11,8 +11,9 @@ import { SiteHeader } from '../components/shell/SiteHeader';
 import { scenarioName, scenarioQualifier } from '../components/shell/IncidentBar';
 import { PROVENANCE, PROVENANCE_NOTE, hoursText, humanize, numberText, scoreText, tokenTail } from '../components/utility/presentation';
 import { SOURCE_FIGURES } from '../content/source-figures';
+import { incidentHotspots } from '../sentinel/hotspots';
 import { SentinelStage, WebGLBoundary, useWebGLSupport } from '../sentinel/SentinelStage';
-import type { SentinelHotspot, SentinelPartId } from '../sentinel/types';
+import type { SentinelPartId } from '../sentinel/types';
 import { fetchAEPSource, type AEPSourceSummary, type ScenarioMeta } from '../services/api';
 import { CUTOUT_VISUAL } from '../three/visual-state';
 import { PoleDiagram } from '../three/PoleDiagram';
@@ -42,18 +43,6 @@ function Horizon() {
   </svg>;
 }
 
-function heroHotspots(snapshot: ScenarioSnapshot | null): SentinelHotspot[] {
-  if (!snapshot) return [];
-  const status = snapshot.cutout_status;
-  const { solar } = snapshot;
-  return [
-    { part: 'cutout', label: 'Protective cutout', value: `${CUTOUT_VISUAL[status].label} · modeled`, tone: status === 'OPEN' ? 'open' : status === 'CLOSED' ? 'closed' : 'unknown' },
-    { part: 'transformer', label: 'Transformer', value: tokenTail(snapshot.current_asset_id), tone: 'neutral' },
-    { part: 'sensor-pod', label: 'Sensor node charge', value: `${numberText(solar.battery_soc_pct)}% · modeled`, tone: 'neutral' },
-    { part: 'solar-panel', label: 'Solar input', value: `${numberText(solar.solar_w)} W · modeled`, tone: 'neutral' },
-  ];
-}
-
 function Hero({ progress, paused }: { progress: MutableRefObject<number>; paused: boolean }) {
   const { snapshot, connectionError, retry, loading } = useIncident();
   const { reduced } = useMotion();
@@ -63,7 +52,7 @@ function Hero({ progress, paused }: { progress: MutableRefObject<number>; paused
   const [selectedPart, setSelectedPart] = useState<SentinelPartId>('cutout');
   const titleRef = useReveal<HTMLHeadingElement>({ intro: true, delay: 120 });
   const status = snapshot?.cutout_status ?? 'UNKNOWN';
-  const hotspots = useMemo(() => heroHotspots(snapshot), [snapshot]);
+  const hotspots = useMemo(() => incidentHotspots(snapshot), [snapshot]);
   const fallback = <div className="hero-fallback"><PoleDiagram status={status} /></div>;
   return <section className="hero" aria-labelledby="hero-title">
     <div className="hero-sky" aria-hidden="true"><span className="hero-cloud hero-cloud--a" /><span className="hero-cloud hero-cloud--b" /><span className="hero-cloud hero-cloud--c" /></div>

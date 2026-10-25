@@ -1,5 +1,6 @@
 import type { CutoutStatus } from '../../../contracts/types';
 import { CUTOUT_VISUAL } from './visual-state';
+import './pole-diagram.css';
 
 export function PoleDiagram({ status }: { status: CutoutStatus }) {
   const visual = CUTOUT_VISUAL[status];

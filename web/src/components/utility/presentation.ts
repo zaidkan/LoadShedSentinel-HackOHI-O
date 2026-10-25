@@ -18,6 +18,14 @@ export function utcText(value: string): string {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? 'Timestamp unavailable' : new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'UTC' }).format(date) + ' UTC';
 }
+/** Compact UTC stamp for dense rows: "Oct 24 · 18:00 UTC". */
+export function utcShort(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Time unavailable';
+  const day = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(date);
+  const time = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }).format(date);
+  return `${day} · ${time} UTC`;
+}
 export function evidenceValue(value: string | number | boolean | null): string {
   return value === null ? 'Unavailable' : typeof value === 'number' ? numberText(value, 2) : typeof value === 'boolean' ? value ? 'Yes' : 'No' : value;
 }
