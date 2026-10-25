@@ -58,6 +58,20 @@ figure {
   margin: 0;
 }
 
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+p,
+li,
+dd,
+blockquote {
+  text-wrap: pretty;
+}
+
 ul,
 ol {
   padding: 0;

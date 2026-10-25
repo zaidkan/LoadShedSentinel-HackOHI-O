@@ -83,8 +83,8 @@
 .hero-shade {
   position: absolute;
   inset: auto 0 0;
-  height: 36%;
-  background: linear-gradient(to top, rgb(12 10 29 / 0.82), rgb(12 10 29 / 0.3) 60%, transparent);
+  height: 52%;
+  background: linear-gradient(to top, rgb(12 10 29 / 0.86), rgb(12 10 29 / 0.55) 45%, transparent);
   pointer-events: none;
 }
 
@@ -142,7 +142,7 @@
 }
 
 .hero-title {
-  font-size: clamp(2.3rem, 7.1vw, 6rem);
+  font-size: clamp(2.3rem, 6.2vw, 5.25rem);
   text-shadow: 0 2px 14px rgb(12 10 29 / 0.45);
 }
 
@@ -165,11 +165,12 @@
 }
 
 .hero-descriptor {
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: var(--text-body);
   line-height: 1.5;
   color: var(--on-night);
   max-width: 34ch;
+  text-shadow: 0 1px 10px rgb(12 10 29 / 0.6);
+  text-wrap: pretty;
 }
 
 .hero-actions {
@@ -223,7 +224,7 @@
 
 @media (max-width: 560px) {
   .hero-descriptor {
-    font-size: 0.75rem;
+    font-size: var(--text-small);
   }
 
   .hero-actions .btn {

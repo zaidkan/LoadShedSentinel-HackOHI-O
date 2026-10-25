@@ -457,8 +457,7 @@
 
 .guidance-item[data-priority="immediate"] {
   padding: var(--space-4);
-  border: 0;
-  border-left: 3px solid var(--state-critical);
+  border: 1px solid var(--state-critical);
   border-radius: var(--radius-m);
   background: var(--state-critical-soft);
 }

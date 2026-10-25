@@ -308,7 +308,7 @@ export function SupplyPath({ snapshot }: SupplyPathProps) {
         <form className="supply-form" onSubmit={submit}>
           <label className="field">
             <span className="field-label">Trace any premise token</span>
-            <input className="input mono" value={query} onChange={event => setQuery(event.target.value)} placeholder="PREM-0B30A08C7266D4BF" spellCheck={false} autoComplete="off" />
+            <input className="input mono" value={query} onChange={event => setQuery(event.target.value)} placeholder="Anonymized AEP premise" spellCheck={false} autoComplete="off" />
           </label>
           <button type="submit" className="btn btn--small btn--accent" disabled={lookup.state === 'busy' || !query.trim()}>{lookup.state === 'busy' ? 'Tracing…' : 'Trace'}</button>
         </form>
