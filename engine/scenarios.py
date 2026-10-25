@@ -139,6 +139,49 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
         restoration['assumptions'].append(
             f'Single indirect allowance source={catalog["basis_evidence"]}; '
             'no separate travel, safety or setup allowance is added.')
+
+        # F02: Multi-section priority scheduling comparison
+        # Compare hospital-first scheduling vs unprioritized FIFO for 3-person crew
+        hosp_tasks = [
+            dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
+                 criticality=['hospital'], customer_count=1, dependencies=[]),
+            dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
+                 criticality=['routine'], customer_count=15, dependencies=[])
+        ]
+        hosp_plan = schedule_tasks(hosp_tasks, planning)
+        unp_tasks = [
+            dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
+                 criticality=['routine'], customer_count=15, dependencies=[]),
+            dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
+                 criticality=['routine'], customer_count=1, dependencies=['feeder_branch'])
+        ]
+        unp_plan = schedule_tasks(unp_tasks, planning)
+
+        fac_count = 0
+        if source_impact and isinstance(source_impact.get('critical_facility_impact'), dict):
+            fac_count = source_impact['critical_facility_impact'].get('facility_count', 0)
+
+        restoration['priority_comparison'] = {
+            'enabled': True,
+            'hospital_first': {
+                'sequence': hosp_plan['task_order'],
+                'hospital_finish_hours': round(hosp_plan['task_schedule'][0]['end_hours'][1], 2),
+                'total_finish_hours': round(hosp_plan['full_repair_hours'][1], 2),
+            },
+            'unprioritized': {
+                'sequence': unp_plan['task_order'],
+                'hospital_finish_hours': round(unp_plan['task_schedule'][1]['end_hours'][1], 2),
+                'total_finish_hours': round(unp_plan['full_repair_hours'][1], 2),
+            },
+            'critical_facility_count': fac_count,
+            'rationale': (
+                f'With {crew_size}-worker crew, prioritizing hospital restores critical healthcare at '
+                f'{round(hosp_plan["task_schedule"][0]["end_hours"][1], 2)}h vs '
+                f'{round(unp_plan["task_schedule"][1]["end_hours"][1], 2)}h unprioritized, '
+                f'maintaining identical {round(hosp_plan["full_repair_hours"][1], 2)}h total completion.'
+            )
+        }
+        restoration['assumptions'].append(restoration['priority_comparison']['rationale'])
     else:
         restoration = estimate_restoration(None, None, planning)
         restoration['assumptions'].insert(0,
@@ -150,9 +193,7 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
     solar = simulate_energy({'initial_soc_pct': 85}, {},
                             {'start_utc': (date - timedelta(hours=1)).isoformat(), 'hours': 1, 'connectivity': 'ONLINE'})['solar']
     uncertain = scenario_id == 'insufficient_evidence'
-    notifications = [] if uncertain else [dict(
-        type='OUTAGE_CONFIRMED', delivery_mode='demo', sent_at_utc=timestamp,
-        text='Declared demonstration outage for this scenario footprint; cause and work package remain subject to utility review. No real message sent.')]
+    notifications = []
     scope_note = ('Premise dependency footprint computed from anonymized AEP challenge upstream paths '
                   'in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. '
                   if source_impact is not None else

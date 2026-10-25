@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Optional, Union, Literal
+from typing import List, Optional, Union, Literal, Dict, Any
 from pydantic import BaseModel, Field
 
 Provenance = Literal[
@@ -61,6 +61,7 @@ class Restoration(BaseModel):
     labor_work_unit: Optional[str] = None
     assumptions: List[str] = Field(default_factory=list)
     last_updated_utc: str
+    priority_comparison: Optional[Dict[str, Any]] = None
 
 class SolarNode(BaseModel):
     battery_soc_pct: float

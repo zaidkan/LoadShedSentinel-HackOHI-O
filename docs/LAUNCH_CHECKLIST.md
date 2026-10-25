@@ -46,7 +46,7 @@
 - [x] **[UI Polish] Mobile Viewport & Map Target Bounds**:
   - Ensure SVG feeder map and 3D console preserve min 44px touch targets and zero horizontal scroll overflow on 390px mobile viewports.
 
-### Phase 1D: Workbook Labor Sourcing, Criticality Scheduling & Facility Linking (Latest Audit Remediations)
+### Phase 1D: Workbook Labor Sourcing, Criticality Scheduling & Facility Linking
 - [x] **[Labor #2 / Sourced Workbook Rates]**:
   - Wire workbook-backed 25-kVA transformer replacement package (sheet `Labor time material related!`, install `C21=1.188085` + removal `D21=0.806128` × 4.5 multiplier = 8.973957 person-hours, 2.991319 hours with 3 lineworkers) into `confirmed_replacement` scenario with exact workbook citations and rating disclaimer.
 - [x] **[Labor #4 / Criticality-Aware Task Scheduling]**:
@@ -61,16 +61,31 @@
 - [x] **[Materials #2 / Customer Uncertainty Copy & Alert Plan UI]**:
   - In `web/src/pages/CustomerPage.tsx`, update UNDER_REVIEW state copy to reflect active utility dispatch review, pending field verification, and display server-supplied `alert_plan` card with channels, cadence policy, and suppression reason.
 
+### Phase 1E: Person 5 Pre-Launch Audit Remediations (F01–F13)
+- [x] **[F01 / P0 - Advance Request Model & OpenAPI]**: Resolved `Union` import in `api/main.py`; verified `GET /openapi.json` (200) and `POST /api/scenario/advance` sensitivity calculations.
+- [x] **[F02 / P1 - Delivered Criticality Priority Sequencing]**: Connected multi-section scheduling comparison (hospital-first vs unprioritized) in `engine/scenarios.py` and rendered comparison in `PlanningPanels.tsx`.
+- [x] **[F03 / P1 - Atomic Advance Mutation]**: Restructured `advance_scenario` in `api/main.py` into a 4-phase atomic execution; rejected advance requests leave snapshot status and revision untouched.
+- [x] **[F04 / P1 - Fail-Closed AEP Data Loading]**: Replaced silent fallback in `api/main.py` with HTTP 503 unless explicit synthetic fixture flag is set.
+- [x] **[F05 / P2 - Single Notification Ownership & Dedup]**: Centralized lifecycle alert ownership in `NotificationFSM`; eliminated double-seeded outage confirmations and fake estimate updates.
+- [x] **[F06 / P2 - Alert Plan Eligibility & Escalation Policy]**: Aligned `alert_plan.eligible` for NORMAL status under elevated risk (pre-storm); distinguished RESTORED vs NORMAL suppression reasons; added escalation policy.
+- [x] **[F07 / P2 - Strict Request Field Validation]**: Added `model_config = {"extra": "forbid"}` across scenario and battery API request schemas to reject unsupported parameters.
+- [x] **[F08 / P2 - Inverter Efficiency Boundary Enforcement]**: Enforced strict `0.5 <= inverter_efficiency <= 1.0` validation with HTTP 400 rejection in `api/main.py`.
+- [x] **[F09 / P2 - Customer Privacy & Internal ID Redaction]**: Replaced direct internal asset ID interpolation in `alert_plan.basis` with customer-safe network description.
+- [x] **[F10 / P2 - UI Mobility & Accessibility Declaration]**: Added interactive `mobility_accessibility_needs` checkbox in `CustomerPage.tsx` to trigger tailored accessibility guidance.
+- [x] **[F11 / P1 - Accessible Form Programmatic Labels]**: Associated `<label htmlFor="...">` and matching `id` attributes on premise token and battery calculator numeric inputs.
+- [x] **[F12 / P2 - Narration & Documentation Alignment]**: Reconciled `README.md`, `judge_evidence.md`, and `LAUNCH_CHECKLIST.md` with 25-kVA / 3-worker / 8.97 person-hour reality.
+- [x] **[F13 / P2 - Feeder Map Coincident Node Separation]**: Added radial node offset distribution in `FeederMap.tsx` so coincident equipment markers do not overlap.
+
 ---
 
 ## 2. Pre-Launch Verification Gate (Release Criteria)
 
 - [x] **Backend Test Suite**:
   - Execute `.venv/bin/pytest -o pythonpath=. tests/`.
-  - Pass 100% of tests with exit code 0 (111/111 passed).
+  - Pass 100% of tests with exit code 0 (117/117 passed).
 - [x] **Frontend Production Build**:
   - Execute `cd web && npm run build` (`tsc && vite build`).
-  - Strict TypeScript check and clean bundle generation with exit code 0 (built in 2.26s).
+  - Strict TypeScript check and clean bundle generation with exit code 0 (built in 2.57s).
 - [x] **End-to-End Browser Playwright Suite**:
   - Run Playwright test script across all 4 scenarios, asset switches, crew/access sensitivity controls, customer concierge sync, and mobile viewports.
   - 13/13 browser test cases pass exit 0.

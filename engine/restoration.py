@@ -120,7 +120,8 @@ For multi-fault planning use context.tasks of {id,person_hours,crew_size,crew_id
     if not isinstance(timestamp, str) or not timestamp: raise ValueError('Explicit timestamp_utc required for deterministic output')
     _no_duplicate_indirect(context)
     result = dict(kind='unavailable', lower_hours=None, expected_hours=None, upper_hours=None,
-                  labor_work_hours=None, labor_work_unit=None, assumptions=[], last_updated_utc=timestamp)
+                  labor_work_hours=None, labor_work_unit=None, assumptions=[], last_updated_utc=timestamp,
+                  priority_comparison=None)
     try:
         tasks = context.get('tasks'); details = []
         if tasks is None:

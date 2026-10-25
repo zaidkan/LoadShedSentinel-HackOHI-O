@@ -140,9 +140,10 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
             </p>
           </div>
           <div className="min-w-0 md:text-right">
-            <span className="text-xs text-slate-500 block mb-1">Premise Location Token</span>
+            <label htmlFor="premise-location-token" className="text-xs text-slate-500 block mb-1">Premise Location Token</label>
             <div className="flex items-center gap-1.5">
               <input
+                id="premise-location-token"
                 type="text"
                 value={premiseToken}
                 onChange={(e) => setPremiseToken(e.target.value)}
@@ -305,10 +306,11 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           Declare special power dependencies. Guidance updates dynamically to prioritize life safety.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
             <input
               type="checkbox"
+              id="need-medical-device"
               checked={needs.life_critical_medical_device}
               onChange={(e) => setNeeds({ ...needs, life_critical_medical_device: e.target.checked })}
               className="rounded border-slate-700 text-rose-500 focus:ring-rose-500"
@@ -319,6 +321,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
             <input
               type="checkbox"
+              id="need-refrigerated-medication"
               checked={needs.refrigerated_medication}
               onChange={(e) => setNeeds({ ...needs, refrigerated_medication: e.target.checked })}
               className="rounded border-slate-700 text-amber-500 focus:ring-amber-500"
@@ -329,6 +332,18 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
             <input
               type="checkbox"
+              id="need-mobility-accessibility"
+              checked={needs.mobility_accessibility_needs}
+              onChange={(e) => setNeeds({ ...needs, mobility_accessibility_needs: e.target.checked })}
+              className="rounded border-slate-700 text-purple-500 focus:ring-purple-500"
+            />
+            <span className="text-sm text-slate-200">Mobility &amp; Accessibility Needs</span>
+          </label>
+
+          <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
+            <input
+              type="checkbox"
+              id="need-sump-pump"
               checked={needs.sump_pump}
               onChange={(e) => setNeeds({ ...needs, sump_pump: e.target.checked })}
               className="rounded border-slate-700 text-blue-500 focus:ring-blue-500"
@@ -372,8 +387,9 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Battery Nominal Capacity (Wh)</label>
+            <label htmlFor="battery-capacity-input" className="block text-xs font-semibold text-slate-400 mb-1">Battery Nominal Capacity (Wh)</label>
             <input
+              id="battery-capacity-input"
               type="number"
               value={needs.battery_capacity_wh}
               onChange={(e) => setNeeds({ ...needs, battery_capacity_wh: Number(e.target.value) })}
@@ -381,8 +397,9 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Continuous Critical Load (Watts)</label>
+            <label htmlFor="battery-load-input" className="block text-xs font-semibold text-slate-400 mb-1">Continuous Critical Load (Watts)</label>
             <input
+              id="battery-load-input"
               type="number"
               value={needs.essential_load_w}
               onChange={(e) => setNeeds({ ...needs, essential_load_w: Number(e.target.value) })}

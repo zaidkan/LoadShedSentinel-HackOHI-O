@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 import os
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Union
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -71,10 +71,12 @@ def get_topology() -> Optional[Topology]:
 def _load_initial_snapshot() -> ScenarioSnapshot:
     try:
         return generate_scenario("local_protection", {})
-    except Exception:
-        with open(FIXTURE_PATH, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return ScenarioSnapshot(**data)
+    except Exception as exc:
+        if os.getenv("SENTINEL_ALLOW_SYNTHETIC_FIXTURE") == "1" and os.path.exists(FIXTURE_PATH):
+            with open(FIXTURE_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return ScenarioSnapshot(**data)
+        raise HTTPException(status_code=503, detail=f"AEP source data unavailable: {exc}") from exc
 
 def get_snapshot() -> ScenarioSnapshot:
     global _current_snapshot
@@ -141,6 +143,7 @@ def aep_source_status():
 
 
 class SelectScenarioRequest(BaseModel):
+    model_config = {"extra": "forbid"}
     scenario_id: str
     asset_token: Optional[str] = None
     premise_token: Optional[str] = None
@@ -170,15 +173,21 @@ def select_scenario(req: SelectScenarioRequest):
     _current_context = context
     _current_snapshot = snapshot
 
+    restoration_summary = ""
+    if _current_snapshot.restoration.kind == 'scenario_planning' and _current_snapshot.restoration.expected_hours is not None:
+        restoration_summary = f"Expected duration {_current_snapshot.restoration.expected_hours:.1f} hours"
+
     new_alerts = _fsm.evaluate_triggers(
         premise_token=_current_snapshot.selected_premise_token,
         incident_id=_current_snapshot.incident_id,
         status=_current_snapshot.status,
         risk=_current_snapshot.customer_risk,
-        restoration_summary=f"Incident {req.scenario_id} declared in grid simulation",
+        restoration_summary=restoration_summary,
         timestamp_utc=_current_snapshot.timestamp_utc
     )
-    _current_snapshot.notifications.extend(new_alerts)
+    for alert in new_alerts:
+        if not any(n.type == alert.type and n.text == alert.text for n in _current_snapshot.notifications):
+            _current_snapshot.notifications.append(alert)
     return _current_snapshot
 
 
@@ -196,6 +205,7 @@ VALID_STATUSES = {"NORMAL", "AT_RISK", "OUTAGE", "UNDER_REVIEW", "RESTORED"}
 VALID_CUTOUTS = {"OPEN", "CLOSED", "UNKNOWN"}
 
 class AdvanceRequest(BaseModel):
+    model_config = {"extra": "forbid"}
     incident_id: Optional[str] = None
     expected_revision: Optional[int] = None
     status: Optional[str] = None
@@ -210,33 +220,33 @@ def advance_scenario(req: AdvanceRequest):
     global _current_snapshot, _current_context, _fsm
     snap = get_snapshot()
     
+    # 1. Validation phase (reject before mutating anything)
     if req.incident_id and req.incident_id != snap.incident_id:
         raise HTTPException(status_code=409, detail=f"Incident ID mismatch: current '{snap.incident_id}', requested '{req.incident_id}'")
     if req.expected_revision is not None and req.expected_revision != snap.revision:
         raise HTTPException(status_code=409, detail=f"Revision conflict: current {snap.revision}, expected {req.expected_revision}")
     
-    if req.status:
-        if req.status not in VALID_STATUSES:
-            raise HTTPException(status_code=400, detail=f"Invalid status '{req.status}'. Must be one of {sorted(VALID_STATUSES)}")
-        snap.status = req.status
-    if req.cutout_status:
-        if req.cutout_status not in VALID_CUTOUTS:
-            raise HTTPException(status_code=400, detail=f"Invalid cutout_status '{req.cutout_status}'. Must be one of {sorted(VALID_CUTOUTS)}")
-        snap.cutout_status = req.cutout_status
+    if req.status and req.status not in VALID_STATUSES:
+        raise HTTPException(status_code=400, detail=f"Invalid status '{req.status}'. Must be one of {sorted(VALID_STATUSES)}")
+    if req.cutout_status and req.cutout_status not in VALID_CUTOUTS:
+        raise HTTPException(status_code=400, detail=f"Invalid cutout_status '{req.cutout_status}'. Must be one of {sorted(VALID_CUTOUTS)}")
 
+    if req.crew_size is not None and (req.crew_size < 1 or req.crew_size > 100):
+        raise HTTPException(status_code=400, detail="crew_size must be between 1 and 100")
+    if req.access_hours is not None:
+        if isinstance(req.access_hours, (int, float)):
+            if req.access_hours < 0 or req.access_hours > 720:
+                raise HTTPException(status_code=400, detail="access_hours must be between 0 and 720")
+        elif isinstance(req.access_hours, list):
+            if not all(isinstance(x, (int, float)) and 0 <= x <= 720 for x in req.access_hours):
+                raise HTTPException(status_code=400, detail="access_hours elements must be between 0 and 720")
+        else:
+            raise HTTPException(status_code=400, detail="access_hours must be a number or list of numbers")
+
+    # 2. Context & restoration recalculation
+    new_restoration = snap.restoration
+    new_planning_inputs = snap.planning_inputs
     if req.crew_size is not None or req.access_hours is not None:
-        if req.crew_size is not None and (req.crew_size < 1 or req.crew_size > 100):
-            raise HTTPException(status_code=400, detail="crew_size must be between 1 and 100")
-        if req.access_hours is not None:
-            if isinstance(req.access_hours, (int, float)):
-                if req.access_hours < 0 or req.access_hours > 720:
-                    raise HTTPException(status_code=400, detail="access_hours must be between 0 and 720")
-            elif isinstance(req.access_hours, list):
-                if not all(isinstance(x, (int, float)) and 0 <= x <= 720 for x in req.access_hours):
-                    raise HTTPException(status_code=400, detail="access_hours elements must be between 0 and 720")
-            else:
-                raise HTTPException(status_code=400, detail="access_hours must be a number or list of numbers")
-
         ctx = dict(_current_context or {})
         if not ctx:
             try:
@@ -250,21 +260,34 @@ def advance_scenario(req: AdvanceRequest):
         _current_context = ctx
 
         updated_snap = generate_scenario(snap.scenario_id, ctx)
-        snap.restoration = updated_snap.restoration
-        snap.planning_inputs = updated_snap.planning_inputs
+        new_restoration = updated_snap.restoration
+        new_planning_inputs = updated_snap.planning_inputs
 
+    # 3. Apply state changes atomically
+    if req.status:
+        snap.status = req.status
+    if req.cutout_status:
+        snap.cutout_status = req.cutout_status
+    snap.restoration = new_restoration
+    snap.planning_inputs = new_planning_inputs
     snap.revision += 1
     
-    # Evaluate notifications via FSM
+    # 4. Evaluate notifications via FSM
+    rest_sum = req.restoration_summary or ""
+    if not rest_sum and snap.restoration.kind == 'scenario_planning' and snap.restoration.expected_hours is not None:
+        rest_sum = f"Expected duration {snap.restoration.expected_hours:.1f} hours"
+
     new_alerts = _fsm.evaluate_triggers(
         premise_token=snap.selected_premise_token,
         incident_id=snap.incident_id,
         status=snap.status,
         risk=snap.customer_risk,
-        restoration_summary=req.restoration_summary or "",
+        restoration_summary=rest_sum,
         timestamp_utc=snap.timestamp_utc
     )
-    snap.notifications.extend(new_alerts)
+    for alert in new_alerts:
+        if not any(n.type == alert.type and n.text == alert.text for n in snap.notifications):
+            snap.notifications.append(alert)
     return snap
 
 @app.post("/api/scenario/reset")
@@ -295,6 +318,7 @@ def get_network_geojson():
     return get_aep_impact().geojson()
 
 class BatteryCalcRequest(BaseModel):
+    model_config = {"extra": "forbid"}
     capacity_wh: float
     usable_fraction: float = 0.85
     device_w: float
@@ -304,6 +328,14 @@ class BatteryCalcRequest(BaseModel):
 @app.post("/api/customer/battery-runtime")
 def battery_runtime(req: BatteryCalcRequest):
     """Calculates continuous runtime and conservative reserve for home battery planning."""
+    if not (0.0 <= req.usable_fraction <= 1.0):
+        raise HTTPException(status_code=400, detail="usable_fraction must be between 0.0 and 1.0")
+    if not (0.5 <= req.inverter_efficiency <= 1.0):
+        raise HTTPException(status_code=400, detail="inverter_efficiency must be between 0.5 and 1.0")
+    if req.device_w < 0:
+        raise HTTPException(status_code=400, detail="device_w must be non-negative")
+    if req.capacity_wh < 0:
+        raise HTTPException(status_code=400, detail="capacity_wh must be non-negative")
     return calculate_battery_runtime(
         capacity_wh=req.capacity_wh,
         usable_fraction=req.usable_fraction,

@@ -120,6 +120,32 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
     try { return parseFeederTopology(data); } catch { return null; }
   }, [data]);
   const project = useMemo(() => parsed ? fitFeederCoordinates(parsed, width) : null, [parsed, width]);
+  const nodeOffsets = useMemo(() => {
+    if (!parsed) return new Map<string, [number, number]>();
+    const groups = new Map<string, typeof parsed.nodes>();
+    for (const node of parsed.nodes) {
+      const key = `${node.position[0]},${node.position[1]}`;
+      const list = groups.get(key) || [];
+      list.push(node);
+      groups.set(key, list);
+    }
+    const offsets = new Map<string, [number, number]>();
+    for (const [, list] of groups) {
+      if (list.length === 1) {
+        offsets.set(list[0].token, [0, 0]);
+      } else {
+        const radius = 28;
+        list.forEach((node, idx) => {
+          const angle = (idx * 2 * Math.PI) / list.length - Math.PI / 2;
+          offsets.set(node.token, [
+            Math.round(Math.cos(angle) * radius),
+            Math.round(Math.sin(angle) * radius),
+          ]);
+        });
+      }
+    }
+    return offsets;
+  }, [parsed]);
   const loadFailed = (topology === undefined && failed) || (data !== undefined && !parsed);
   const current = parsed?.nodes.find(node => node.token === snapshot.current_asset_id);
   const active = parsed?.nodes.find(node => node.token === (hovered || inspected)) || current || parsed?.nodes[0];
@@ -145,7 +171,10 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
               return <polyline key={index} className={`utility-feeder-link${link.directed ? '' : ' utility-feeder-link-unknown'}`} points={positions.map(p => p.join(',')).join(' ')} markerEnd={link.directed ? `url(#${uid}-arrow)` : undefined}><title>{link.directed ? `${link.upstream} supplies ${link.downstream} · topology only` : 'Link direction unavailable'}</title></polyline>;
             })}
             {parsed.nodes.map(node => {
-              const [x, y] = project!(node.position), selected = node.token === snapshot.current_asset_id;
+              const base = project!(node.position);
+              const offset = nodeOffsets.get(node.token) || [0, 0];
+              const x = base[0] + offset[0], y = base[1] + offset[1];
+              const selected = node.token === snapshot.current_asset_id;
               const description = `${node.token} · ${node.label} · ${selected ? CUTOUT_TEXT[snapshot.cutout_status] : 'Energization not supplied'}`;
               return <g key={node.token} transform={`translate(${x} ${y})`} role="button" tabIndex={0} aria-label={description} aria-pressed={active?.token === node.token}
                 className={`utility-feeder-node${selected ? ` utility-feeder-current utility-feeder-${snapshot.cutout_status.toLowerCase()}` : ''}`}

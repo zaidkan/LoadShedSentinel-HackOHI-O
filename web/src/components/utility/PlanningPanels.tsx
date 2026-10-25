@@ -45,6 +45,23 @@ export function PlanningPanels({ snapshot, inputs, onInputsChange, pending, erro
           <div><dt>Upper</dt><dd>{duration(restoration.upper_hours)}</dd></div>
         </dl>}
         <p className="utility-workload">Labor: <strong>{restoration.labor_work_hours === null || !restoration.labor_work_unit ? 'Unavailable' : `${numberText(restoration.labor_work_hours)} ${restoration.labor_work_unit}`}</strong></p>
+        {restoration.priority_comparison?.enabled && (
+          <div className="utility-priority-box mt-3 p-3 rounded-lg bg-blue-950/30 border border-blue-800/40 text-xs text-blue-100 space-y-1.5">
+            <h4 className="font-semibold text-blue-300">Critical Facility Priority Sequencing</h4>
+            <p>{restoration.priority_comparison.rationale}</p>
+            <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+              <div>
+                <span className="text-slate-400 block">Hospital-first:</span>
+                <span className="text-emerald-400">{restoration.priority_comparison.hospital_first.hospital_finish_hours}h hospital</span> · {restoration.priority_comparison.hospital_first.total_finish_hours}h total
+              </div>
+              <div>
+                <span className="text-slate-400 block">Unprioritized:</span>
+                <span className="text-amber-400">{restoration.priority_comparison.unprioritized.hospital_finish_hours}h hospital</span> · {restoration.priority_comparison.unprioritized.total_finish_hours}h total
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-400 pt-1">Dispatcher authorization required prior to circuit switching.</p>
+          </div>
+        )}
         <details><summary>Assumptions behind this range</summary>{restoration.assumptions.length ? <ul>{restoration.assumptions.map((item, i) => <li key={i}>{item}</li>)}</ul> : <p className="utility-muted">No assumptions supplied.</p>}</details>
         <p className="utility-footnote">{restoration.kind === 'scenario_planning' ? 'Planning durations under supplied assumptions; no guaranteed restoration time. ' : ''}<time dateTime={restoration.last_updated_utc}>Updated {utcText(restoration.last_updated_utc)}</time></p>
       </div>

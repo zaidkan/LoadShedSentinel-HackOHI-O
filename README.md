@@ -24,12 +24,12 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
 3. **Procedural 3D Digital Twin & Utility Operator Console**:
    - Interactive Three.js/WebGL procedural utility pole, distribution transformer, sensor pod, and animated cutout fuse switch (latched energized vs 45° blown drop).
    - Source-derived schematic SVG feeder map visualizing provided upstream equipment relationships (not measured power flow or live state).
-   - Telemetry HUD with oil temperature, vibration harmonics, load factor, and ambient weather.
+   - Telemetry HUD with protective cutout state, modeled battery/solar status, and communications connectivity.
 
 4. **AI Residential Outage Concierge**:
    - Dynamic 4-state alert finite-state machine (`PRE_STORM`, `OUTAGE_CONFIRMED`, `ESTIMATE_UPDATED`, `RESTORATION_COMPLETE`).
    - Home battery runtime calculator budgeting critical household wattage against usable capacity and inverter losses.
-   - Household needs intake (refrigerated medication, medical devices, sump pumps) generating tailored preparedness guidance.
+   - Household needs intake (refrigerated medication, medical devices, mobility/accessibility, sump pumps) generating tailored preparedness guidance.
    - Strict privacy projection: zero customer PII or raw coordinates exposed to public network layers.
 
 ---
@@ -38,10 +38,10 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
 
 | Scenario | Incident ID | Cutout Switch | Root Cause Diagnosis | Crew Packaging |
 |---|---|---|---|---|
-| **1. Local Protection Fault** | `INC-2026-0881` | OPEN (45° drop) | Cutout fuse blown on transient lightning surge; transformer core healthy | 1 Line Crew (2 persons), bucket truck, replacement fuse link |
-| **2. Upstream Feeder Trip** | `INC-2026-0894` | CLOSED (energized) | Upstream recloser lockout; zero local transformer damage | Upstream Substation/Feeder Crew; avoids false transformer replacement |
-| **3. Confirmed Replacement** | `INC-2026-0902` | OPEN (blown) | Severe coil thermal runaway & tank rupture; physical replacement required | Crane Crew + Line Crew (4 persons), 50 kVA transformer replacement |
-| **4. Insufficient Evidence** | `INC-2026-0917` | UNKNOWN | Ambiguous telemetry; sensor signal degradation | Trouble Shooter patrol dispatched for physical inspection before commitment |
+| **1. Local Protection Fault** | `INC-2026-0881` | OPEN (45° drop) | Cutout fuse blown on transient surge; equipment condition unconfirmed | Line Crew (2 lineworkers), bucket truck, replacement fuse link |
+| **2. Upstream Feeder Trip** | `INC-2026-0894` | CLOSED (energized) | Upstream recloser lockout; does not infer local transformer replacement | Upstream Substation/Feeder Crew; avoids false local replacement |
+| **3. Confirmed Replacement** | `INC-2026-0902` | OPEN (blown) | Declared field confirmation; physical replacement required | Line Crew (3 lineworkers), 25 kVA transformer replacement (workbook rate: 8.97 person-hours) |
+| **4. Insufficient Evidence** | `INC-2026-0917` | UNKNOWN | Ambiguous telemetry; abstains from premature ETR commitment | Trouble Shooter patrol dispatched for physical inspection before commitment |
 
 ---
 

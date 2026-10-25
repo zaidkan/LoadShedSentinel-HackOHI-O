@@ -57,6 +57,21 @@ export interface Restoration {
   labor_work_unit: string | null;
   assumptions: string[];
   last_updated_utc: string;
+  priority_comparison?: {
+    enabled: boolean;
+    hospital_first: {
+      sequence: string[];
+      hospital_finish_hours: number;
+      total_finish_hours: number;
+    };
+    unprioritized: {
+      sequence: string[];
+      hospital_finish_hours: number;
+      total_finish_hours: number;
+    };
+    critical_facility_count: number;
+    rationale: string;
+  };
 }
 
 export interface SolarNode {
@@ -97,6 +112,16 @@ export interface ScenarioSnapshot {
     affected_count_in_sample: number;
     sample_premise_count: number;
     full_source_known_dependent_count: number | null;
+    critical_facility_impact?: {
+      status: string;
+      facility_count: number;
+      critical_facilities: Array<{
+        facility_name: string;
+        facility_type: string;
+        nearest_asset_id: string;
+        distance_km: number;
+      }>;
+    };
   } | null;
   customer_risk: {
     band: RiskBand;
