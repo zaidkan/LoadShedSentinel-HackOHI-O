@@ -8,8 +8,8 @@ pattern = r'^## (\d{2}:\d{2})–(\d{2}:\d{2}) — Person ([1-4]) — ([^\n]+)\n(
 segments = re.findall(pattern, script, re.M | re.S)
 assert len(segments) == 4, 'Exactly four timed speaker segments required'
 seconds = lambda value: int(value[:2]) * 60 + int(value[3:])
-roles = ['Data & Topology', 'Twin & Labor Engine', 'Utility Interface & Controls', 'Customer Concierge & Orchestration']
-expected_durations = [40, 45, 50, 45]
+roles = ['Problem & Data', 'Prevention & Evidence', 'Operator & Restoration', 'Customer & Household Plan']
+expected_durations = [25, 35, 80, 40]
 expected_words = []
 previous_end = 0
 results = []

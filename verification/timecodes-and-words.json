@@ -1,49 +1,49 @@
 {
   "passed": true,
   "total_seconds": 180,
-  "total_spoken_words": 400,
+  "total_spoken_words": 392,
   "delivery_seconds": 172,
   "silent_seconds": 8,
   "segments": [
     {
       "speaker": 1,
-      "role": "Data & Topology",
+      "role": "Problem & Data",
       "start": "00:00",
-      "end": "00:40",
-      "duration_seconds": 40,
-      "spoken_words": 92,
-      "delivery_seconds": 38,
-      "words_per_delivery_minute": 145.26
+      "end": "00:25",
+      "duration_seconds": 25,
+      "spoken_words": 60,
+      "delivery_seconds": 23,
+      "words_per_delivery_minute": 156.52
     },
     {
       "speaker": 2,
-      "role": "Twin & Labor Engine",
-      "start": "00:40",
-      "end": "01:25",
-      "duration_seconds": 45,
-      "spoken_words": 100,
-      "delivery_seconds": 43,
-      "words_per_delivery_minute": 139.53
+      "role": "Prevention & Evidence",
+      "start": "00:25",
+      "end": "01:00",
+      "duration_seconds": 35,
+      "spoken_words": 74,
+      "delivery_seconds": 33,
+      "words_per_delivery_minute": 134.55
     },
     {
       "speaker": 3,
-      "role": "Utility Interface & Controls",
-      "start": "01:25",
-      "end": "02:15",
-      "duration_seconds": 50,
-      "spoken_words": 104,
-      "delivery_seconds": 48,
-      "words_per_delivery_minute": 130.0
+      "role": "Operator & Restoration",
+      "start": "01:00",
+      "end": "02:20",
+      "duration_seconds": 80,
+      "spoken_words": 172,
+      "delivery_seconds": 78,
+      "words_per_delivery_minute": 132.31
     },
     {
       "speaker": 4,
-      "role": "Customer Concierge & Orchestration",
-      "start": "02:15",
+      "role": "Customer & Household Plan",
+      "start": "02:20",
       "end": "03:00",
-      "duration_seconds": 45,
-      "spoken_words": 104,
-      "delivery_seconds": 43,
-      "words_per_delivery_minute": 145.12
+      "duration_seconds": 40,
+      "spoken_words": 86,
+      "delivery_seconds": 38,
+      "words_per_delivery_minute": 135.79
     }
   ],
   "word_count_rule": "Whitespace-delimited words in the four quoted narration blocks only; numeric facts spelled out.",
