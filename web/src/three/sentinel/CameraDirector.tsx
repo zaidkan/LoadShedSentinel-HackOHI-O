@@ -80,10 +80,11 @@ export function CameraDirector({ mode, focus, reducedMotion, intro, interactive,
     controls.mouseButtons.right = inspect ? ACTION.TRUCK : ACTION.NONE;
     controls.mouseButtons.middle = inspect ? ACTION.DOLLY : ACTION.NONE;
     controls.mouseButtons.wheel = inspect ? ACTION.DOLLY : ACTION.NONE;
-    controls.touches.one = inspect ? ACTION.TOUCH_ROTATE : ACTION.NONE;
+    controls.touches.one = interactive ? ACTION.TOUCH_ROTATE : ACTION.NONE;
     controls.touches.two = inspect ? ACTION.TOUCH_DOLLY_TRUCK : ACTION.NONE;
     controls.touches.three = ACTION.NONE;
-    // Hero sits in a scrolling page: leave wheel and vertical touch pans to the document.
+    // Hero sits in a scrolling page: leave wheel and vertical touch pans to the document,
+    // so one-finger drags only orbit horizontally there.
     if (mode === 'hero') gl.domElement.style.touchAction = 'pan-y';
     const started = () => { live.current.userControlled = true; live.current.lastInteraction = performance.now(); controls.smoothTime = SMOOTH.interaction; };
     const wheel = () => { if (inspect) started(); };
