@@ -215,6 +215,7 @@ export const App: React.FC = () => {
             key={`${snapshot.incident_id}-${snapshot.current_asset_id}`}
             snapshot={snapshot}
             onSnapshotChange={next => setSnapshot(current => current === snapshot ? next : current)}
+            onSelectScenario={handleSelectScenario}
           />
         )}
       </main>

@@ -7,12 +7,14 @@ import { TelemetryHUD } from '../components/utility/TelemetryHUD';
 import { EvidencePanel } from '../components/utility/EvidencePanel';
 import { PlanningPanels } from '../components/utility/PlanningPanels';
 import { DecisionSummary } from '../components/utility/DecisionSummary';
+import { CounterfactualCompareCard } from '../components/utility/CounterfactualCompareCard';
 import { PROVENANCE } from '../components/utility/presentation';
 import '../components/utility/utility.css';
 
 export interface UtilityPageProps {
   snapshot: ScenarioSnapshot;
   onSnapshotChange: (snapshot: ScenarioSnapshot) => void;
+  onSelectScenario?: (scenarioId: string) => void;
 }
 
 const planningInputs = (snapshot: ScenarioSnapshot) => snapshot.planning_inputs ?? {
@@ -21,7 +23,7 @@ const planningInputs = (snapshot: ScenarioSnapshot) => snapshot.planning_inputs 
 };
 
 /** Planning controls request a revised canonical snapshot; no local restoration math. */
-export function UtilityPage({ snapshot, onSnapshotChange }: UtilityPageProps) {
+export function UtilityPage({ snapshot, onSnapshotChange, onSelectScenario }: UtilityPageProps) {
   const [inputs, setInputs] = useState(planningInputs(snapshot));
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
@@ -65,6 +67,7 @@ export function UtilityPage({ snapshot, onSnapshotChange }: UtilityPageProps) {
     <a href="#utility-evidence-heading" className="utility-skip-link">Skip model and review incident evidence</a>
     <div className="utility-content">
       <DecisionSummary snapshot={snapshot} />
+      <CounterfactualCompareCard snapshot={snapshot} onSelectScenario={onSelectScenario} />
       <nav className="utility-review-nav" aria-label="Incident review steps"><a href="#utility-telemetry-heading">Modeled telemetry</a><a href="#utility-evidence-heading">Diagnosis & uncertainty</a><a href="#utility-work-heading">Review-only work package</a><a href="#utility-feeder-heading">Feeder context</a></nav>
       <section className="utility-review-section" aria-labelledby="utility-telemetry-heading">
         <div className="utility-section-heading"><h2 id="utility-telemetry-heading">Modeled telemetry</h2><p>Inspect the equipment and simulated inputs before reviewing a cause.</p></div>
