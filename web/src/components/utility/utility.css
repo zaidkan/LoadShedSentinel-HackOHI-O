@@ -938,12 +938,19 @@
 }
 
 .crew-reason {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
   margin: var(--space-5) 0 0;
-  padding: var(--space-1) 0 var(--space-1) var(--space-4);
-  border-left: 2px solid var(--accent);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
   color: var(--ink-2);
   font-size: var(--text-small);
   line-height: 1.55;
+}
+
+.crew-reason p {
+  max-width: 72ch;
 }
 
 /* Locations and legend */
@@ -1099,7 +1106,7 @@
   .block-head--split > .tag,
   .block-head--split > .state {
     justify-self: start;
-    grid-row: 1;
+    grid-row: 2;
   }
 
   .console-meta {

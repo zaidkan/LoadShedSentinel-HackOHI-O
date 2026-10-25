@@ -73,7 +73,10 @@ export function PlanningPanels({ snapshot }: { snapshot: ScenarioSnapshot }) {
           {crew.material_categories.length ? <ul className="crew-list">{crew.material_categories.map((item, i) => <li key={i}>{sentenceCase(item)}</li>)}</ul> : <p className="muted small">No materials supplied.</p>}
         </div>
       </div>
-      <blockquote className="crew-reason"><p>{crew.reason}</p></blockquote>
+      <div className="crew-reason">
+        <span className="state" data-state="unknown">Human review required</span>
+        <p>{crew.reason}</p>
+      </div>
     </section>
   </div>;
 }

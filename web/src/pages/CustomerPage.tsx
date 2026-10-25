@@ -160,8 +160,8 @@ export function CustomerPage({ snapshot: scenarioSnapshot, scenarioId }: Custome
   return <div className="cust">
     <section className="cust-hero page" aria-labelledby="cust-status">
       <div className="cust-hero-main">
-        <span className="state" data-state={view.status.toLowerCase()}>{sentenceCase(view.status)} · simulated</span>
         <h1 id="cust-status" className="display display-l"><em>{lead}</em> {rest}</h1>
+        <span className="state" data-state={view.status.toLowerCase()}>{sentenceCase(view.status)} · simulated</span>
         <p className="lead">{statusBody(view)}</p>
       </div>
       <aside className="cust-premise" aria-label="This premise">
