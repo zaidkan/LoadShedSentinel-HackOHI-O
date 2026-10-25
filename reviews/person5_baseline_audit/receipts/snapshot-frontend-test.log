@@ -1,0 +1,33 @@
+
+> loadshed-sentinel-web@1.0.0 test
+> node test-frontend.mjs
+
+(node:11220) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+--- Test 1: PlanningPanels component rendering & states ---
+✔ PlanningPanels basic render passed
+--- Test 2: CustomerPage initial loading state ---
+✔ CustomerPage initial loading state render passed
+--- Test 3: TelemetryHUD & EvidencePanel component rendering ---
+✔ TelemetryHUD and EvidencePanel renders passed
+--- Test 3: API Service session isolation headers ---
+✔ Session header attachment passed
+--- Test 4: advanceScenario parameter serialization ---
+✔ advanceScenario serialized action and blocker parameters passed
+--- Test 5: CounterfactualCompareCard rendering & hypotheses ---
+✔ CounterfactualCompareCard render & hypotheses verified
+(node:11220) Warning: `--localstorage-file` was provided without a valid path
+✔ Customer: new household generation wins when older requests finish last
+✔ Customer: input mutation invalidates responses before effects run
+✔ Customer: stale failures and finally handlers cannot replace current success/loading
+✔ Customer: invalid load and no-battery choices clear estimates and reject pending results
+✔ Customer: current errors are actionable and retry reads the current inputs
+✔ Customer: malformed battery responses cannot become a runtime estimate
+✔ Customer: snapshot refresh rejects an older scenario response and reports failure
+✔ Customer: unmount invalidates both household response handlers
+✔ Customer: stored values are type-checked and household edits persist
+✔ Customer: all service states are plain English and estimates are suppressed under review
+✔ Customer: priority guidance, battery units/assumptions and notification honesty are visible
+✔ Customer: service, battery and guidance error/loading states have labels and recovery
+Customer dashboard regression tests passed (12/12).
+All frontend integration and customer dashboard checks passed.

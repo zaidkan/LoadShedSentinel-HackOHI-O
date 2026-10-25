@@ -1,0 +1,2918 @@
+{
+  "passed": false,
+  "results": [
+    {
+      "case": "Source scope and facility proximity-association boundary",
+      "passed": true,
+      "details": {
+        "sample": 16,
+        "offline_paths": 117549,
+        "facilities": {
+          "count": 52,
+          "kinds": {
+            "HOSPITAL": 5,
+            "FIRE": 37,
+            "AMBULANCE": 10
+          },
+          "status": "ASSUMED"
+        }
+      }
+    },
+    {
+      "case": "Independent workbook XML: C21+D21, single 4.5 multiplier and elapsed units",
+      "passed": true,
+      "details": {
+        "sha256": "e11fb199592bf26ef7f6e0bd11fab3de00265cde7649fc9b9a0cd54fc2e96e3b",
+        "cells": {
+          "C21": 1.1880851063829778,
+          "D21": 0.8061276595744681
+        },
+        "multiplier": 4.5,
+        "person_hours": 8.973957446808507,
+        "elapsed_at_3": 2.991319148936169
+      }
+    },
+    {
+      "case": "Scenario and customer projection: local_protection",
+      "passed": true,
+      "details": {
+        "status": "OUTAGE",
+        "cutout": "OPEN",
+        "affected": 3,
+        "crew_basis": "diagnostic_hypothesis",
+        "capabilities": [
+          "qualified distribution line troubleshooting"
+        ],
+        "restoration": "unavailable"
+      }
+    },
+    {
+      "case": "Scenario and customer projection: upstream_feeder",
+      "passed": true,
+      "details": {
+        "status": "OUTAGE",
+        "cutout": "CLOSED",
+        "affected": 16,
+        "crew_basis": "diagnostic_hypothesis",
+        "capabilities": [
+          "qualified feeder and protection investigation"
+        ],
+        "restoration": "unavailable"
+      }
+    },
+    {
+      "case": "Scenario and customer projection: confirmed_replacement",
+      "passed": true,
+      "details": {
+        "status": "OUTAGE",
+        "cutout": "OPEN",
+        "affected": 3,
+        "crew_basis": "field_confirmed",
+        "capabilities": [
+          "qualified distribution line and transformer replacement",
+          "approved isolation and lifting coordination"
+        ],
+        "restoration": "scenario_planning"
+      }
+    },
+    {
+      "case": "Scenario and customer projection: insufficient_evidence",
+      "passed": true,
+      "details": {
+        "status": "UNDER_REVIEW",
+        "cutout": "UNKNOWN",
+        "affected": 0,
+        "crew_basis": "assessment_required",
+        "capabilities": [
+          "qualified distribution line assessment"
+        ],
+        "restoration": "unavailable"
+      }
+    },
+    {
+      "case": "All selectable transformers: varying source-derived footprints",
+      "passed": true,
+      "details": [
+        {
+          "asset": "ASSET-253FD0B7C3F209A9",
+          "sample_impact": 1,
+          "capabilities": [
+            "qualified distribution line troubleshooting"
+          ]
+        },
+        {
+          "asset": "ASSET-3D728064C2BE9061",
+          "sample_impact": 1,
+          "capabilities": [
+            "qualified distribution line troubleshooting"
+          ]
+        },
+        {
+          "asset": "ASSET-47FA2B5E062A42E6",
+          "sample_impact": 4,
+          "capabilities": [
+            "qualified distribution line troubleshooting"
+          ]
+        },
+        {
+          "asset": "ASSET-4D3811483AD1FB8F",
+          "sample_impact": 3,
+          "capabilities": [
+            "qualified distribution line troubleshooting"
+          ]
+        },
+        {
+          "asset": "ASSET-5405BE644B753F39",
+          "sample_impact": 5,
+          "capabilities": [
+            "qualified distribution line troubleshooting"
+          ]
+        },
+        {
+          "asset": "ASSET-B4735B2138B3CE7C",
+          "sample_impact": 2,
+          "capabilities": [
+            "qualified distribution line troubleshooting"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "Sensitivity, shared customer range and stale revision rejection",
+      "passed": true,
+      "details": [
+        {
+          "crew": 6,
+          "access": 0,
+          "expected": 1.4956595744680845
+        },
+        {
+          "crew": 6,
+          "access": 2,
+          "expected": 3.4956595744680845
+        }
+      ]
+    },
+    {
+      "case": "Restoration needs cleared blockers AND explicit simulated authorization",
+      "passed": true,
+      "details": {
+        "uncleared": 400,
+        "cleared_without_authorization": 400,
+        "cleared_and_authorized": 200
+      }
+    },
+    {
+      "case": "X-Session-ID state and reset isolation",
+      "passed": true,
+      "details": "Independent session state and reset verified"
+    },
+    {
+      "case": "Battery physics: efficiency, reserve, zero energy and invalid inputs",
+      "passed": false,
+      "error": "AssertionError()"
+    },
+    {
+      "case": "Projection privacy and source-bounded known/unknown lookup",
+      "passed": false,
+      "error": "AssertionError()"
+    }
+  ],
+  "evidence": {
+    "aep_source": {
+      "provenance": "aep_challenge",
+      "origin": "https://github.com/hackohio/aep_challenge_hack26",
+      "scope": "selected_subnet",
+      "premises_in_sample": 16,
+      "equipment_in_sample": 12,
+      "basis": "validated supplied upstream paths; not physical conductor geometry",
+      "is_live_outage_data": false,
+      "is_full_territory_impact_count": false,
+      "limitations": [
+        "Selected counts are not full-network impact counts.",
+        "GIS line context does not add electrical dependencies.",
+        "Historical damage Circuit labels do not match customer circuit_id; no circuit join is claimed.",
+        "NEAR_FID target layer is unverified; no damage-to-equipment assignment is claimed."
+      ]
+    },
+    "facility_summary": {
+      "count": 52,
+      "kinds": {
+        "HOSPITAL": 5,
+        "FIRE": 37,
+        "AMBULANCE": 10
+      },
+      "status": "ASSUMED"
+    },
+    "workbook": {
+      "sha256": "e11fb199592bf26ef7f6e0bd11fab3de00265cde7649fc9b9a0cd54fc2e96e3b",
+      "cells": {
+        "C21": 1.1880851063829778,
+        "D21": 0.8061276595744681
+      },
+      "multiplier": 4.5,
+      "person_hours": 8.973957446808507,
+      "elapsed_at_3": 2.991319148936169
+    },
+    "local_asset_matrix": [
+      {
+        "asset": "ASSET-253FD0B7C3F209A9",
+        "sample_impact": 1,
+        "capabilities": [
+          "qualified distribution line troubleshooting"
+        ]
+      },
+      {
+        "asset": "ASSET-3D728064C2BE9061",
+        "sample_impact": 1,
+        "capabilities": [
+          "qualified distribution line troubleshooting"
+        ]
+      },
+      {
+        "asset": "ASSET-47FA2B5E062A42E6",
+        "sample_impact": 4,
+        "capabilities": [
+          "qualified distribution line troubleshooting"
+        ]
+      },
+      {
+        "asset": "ASSET-4D3811483AD1FB8F",
+        "sample_impact": 3,
+        "capabilities": [
+          "qualified distribution line troubleshooting"
+        ]
+      },
+      {
+        "asset": "ASSET-5405BE644B753F39",
+        "sample_impact": 5,
+        "capabilities": [
+          "qualified distribution line troubleshooting"
+        ]
+      },
+      {
+        "asset": "ASSET-B4735B2138B3CE7C",
+        "sample_impact": 2,
+        "capabilities": [
+          "qualified distribution line troubleshooting"
+        ]
+      }
+    ],
+    "scenarios": {
+      "local_protection": {
+        "scenario_id": "local_protection",
+        "incident_id": "INC-DEMO-LOCAL_PROTECTION",
+        "revision": 1,
+        "current_asset_id": "ASSET-4D3811483AD1FB8F",
+        "selected_premise_token": "PREM-0B30A08C7266D4BF",
+        "timestamp_utc": "2026-10-24T18:00:00Z",
+        "cutout_status": "OPEN",
+        "status": "OUTAGE",
+        "evidence": [
+          {
+            "id": "INC-DEMO-LOCAL_PROTECTION:local_protection:E1",
+            "incident_id": "INC-DEMO-LOCAL_PROTECTION",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "cutout_state",
+            "value": "OPEN",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-LOCAL_PROTECTION:local_protection:E2",
+            "incident_id": "INC-DEMO-LOCAL_PROTECTION",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "temperature_state",
+            "value": "NORMAL",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          }
+        ],
+        "hypotheses": [
+          {
+            "code": "LOCAL_PROTECTION_OPERATION",
+            "score_type": "relative_evidence",
+            "score": 3.0,
+            "label": "Local protective device operated; equipment condition unconfirmed",
+            "supporting_evidence_ids": [
+              "INC-DEMO-LOCAL_PROTECTION:local_protection:E1"
+            ],
+            "contradicting_evidence_ids": [],
+            "missing_evidence": [
+              "current field assessment",
+              "utility protection record"
+            ],
+            "requires_field_confirmation": true
+          }
+        ],
+        "crew_recommendation": {
+          "capabilities": [
+            "qualified distribution line troubleshooting"
+          ],
+          "material_categories": [
+            "protective-device parts subject to field verification",
+            "approved assessment and protective equipment"
+          ],
+          "candidate_damage_class": "protection_or_unknown",
+          "basis": "diagnostic_hypothesis",
+          "approved": false,
+          "reason": "Protection operation does not identify damaged internals; inspect before replacement or re-energization. Human review required."
+        },
+        "restoration": {
+          "kind": "unavailable",
+          "lower_hours": null,
+          "expected_hours": null,
+          "upper_hours": null,
+          "labor_work_hours": null,
+          "labor_work_unit": null,
+          "assumptions": [
+            "No repair construction unit has been selected for this protection/interruption scenario; assessment is required before assigning a sourced workload or duration.",
+            "Missing verified work package or labor reference",
+            "No duration is fabricated from unknown hours, units, quantities or crew sizes."
+          ],
+          "last_updated_utc": "2026-10-24T18:00:00Z",
+          "priority_comparison": null
+        },
+        "planning_inputs": {
+          "crew_size": 2,
+          "access_hours": 0.0
+        },
+        "solar": {
+          "battery_soc_pct": 84.93414634146342,
+          "nominal_wh": 41.0,
+          "solar_w": 25.0,
+          "modeled_runtime_days": 53.7391975308642,
+          "buffered_events": 0,
+          "connectivity": "ONLINE",
+          "provenance": "modeled_sensor"
+        },
+        "affected_premise_tokens": [
+          "PREM-0B30A08C7266D4BF",
+          "PREM-18D896D9BA3A6742",
+          "PREM-9CD9B633192D8F1B"
+        ],
+        "impact_source": {
+          "provenance": "aep_challenge",
+          "scope": "selected_subnet",
+          "basis": "provided_upstream_sequence_not_live_outage",
+          "fault_asset_token": "ASSET-4D3811483AD1FB8F",
+          "fault_asset_kind": "TRANSFORMER",
+          "affected_count_in_sample": 3,
+          "sample_premise_count": 16,
+          "full_source_known_dependent_count": 3,
+          "critical_facility_impact": {
+            "status": "ASSUMED",
+            "facility_count": 7,
+            "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor.",
+            "critical_facilities": [
+              {
+                "facility_token": "CF-AMBULANCE-004",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-011",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-019",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-022",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-027",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 4,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-035",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-001",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              }
+            ]
+          }
+        },
+        "customer_risk": {
+          "band": "MODERATE",
+          "drivers": [
+            "wind_kph=70: 2/2 points",
+            "ambient_temperature_c=35: 1/2 points",
+            "transformer_load_factor=0.95: 1/2 points",
+            "health_index=80: 0/2 points",
+            "Score 4/8; LOW 0-2, MODERATE 3-5, HIGH 6-8.",
+            "Declared scenario inputs and prototype thresholds; not a measured probability or utility forecast."
+          ],
+          "confidence_kind": "declared_rule_not_calibrated"
+        },
+        "notifications": [
+          {
+            "type": "OUTAGE_CONFIRMED",
+            "text": "Power loss has been reported for your supply area as of Oct 24, 2026, 18:00 UTC. The suspected cause is under assessment by utility dispatch. Review your declared emergency plan and safety preparation steps.",
+            "delivery_mode": "demo",
+            "sent_at_utc": "2026-10-24T18:00:00Z"
+          }
+        ],
+        "disclosure": "Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. Premise dependency footprint computed from anonymized AEP challenge upstream paths in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. Planning ranges are not utility commitments; crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; modeled runtime is not verified hardware endurance."
+      },
+      "upstream_feeder": {
+        "scenario_id": "upstream_feeder",
+        "incident_id": "INC-DEMO-UPSTREAM_FEEDER",
+        "revision": 1,
+        "current_asset_id": "ASSET-4D3811483AD1FB8F",
+        "selected_premise_token": "PREM-0B30A08C7266D4BF",
+        "timestamp_utc": "2026-10-24T18:00:00Z",
+        "cutout_status": "CLOSED",
+        "status": "OUTAGE",
+        "evidence": [
+          {
+            "id": "INC-DEMO-UPSTREAM_FEEDER:upstream_feeder:E1",
+            "incident_id": "INC-DEMO-UPSTREAM_FEEDER",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "cutout_state",
+            "value": "CLOSED",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-UPSTREAM_FEEDER:upstream_feeder:E2",
+            "incident_id": "INC-DEMO-UPSTREAM_FEEDER",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "temperature_state",
+            "value": "NORMAL",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-UPSTREAM_FEEDER:upstream_feeder:E3",
+            "incident_id": "INC-DEMO-UPSTREAM_FEEDER",
+            "asset_id": "ASSET-364D878C367B313A",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "upstream_trip",
+            "value": true,
+            "unit": null,
+            "provenance": "scenario",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-UPSTREAM_FEEDER:upstream_feeder:E4",
+            "incident_id": "INC-DEMO-UPSTREAM_FEEDER",
+            "asset_id": "ASSET-364D878C367B313A",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "upstream_protection_state",
+            "value": "OPEN",
+            "unit": null,
+            "provenance": "scenario",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-UPSTREAM_FEEDER:upstream_feeder:E5",
+            "incident_id": "INC-DEMO-UPSTREAM_FEEDER",
+            "asset_id": "ASSET-364D878C367B313A",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "widespread_outage",
+            "value": true,
+            "unit": null,
+            "provenance": "scenario",
+            "quality": "modeled",
+            "visibility": "operator"
+          }
+        ],
+        "hypotheses": [
+          {
+            "code": "UPSTREAM_FEEDER_INTERRUPTION",
+            "score_type": "relative_evidence",
+            "score": 6.0,
+            "label": "Upstream interruption evidence; investigate feeder/protection",
+            "supporting_evidence_ids": [
+              "INC-DEMO-UPSTREAM_FEEDER:upstream_feeder:E3",
+              "INC-DEMO-UPSTREAM_FEEDER:upstream_feeder:E5"
+            ],
+            "contradicting_evidence_ids": [],
+            "missing_evidence": [
+              "current field assessment",
+              "utility protection record"
+            ],
+            "requires_field_confirmation": true
+          }
+        ],
+        "crew_recommendation": {
+          "capabilities": [
+            "qualified feeder and protection investigation"
+          ],
+          "material_categories": [
+            "feeder protection and switching context"
+          ],
+          "candidate_damage_class": "upstream_feeder",
+          "basis": "diagnostic_hypothesis",
+          "approved": false,
+          "reason": "Upstream trip evidence requires feeder investigation; no local transformer replacement inferred. Human review required."
+        },
+        "restoration": {
+          "kind": "unavailable",
+          "lower_hours": null,
+          "expected_hours": null,
+          "upper_hours": null,
+          "labor_work_hours": null,
+          "labor_work_unit": null,
+          "assumptions": [
+            "No repair construction unit has been selected for this protection/interruption scenario; assessment is required before assigning a sourced workload or duration.",
+            "Missing verified work package or labor reference",
+            "No duration is fabricated from unknown hours, units, quantities or crew sizes."
+          ],
+          "last_updated_utc": "2026-10-24T18:00:00Z",
+          "priority_comparison": null
+        },
+        "planning_inputs": {
+          "crew_size": 3,
+          "access_hours": 0.0
+        },
+        "solar": {
+          "battery_soc_pct": 84.93414634146342,
+          "nominal_wh": 41.0,
+          "solar_w": 25.0,
+          "modeled_runtime_days": 53.7391975308642,
+          "buffered_events": 0,
+          "connectivity": "ONLINE",
+          "provenance": "modeled_sensor"
+        },
+        "affected_premise_tokens": [
+          "PREM-0B30A08C7266D4BF",
+          "PREM-18D896D9BA3A6742",
+          "PREM-2C7D1FA7804104E9",
+          "PREM-3EB7CFB5FEE2F689",
+          "PREM-4254BDA0BDA3AE63",
+          "PREM-54D6D4F5EE7203DC",
+          "PREM-57377B41B7FF07B7",
+          "PREM-58C01E7EE6E78158",
+          "PREM-5BD748397AD95FC9",
+          "PREM-65407403B0C9216A",
+          "PREM-7965B5A1349D13E5",
+          "PREM-9CD9B633192D8F1B",
+          "PREM-B8DF9AD90151321C",
+          "PREM-E46129B8743DA751",
+          "PREM-EC8EC570B73A55C4",
+          "PREM-FC1CDDA2C3D68306"
+        ],
+        "impact_source": {
+          "provenance": "aep_challenge",
+          "scope": "selected_subnet",
+          "basis": "provided_upstream_sequence_not_live_outage",
+          "fault_asset_token": "ASSET-364D878C367B313A",
+          "fault_asset_kind": "CIRCUIT_BREAKER",
+          "affected_count_in_sample": 16,
+          "sample_premise_count": 16,
+          "full_source_known_dependent_count": 1563,
+          "critical_facility_impact": {
+            "status": "ASSUMED",
+            "facility_count": 52,
+            "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor.",
+            "critical_facilities": [
+              {
+                "facility_token": "CF-AMBULANCE-001",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 31,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-002",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 25,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-003",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 20,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-004",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-005",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 12,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-006",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 17,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-007",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 22,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-008",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 6,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-009",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 36,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-010",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-001",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 14,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-002",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 25,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-003",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 15,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-004",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 18,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-005",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 17,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-006",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-007",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 13,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-008",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 29,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-009",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 16,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-010",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-011",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-012",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-013",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 15,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-014",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 22,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-015",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 36,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-016",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-017",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 29,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-018",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 11,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-019",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-020",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 19,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-021",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 12,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-022",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-023",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 31,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-024",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 1,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-025",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 13,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-026",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 17,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-027",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 4,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-028",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 14,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-029",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 18,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-030",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-031",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 11,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-032",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 24,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-033",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 33,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-034",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 13,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-035",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-036",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 5,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-037",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-001",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-002",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 7,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-003",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-004",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 12,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-005",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 13,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              }
+            ]
+          }
+        },
+        "customer_risk": {
+          "band": "MODERATE",
+          "drivers": [
+            "wind_kph=70: 2/2 points",
+            "ambient_temperature_c=35: 1/2 points",
+            "transformer_load_factor=0.95: 1/2 points",
+            "health_index=80: 0/2 points",
+            "Score 4/8; LOW 0-2, MODERATE 3-5, HIGH 6-8.",
+            "Declared scenario inputs and prototype thresholds; not a measured probability or utility forecast."
+          ],
+          "confidence_kind": "declared_rule_not_calibrated"
+        },
+        "notifications": [
+          {
+            "type": "OUTAGE_CONFIRMED",
+            "text": "Power loss has been reported for your supply area as of Oct 24, 2026, 18:00 UTC. The suspected cause is under assessment by utility dispatch. Review your declared emergency plan and safety preparation steps.",
+            "delivery_mode": "demo",
+            "sent_at_utc": "2026-10-24T18:00:00Z"
+          }
+        ],
+        "disclosure": "Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. Premise dependency footprint computed from anonymized AEP challenge upstream paths in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. Planning ranges are not utility commitments; crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; modeled runtime is not verified hardware endurance."
+      },
+      "confirmed_replacement": {
+        "scenario_id": "confirmed_replacement",
+        "incident_id": "INC-DEMO-CONFIRMED_REPLACEMENT",
+        "revision": 1,
+        "current_asset_id": "ASSET-4D3811483AD1FB8F",
+        "selected_premise_token": "PREM-0B30A08C7266D4BF",
+        "timestamp_utc": "2026-10-24T18:00:00Z",
+        "cutout_status": "OPEN",
+        "status": "OUTAGE",
+        "evidence": [
+          {
+            "id": "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E1",
+            "incident_id": "INC-DEMO-CONFIRMED_REPLACEMENT",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "cutout_state",
+            "value": "OPEN",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E2",
+            "incident_id": "INC-DEMO-CONFIRMED_REPLACEMENT",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "temperature_state",
+            "value": "HOT",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E3",
+            "incident_id": "INC-DEMO-CONFIRMED_REPLACEMENT",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "acoustic_anomaly",
+            "value": true,
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E4",
+            "incident_id": "INC-DEMO-CONFIRMED_REPLACEMENT",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "vibration_anomaly",
+            "value": true,
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E5",
+            "incident_id": "INC-DEMO-CONFIRMED_REPLACEMENT",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "oil_condition",
+            "value": "boiling oil / internal distress in declared scenario",
+            "unit": null,
+            "provenance": "scenario",
+            "quality": "field_confirmed",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E6",
+            "incident_id": "INC-DEMO-CONFIRMED_REPLACEMENT",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "field_damage",
+            "value": "transformer",
+            "unit": null,
+            "provenance": "scenario",
+            "quality": "field_confirmed",
+            "visibility": "operator"
+          }
+        ],
+        "hypotheses": [
+          {
+            "code": "POSSIBLE_EQUIPMENT_DISTRESS",
+            "score_type": "relative_evidence",
+            "score": 14.0,
+            "label": "Possible equipment distress; qualified inspection required",
+            "supporting_evidence_ids": [
+              "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E2",
+              "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E3",
+              "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E4",
+              "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E6"
+            ],
+            "contradicting_evidence_ids": [],
+            "missing_evidence": [],
+            "requires_field_confirmation": false
+          },
+          {
+            "code": "LOCAL_PROTECTION_OPERATION",
+            "score_type": "relative_evidence",
+            "score": 3.0,
+            "label": "Local protective device operated; equipment condition unconfirmed",
+            "supporting_evidence_ids": [
+              "INC-DEMO-CONFIRMED_REPLACEMENT:confirmed_replacement:E1"
+            ],
+            "contradicting_evidence_ids": [],
+            "missing_evidence": [
+              "current field assessment",
+              "utility protection record"
+            ],
+            "requires_field_confirmation": true
+          }
+        ],
+        "crew_recommendation": {
+          "capabilities": [
+            "qualified distribution line and transformer replacement",
+            "approved isolation and lifting coordination"
+          ],
+          "material_categories": [
+            "correctly rated transformer",
+            "lifting and access equipment"
+          ],
+          "candidate_damage_class": "transformer_replacement",
+          "basis": "field_confirmed",
+          "approved": false,
+          "reason": "Scenario field-confirmation event; dispatcher must verify inventory, rating, access, qualifications and isolation; approval remains false."
+        },
+        "restoration": {
+          "kind": "scenario_planning",
+          "lower_hours": 2.2434893617021268,
+          "expected_hours": 2.991319148936169,
+          "upper_hours": 4.4869787234042535,
+          "labor_work_hours": 8.973957446808507,
+          "labor_work_unit": "person-hours",
+          "assumptions": [
+            "Declared scenario package for asset=ASSET-4D3811483AD1FB8F: one 25-kVA transformer, replace, quantity=1 construction_unit; rating is not verified from GIS. Workbook category average, subject to dispatcher review; associated equipment and assessment labor are outside this selected transformer component scope.",
+            "Labor source={'workbook': 'Install_Labor_HackOHIO.xlsx', 'workbook_sha256': 'e11fb199592bf26ef7f6e0bd11fab3de00265cde7649fc9b9a0cd54fc2e96e3b', 'sheet': 'Labor time material related', 'cells': ['C21', 'D21'], 'missing_cells': []}; operation=replace; quantity=1.0; quantity_unit=construction_unit.",
+            "raw_direct_hours=1.994212765957446; indirect_multiplier_applied=4.5; adjusted_person_hours=8.973957446808507; crew_size=3.",
+            "Earliest feasible start, then hospital/fire/ambulance priority, then descending customer_count, then task ID; each crew_id is exclusive. Missing priority metadata means routine/zero customers. No staffing optimization.",
+            "Duration factors low/expected/high=[0.75, 1.0, 1.5]; queue=[0.0, 0.0, 0.0]; non-overlapping access=[0.0, 0.0, 0.0]; energization=[0.0, 0.0, 0.0].",
+            "Person-hours include the single indirect allowance; no additional travel/setup/safety time.",
+            "Scenario ranges, not calibrated probabilities or an official restoration commitment.",
+            "Single indirect allowance source={'sheet': 'Indirect Labor Multiplier', 'cells': ['B1', 'A3'], 'instruction': 'The ILM should be mutiplied time any labor hours to take into account drive time, safety discussion time, set up time, etc.'}; no separate travel, safety or setup allowance is added.",
+            "Illustrative comparison: hospital_service=3 and feeder_branch=6 person-hours, independent tasks sharing one crew; these are not workbook repair workloads. Facility counts are association counts, not customer counts; hospital customer count is unknown (priority input 0). The routine branch uses the selected sample footprint size as a declared comparison input, not a disjoint service area. With 3-worker crew, prioritizing hospital restores critical healthcare at 1.0h vs 3.0h unprioritized, maintaining identical 3.0h total completion."
+          ],
+          "last_updated_utc": "2026-10-24T18:00:00Z",
+          "priority_comparison": {
+            "enabled": true,
+            "hospital_first": {
+              "sequence": [
+                "hospital_service",
+                "feeder_branch"
+              ],
+              "hospital_finish_hours": 1.0,
+              "total_finish_hours": 3.0
+            },
+            "unprioritized": {
+              "sequence": [
+                "feeder_branch",
+                "hospital_service"
+              ],
+              "hospital_finish_hours": 3.0,
+              "total_finish_hours": 3.0
+            },
+            "critical_facility_count": 7,
+            "rationale": "Illustrative comparison: hospital_service=3 and feeder_branch=6 person-hours, independent tasks sharing one crew; these are not workbook repair workloads. Facility counts are association counts, not customer counts; hospital customer count is unknown (priority input 0). The routine branch uses the selected sample footprint size as a declared comparison input, not a disjoint service area. With 3-worker crew, prioritizing hospital restores critical healthcare at 1.0h vs 3.0h unprioritized, maintaining identical 3.0h total completion."
+          }
+        },
+        "planning_inputs": {
+          "crew_size": 3,
+          "access_hours": 0.0
+        },
+        "solar": {
+          "battery_soc_pct": 84.93414634146342,
+          "nominal_wh": 41.0,
+          "solar_w": 25.0,
+          "modeled_runtime_days": 53.7391975308642,
+          "buffered_events": 0,
+          "connectivity": "ONLINE",
+          "provenance": "modeled_sensor"
+        },
+        "affected_premise_tokens": [
+          "PREM-0B30A08C7266D4BF",
+          "PREM-18D896D9BA3A6742",
+          "PREM-9CD9B633192D8F1B"
+        ],
+        "impact_source": {
+          "provenance": "aep_challenge",
+          "scope": "selected_subnet",
+          "basis": "provided_upstream_sequence_not_live_outage",
+          "fault_asset_token": "ASSET-4D3811483AD1FB8F",
+          "fault_asset_kind": "TRANSFORMER",
+          "affected_count_in_sample": 3,
+          "sample_premise_count": 16,
+          "full_source_known_dependent_count": 3,
+          "critical_facility_impact": {
+            "status": "ASSUMED",
+            "facility_count": 7,
+            "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor.",
+            "critical_facilities": [
+              {
+                "facility_token": "CF-AMBULANCE-004",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-011",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-019",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-022",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-027",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 4,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-035",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-001",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              }
+            ]
+          }
+        },
+        "customer_risk": {
+          "band": "HIGH",
+          "drivers": [
+            "wind_kph=70: 2/2 points",
+            "ambient_temperature_c=35: 1/2 points",
+            "transformer_load_factor=1.15: 2/2 points",
+            "health_index=35: 2/2 points",
+            "Score 7/8; LOW 0-2, MODERATE 3-5, HIGH 6-8.",
+            "Declared scenario inputs and prototype thresholds; not a measured probability or utility forecast."
+          ],
+          "confidence_kind": "declared_rule_not_calibrated"
+        },
+        "notifications": [
+          {
+            "type": "OUTAGE_CONFIRMED",
+            "text": "Power loss has been reported for your supply area as of Oct 24, 2026, 18:00 UTC. The suspected cause is under assessment by utility dispatch. Review your declared emergency plan and safety preparation steps.",
+            "delivery_mode": "demo",
+            "sent_at_utc": "2026-10-24T18:00:00Z"
+          },
+          {
+            "type": "ESTIMATE_UPDATED",
+            "text": "The restoration outlook changed: Expected duration 3.0 hours. We will provide updates as utility field crews confirm repair milestones.",
+            "delivery_mode": "demo",
+            "sent_at_utc": "2026-10-24T18:00:00Z"
+          }
+        ],
+        "disclosure": "Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. Premise dependency footprint computed from anonymized AEP challenge upstream paths in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. Planning ranges are not utility commitments; crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; modeled runtime is not verified hardware endurance."
+      },
+      "insufficient_evidence": {
+        "scenario_id": "insufficient_evidence",
+        "incident_id": "INC-DEMO-INSUFFICIENT_EVIDENCE",
+        "revision": 1,
+        "current_asset_id": "ASSET-4D3811483AD1FB8F",
+        "selected_premise_token": "PREM-0B30A08C7266D4BF",
+        "timestamp_utc": "2026-10-24T18:00:00Z",
+        "cutout_status": "UNKNOWN",
+        "status": "UNDER_REVIEW",
+        "evidence": [
+          {
+            "id": "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E1",
+            "incident_id": "INC-DEMO-INSUFFICIENT_EVIDENCE",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "cutout_state",
+            "value": "OPEN",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E2",
+            "incident_id": "INC-DEMO-INSUFFICIENT_EVIDENCE",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "temperature_state",
+            "value": "NORMAL",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E3",
+            "incident_id": "INC-DEMO-INSUFFICIENT_EVIDENCE",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "cutout_state",
+            "value": "CLOSED",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          },
+          {
+            "id": "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E4",
+            "incident_id": "INC-DEMO-INSUFFICIENT_EVIDENCE",
+            "asset_id": "ASSET-4D3811483AD1FB8F",
+            "timestamp_utc": "2026-10-24T18:00:00Z",
+            "kind": "temperature_state",
+            "value": "HOT",
+            "unit": null,
+            "provenance": "modeled_sensor",
+            "quality": "modeled",
+            "visibility": "operator"
+          }
+        ],
+        "hypotheses": [
+          {
+            "code": "INSUFFICIENT_EVIDENCE",
+            "score_type": "unavailable",
+            "score": null,
+            "label": "Insufficient or conflicting evidence; assess before repair selection",
+            "supporting_evidence_ids": [],
+            "contradicting_evidence_ids": [
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E1",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E2",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E3",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E4"
+            ],
+            "missing_evidence": [
+              "consistent current asset/incident evidence and qualified field assessment"
+            ],
+            "requires_field_confirmation": true
+          },
+          {
+            "code": "LOCAL_PROTECTION_OPERATION",
+            "score_type": "relative_evidence",
+            "score": 3.0,
+            "label": "Local protective device operated; equipment condition unconfirmed",
+            "supporting_evidence_ids": [
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E1"
+            ],
+            "contradicting_evidence_ids": [
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E1",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E2",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E3",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E4"
+            ],
+            "missing_evidence": [
+              "current field assessment",
+              "utility protection record"
+            ],
+            "requires_field_confirmation": true
+          },
+          {
+            "code": "POSSIBLE_EQUIPMENT_DISTRESS",
+            "score_type": "relative_evidence",
+            "score": 2.0,
+            "label": "Possible equipment distress; qualified inspection required",
+            "supporting_evidence_ids": [
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E4"
+            ],
+            "contradicting_evidence_ids": [
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E1",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E2",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E3",
+              "INC-DEMO-INSUFFICIENT_EVIDENCE:insufficient_evidence:E4"
+            ],
+            "missing_evidence": [
+              "current field assessment",
+              "utility protection record"
+            ],
+            "requires_field_confirmation": true
+          }
+        ],
+        "crew_recommendation": {
+          "capabilities": [
+            "qualified distribution line assessment"
+          ],
+          "material_categories": [
+            "approved assessment and protective equipment"
+          ],
+          "candidate_damage_class": "unknown",
+          "basis": "assessment_required",
+          "approved": false,
+          "reason": "Qualified field assessment and human dispatcher review required; no live crew is dispatched."
+        },
+        "restoration": {
+          "kind": "unavailable",
+          "lower_hours": null,
+          "expected_hours": null,
+          "upper_hours": null,
+          "labor_work_hours": null,
+          "labor_work_unit": null,
+          "assumptions": [
+            "Contradictory telemetry: assess before choosing a repair package or restoration range.",
+            "Missing verified work package or labor reference",
+            "No duration is fabricated from unknown hours, units, quantities or crew sizes."
+          ],
+          "last_updated_utc": "2026-10-24T18:00:00Z",
+          "priority_comparison": null
+        },
+        "planning_inputs": {
+          "crew_size": 3,
+          "access_hours": 0.0
+        },
+        "solar": {
+          "battery_soc_pct": 84.93414634146342,
+          "nominal_wh": 41.0,
+          "solar_w": 25.0,
+          "modeled_runtime_days": 53.7391975308642,
+          "buffered_events": 0,
+          "connectivity": "ONLINE",
+          "provenance": "modeled_sensor"
+        },
+        "affected_premise_tokens": [],
+        "impact_source": {
+          "provenance": "aep_challenge",
+          "scope": "selected_subnet",
+          "basis": "provided_upstream_sequence_not_live_outage",
+          "fault_asset_token": "ASSET-4D3811483AD1FB8F",
+          "fault_asset_kind": "TRANSFORMER",
+          "affected_count_in_sample": 3,
+          "sample_premise_count": 16,
+          "full_source_known_dependent_count": 3,
+          "critical_facility_impact": {
+            "status": "ASSUMED",
+            "facility_count": 7,
+            "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor.",
+            "critical_facilities": [
+              {
+                "facility_token": "CF-AMBULANCE-004",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-011",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-019",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-022",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-027",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 4,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-035",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-001",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              }
+            ]
+          }
+        },
+        "customer_risk": {
+          "band": "UNKNOWN",
+          "drivers": [
+            "Conflicting scenario evidence; outage-risk screening withheld."
+          ],
+          "confidence_kind": "unavailable"
+        },
+        "notifications": [],
+        "disclosure": "Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. Premise dependency footprint computed from anonymized AEP challenge upstream paths in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. Planning ranges are not utility commitments; crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; modeled runtime is not verified hardware endurance."
+      }
+    },
+    "customer_views": {
+      "local_protection": {
+        "scenario_id": "local_protection",
+        "incident_id": "INC-DEMO-LOCAL_PROTECTION",
+        "revision": 1,
+        "selected_premise_token": "PREM-0B30A08C7266D4BF",
+        "timestamp_utc": "2026-10-24T18:00:00Z",
+        "status": "OUTAGE",
+        "impact_source": {
+          "provenance": "aep_challenge",
+          "scope": "selected_subnet",
+          "basis": "provided_upstream_sequence_not_live_outage",
+          "fault_asset_token": "ASSET-4D3811483AD1FB8F",
+          "fault_asset_kind": "TRANSFORMER",
+          "affected_count_in_sample": 3,
+          "sample_premise_count": 16,
+          "full_source_known_dependent_count": 3,
+          "critical_facility_impact": {
+            "status": "ASSUMED",
+            "facility_count": 7,
+            "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor.",
+            "critical_facilities": [
+              {
+                "facility_token": "CF-AMBULANCE-004",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-011",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-019",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-022",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-027",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 4,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-035",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-001",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              }
+            ]
+          }
+        },
+        "customer_risk": {
+          "band": "MODERATE",
+          "drivers": [
+            "wind_kph=70: 2/2 points",
+            "ambient_temperature_c=35: 1/2 points",
+            "transformer_load_factor=0.95: 1/2 points",
+            "health_index=80: 0/2 points",
+            "Score 4/8; LOW 0-2, MODERATE 3-5, HIGH 6-8.",
+            "Declared scenario inputs and prototype thresholds; not a measured probability or utility forecast."
+          ],
+          "confidence_kind": "declared_rule_not_calibrated"
+        },
+        "restoration_planning": {
+          "kind": "unavailable",
+          "lower_hours": null,
+          "expected_hours": null,
+          "upper_hours": null,
+          "assumptions": [
+            "No repair construction unit has been selected for this protection/interruption scenario; assessment is required before assigning a sourced workload or duration.",
+            "Missing verified work package or labor reference",
+            "No duration is fabricated from unknown hours, units, quantities or crew sizes."
+          ],
+          "last_updated_utc": "2026-10-24T18:00:00Z"
+        },
+        "notifications": [
+          {
+            "type": "OUTAGE_CONFIRMED",
+            "text": "Power loss has been reported for your supply area as of Oct 24, 2026, 18:00 UTC. The suspected cause is under assessment by utility dispatch. Review your declared emergency plan and safety preparation steps.",
+            "delivery_mode": "demo",
+            "sent_at_utc": "2026-10-24T18:00:00Z"
+          }
+        ],
+        "public_evidence": [],
+        "alert_plan": {
+          "eligible": true,
+          "recipient_role": "Verified premise contact (simulated)",
+          "channels": [
+            "SMS",
+            "Mobile Push (Simulated)"
+          ],
+          "cadence_policy": "Event declaration, verified ETR updates, and restoration completion",
+          "escalation_policy": "Simulated demonstration preview: would escalate notification cadence if conditions escalate to confirmed outage or critical priority; not connected to live 911 or dispatchers.",
+          "suppression_reason": null,
+          "basis": "Validated electrical distribution network dependency",
+          "channel": "SMS & Push Notification (Simulated)",
+          "cadence": "Dispatched at event declaration, critical ETR updates, and restoration completion",
+          "proactive_summary": "Eligible for automated updates during service anomalies or elevated storm risk."
+        },
+        "disclosure": "Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. Premise dependency footprint computed from anonymized AEP challenge upstream paths in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. Planning ranges are not utility commitments; crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; modeled runtime is not verified hardware endurance."
+      },
+      "upstream_feeder": {
+        "scenario_id": "upstream_feeder",
+        "incident_id": "INC-DEMO-UPSTREAM_FEEDER",
+        "revision": 1,
+        "selected_premise_token": "PREM-0B30A08C7266D4BF",
+        "timestamp_utc": "2026-10-24T18:00:00Z",
+        "status": "OUTAGE",
+        "impact_source": {
+          "provenance": "aep_challenge",
+          "scope": "selected_subnet",
+          "basis": "provided_upstream_sequence_not_live_outage",
+          "fault_asset_token": "ASSET-364D878C367B313A",
+          "fault_asset_kind": "CIRCUIT_BREAKER",
+          "affected_count_in_sample": 16,
+          "sample_premise_count": 16,
+          "full_source_known_dependent_count": 1563,
+          "critical_facility_impact": {
+            "status": "ASSUMED",
+            "facility_count": 52,
+            "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor.",
+            "critical_facilities": [
+              {
+                "facility_token": "CF-AMBULANCE-001",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 31,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-002",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 25,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-003",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 20,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-004",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-005",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 12,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-006",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 17,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-007",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 22,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-008",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 6,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-009",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 36,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-AMBULANCE-010",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-001",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 14,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-002",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 25,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-003",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 15,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-004",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 18,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-005",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 17,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-006",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-007",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 13,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-008",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 29,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-009",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 16,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-010",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-011",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-012",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-013",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 15,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-014",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 22,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-015",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 36,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-016",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-017",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 29,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-018",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 11,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-019",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-020",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 19,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-021",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 12,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-022",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-023",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 31,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-024",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 1,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-025",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 13,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-026",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 17,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-027",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 4,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-028",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 14,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-029",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 18,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-030",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-031",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 11,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-032",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 24,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-033",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 33,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-034",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 13,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-035",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-036",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 5,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-037",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-001",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-002",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 7,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-003",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-004",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 12,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-005",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-253FD0B7C3F209A9",
+                "distance_km": 13,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              }
+            ]
+          }
+        },
+        "customer_risk": {
+          "band": "MODERATE",
+          "drivers": [
+            "wind_kph=70: 2/2 points",
+            "ambient_temperature_c=35: 1/2 points",
+            "transformer_load_factor=0.95: 1/2 points",
+            "health_index=80: 0/2 points",
+            "Score 4/8; LOW 0-2, MODERATE 3-5, HIGH 6-8.",
+            "Declared scenario inputs and prototype thresholds; not a measured probability or utility forecast."
+          ],
+          "confidence_kind": "declared_rule_not_calibrated"
+        },
+        "restoration_planning": {
+          "kind": "unavailable",
+          "lower_hours": null,
+          "expected_hours": null,
+          "upper_hours": null,
+          "assumptions": [
+            "No repair construction unit has been selected for this protection/interruption scenario; assessment is required before assigning a sourced workload or duration.",
+            "Missing verified work package or labor reference",
+            "No duration is fabricated from unknown hours, units, quantities or crew sizes."
+          ],
+          "last_updated_utc": "2026-10-24T18:00:00Z"
+        },
+        "notifications": [
+          {
+            "type": "OUTAGE_CONFIRMED",
+            "text": "Power loss has been reported for your supply area as of Oct 24, 2026, 18:00 UTC. The suspected cause is under assessment by utility dispatch. Review your declared emergency plan and safety preparation steps.",
+            "delivery_mode": "demo",
+            "sent_at_utc": "2026-10-24T18:00:00Z"
+          }
+        ],
+        "public_evidence": [],
+        "alert_plan": {
+          "eligible": true,
+          "recipient_role": "Verified premise contact (simulated)",
+          "channels": [
+            "SMS",
+            "Mobile Push (Simulated)"
+          ],
+          "cadence_policy": "Event declaration, verified ETR updates, and restoration completion",
+          "escalation_policy": "Simulated demonstration preview: would escalate notification cadence if conditions escalate to confirmed outage or critical priority; not connected to live 911 or dispatchers.",
+          "suppression_reason": null,
+          "basis": "Validated electrical distribution network dependency",
+          "channel": "SMS & Push Notification (Simulated)",
+          "cadence": "Dispatched at event declaration, critical ETR updates, and restoration completion",
+          "proactive_summary": "Eligible for automated updates during service anomalies or elevated storm risk."
+        },
+        "disclosure": "Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. Premise dependency footprint computed from anonymized AEP challenge upstream paths in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. Planning ranges are not utility commitments; crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; modeled runtime is not verified hardware endurance."
+      },
+      "confirmed_replacement": {
+        "scenario_id": "confirmed_replacement",
+        "incident_id": "INC-DEMO-CONFIRMED_REPLACEMENT",
+        "revision": 1,
+        "selected_premise_token": "PREM-0B30A08C7266D4BF",
+        "timestamp_utc": "2026-10-24T18:00:00Z",
+        "status": "OUTAGE",
+        "impact_source": {
+          "provenance": "aep_challenge",
+          "scope": "selected_subnet",
+          "basis": "provided_upstream_sequence_not_live_outage",
+          "fault_asset_token": "ASSET-4D3811483AD1FB8F",
+          "fault_asset_kind": "TRANSFORMER",
+          "affected_count_in_sample": 3,
+          "sample_premise_count": 16,
+          "full_source_known_dependent_count": 3,
+          "critical_facility_impact": {
+            "status": "ASSUMED",
+            "facility_count": 7,
+            "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor.",
+            "critical_facilities": [
+              {
+                "facility_token": "CF-AMBULANCE-004",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-011",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-019",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-022",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-027",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 4,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-035",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-001",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              }
+            ]
+          }
+        },
+        "customer_risk": {
+          "band": "HIGH",
+          "drivers": [
+            "wind_kph=70: 2/2 points",
+            "ambient_temperature_c=35: 1/2 points",
+            "transformer_load_factor=1.15: 2/2 points",
+            "health_index=35: 2/2 points",
+            "Score 7/8; LOW 0-2, MODERATE 3-5, HIGH 6-8.",
+            "Declared scenario inputs and prototype thresholds; not a measured probability or utility forecast."
+          ],
+          "confidence_kind": "declared_rule_not_calibrated"
+        },
+        "restoration_planning": {
+          "kind": "scenario_planning",
+          "lower_hours": 2.2434893617021268,
+          "expected_hours": 2.991319148936169,
+          "upper_hours": 4.4869787234042535,
+          "assumptions": [
+            "Declared scenario package for distribution equipment: one 25-kVA transformer, replace, quantity=1 construction_unit; rating is not verified from GIS. Workbook category average, subject to dispatcher review; associated equipment and assessment labor are outside this selected transformer component scope.",
+            "Labor source={'workbook': 'Install_Labor_HackOHIO.xlsx', 'workbook_sha256': 'e11fb199592bf26ef7f6e0bd11fab3de00265cde7649fc9b9a0cd54fc2e96e3b', 'sheet': 'Labor time material related', 'cells': ['C21', 'D21'], 'missing_cells': []}; operation=replace; quantity=1.0; quantity_unit=construction_unit.",
+            "raw_direct_hours=1.994212765957446; indirect_multiplier_applied=4.5; adjusted_person_hours=8.973957446808507; crew_size=3.",
+            "Earliest feasible start, then hospital/fire/ambulance priority, then descending customer_count, then task ID; each crew_id is exclusive. Missing priority metadata means routine/zero customers. No staffing optimization.",
+            "Duration factors low/expected/high=[0.75, 1.0, 1.5]; queue=[0.0, 0.0, 0.0]; non-overlapping access=[0.0, 0.0, 0.0]; energization=[0.0, 0.0, 0.0].",
+            "Person-hours include the single indirect allowance; no additional travel/setup/safety time.",
+            "Scenario ranges, not calibrated probabilities or an official restoration commitment.",
+            "Single indirect allowance source={'sheet': 'Indirect Labor Multiplier', 'cells': ['B1', 'A3'], 'instruction': 'The ILM should be mutiplied time any labor hours to take into account drive time, safety discussion time, set up time, etc.'}; no separate travel, safety or setup allowance is added.",
+            "Illustrative comparison: hospital_service=3 and feeder_branch=6 person-hours, independent tasks sharing one crew; these are not workbook repair workloads. Facility counts are association counts, not customer counts; hospital customer count is unknown (priority input 0). The routine branch uses the selected sample footprint size as a declared comparison input, not a disjoint service area. With 3-worker crew, prioritizing hospital restores critical healthcare at 1.0h vs 3.0h unprioritized, maintaining identical 3.0h total completion."
+          ],
+          "last_updated_utc": "2026-10-24T18:00:00Z"
+        },
+        "notifications": [
+          {
+            "type": "OUTAGE_CONFIRMED",
+            "text": "Power loss has been reported for your supply area as of Oct 24, 2026, 18:00 UTC. The suspected cause is under assessment by utility dispatch. Review your declared emergency plan and safety preparation steps.",
+            "delivery_mode": "demo",
+            "sent_at_utc": "2026-10-24T18:00:00Z"
+          },
+          {
+            "type": "ESTIMATE_UPDATED",
+            "text": "The restoration outlook changed: Expected duration 3.0 hours. We will provide updates as utility field crews confirm repair milestones.",
+            "delivery_mode": "demo",
+            "sent_at_utc": "2026-10-24T18:00:00Z"
+          }
+        ],
+        "public_evidence": [],
+        "alert_plan": {
+          "eligible": true,
+          "recipient_role": "Verified premise contact (simulated)",
+          "channels": [
+            "SMS",
+            "Mobile Push (Simulated)"
+          ],
+          "cadence_policy": "Event declaration, verified ETR updates, and restoration completion",
+          "escalation_policy": "Simulated demonstration preview: would escalate notification cadence if conditions escalate to confirmed outage or critical priority; not connected to live 911 or dispatchers.",
+          "suppression_reason": null,
+          "basis": "Validated electrical distribution network dependency",
+          "channel": "SMS & Push Notification (Simulated)",
+          "cadence": "Dispatched at event declaration, critical ETR updates, and restoration completion",
+          "proactive_summary": "Eligible for automated updates during service anomalies or elevated storm risk."
+        },
+        "disclosure": "Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. Premise dependency footprint computed from anonymized AEP challenge upstream paths in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. Planning ranges are not utility commitments; crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; modeled runtime is not verified hardware endurance."
+      },
+      "insufficient_evidence": {
+        "scenario_id": "insufficient_evidence",
+        "incident_id": "INC-DEMO-INSUFFICIENT_EVIDENCE",
+        "revision": 1,
+        "selected_premise_token": "PREM-0B30A08C7266D4BF",
+        "timestamp_utc": "2026-10-24T18:00:00Z",
+        "status": "UNDER_REVIEW",
+        "impact_source": {
+          "provenance": "aep_challenge",
+          "scope": "selected_subnet",
+          "basis": "provided_upstream_sequence_not_live_outage",
+          "fault_asset_token": "ASSET-4D3811483AD1FB8F",
+          "fault_asset_kind": "TRANSFORMER",
+          "affected_count_in_sample": 3,
+          "sample_premise_count": 16,
+          "full_source_known_dependent_count": 3,
+          "critical_facility_impact": {
+            "status": "ASSUMED",
+            "facility_count": 7,
+            "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+            "disclosure": "Nearest transformer within selected slice; not a verified feeding relationship or observed outage. Distances rounded to km; distant matches remain approximate. Upstream tags union supplied paths through the anchor.",
+            "critical_facilities": [
+              {
+                "facility_token": "CF-AMBULANCE-004",
+                "kind": "AMBULANCE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-011",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-019",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-022",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 10,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-027",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 4,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-FIRE-035",
+                "kind": "FIRE",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 9,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              },
+              {
+                "facility_token": "CF-HOSPITAL-001",
+                "kind": "HOSPITAL",
+                "nearest_asset_token": "ASSET-4D3811483AD1FB8F",
+                "distance_km": 21,
+                "basis": "nearest_transformer_in_slice_then_union_of_supplied_paths",
+                "status": "ASSUMED",
+                "source_crs": "EPSG:3857 + NAVD88",
+                "matching_crs": "EPSG:4326",
+                "equipment_geometry": "generalized"
+              }
+            ]
+          }
+        },
+        "customer_risk": {
+          "band": "UNKNOWN",
+          "drivers": [
+            "Conflicting scenario evidence; outage-risk screening withheld."
+          ],
+          "confidence_kind": "unavailable"
+        },
+        "restoration_planning": {
+          "kind": "unavailable",
+          "lower_hours": null,
+          "expected_hours": null,
+          "upper_hours": null,
+          "assumptions": [
+            "Contradictory telemetry: assess before choosing a repair package or restoration range.",
+            "Missing verified work package or labor reference",
+            "No duration is fabricated from unknown hours, units, quantities or crew sizes."
+          ],
+          "last_updated_utc": "2026-10-24T18:00:00Z"
+        },
+        "notifications": [],
+        "public_evidence": [],
+        "alert_plan": {
+          "eligible": true,
+          "recipient_role": "Verified premise contact (simulated)",
+          "channels": [
+            "SMS",
+            "Mobile Push (Simulated)"
+          ],
+          "cadence_policy": "Event declaration, verified ETR updates, and restoration completion",
+          "escalation_policy": "Simulated demonstration preview: would escalate notification cadence if conditions escalate to confirmed outage or critical priority; not connected to live 911 or dispatchers.",
+          "suppression_reason": null,
+          "basis": "Validated electrical distribution network dependency",
+          "channel": "SMS & Push Notification (Simulated)",
+          "cadence": "Dispatched at event declaration, critical ETR updates, and restoration completion",
+          "proactive_summary": "Eligible for automated updates during service anomalies or elevated storm risk."
+        },
+        "disclosure": "Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. Premise dependency footprint computed from anonymized AEP challenge upstream paths in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. Planning ranges are not utility commitments; crew approval remains false. Solar node uses illustrative 85% initial charge and one hour without harvest; modeled runtime is not verified hardware endurance."
+      }
+    }
+  }
+}

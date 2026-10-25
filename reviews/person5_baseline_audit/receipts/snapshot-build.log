@@ -1,0 +1,24 @@
+
+> loadshed-sentinel-web@1.0.0 build
+> tsc && vite build
+
+(node:11288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+vite v6.4.5 building for production...
+transforming...
+✓ 2593 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                   0.70 kB │ gzip:   0.42 kB
+dist/assets/SentinelScene-DptSAR3C.css            3.75 kB │ gzip:   1.18 kB
+dist/assets/SentinelPreviewPage-YHcWEprU.css      6.83 kB │ gzip:   2.30 kB
+dist/assets/index-D24HjYyE.css                  103.36 kB │ gzip:  20.10 kB
+dist/assets/SentinelPreviewPage-Dc0mW3XD.js       4.42 kB │ gzip:   1.87 kB
+dist/assets/SentinelScene-CqxxGDVv.js           113.66 kB │ gzip:  34.82 kB
+dist/assets/index-CewnE8Y7.js                 1,182.06 kB │ gzip: 328.39 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.73s

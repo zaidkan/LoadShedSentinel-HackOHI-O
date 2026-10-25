@@ -1,0 +1,46 @@
+
+> loadshed-sentinel-web@1.0.0 test
+> node test-frontend.mjs
+
+(node:10971) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✘ [ERROR] Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/components/utility/EvidencePanel.cjs: operation not permitted
+
+✘ [ERROR] Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/components/utility/PlanningPanels.cjs: operation not permitted
+
+✘ [ERROR] Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/components/utility/TelemetryHUD.cjs: operation not permitted
+
+✘ [ERROR] Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/services/api.cjs: operation not permitted
+
+✘ [ERROR] Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/pages/CustomerPage.cjs: operation not permitted
+
+✘ [ERROR] Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/pages/CustomerPage.css: operation not permitted
+
+✘ [ERROR] Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/components/utility/CounterfactualCompareCard.cjs: operation not permitted
+
+/Users/zaid/Larp-MAXXX/hackathon/web/node_modules/esbuild/lib/main.js:1467
+  let error = new Error(text);
+              ^
+
+Error: Build failed with 7 errors:
+error: Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/components/utility/EvidencePanel.cjs: operation not permitted
+error: Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/components/utility/PlanningPanels.cjs: operation not permitted
+error: Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/components/utility/TelemetryHUD.cjs: operation not permitted
+error: Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/services/api.cjs: operation not permitted
+error: Failed to write to output file: open /Users/zaid/Larp-MAXXX/hackathon/web/dist-test/pages/CustomerPage.cjs: operation not permitted
+...
+    at failureErrorWithLog [90m(/Users/zaid/Larp-MAXXX/hackathon/web/[39mnode_modules/[4mesbuild[24m/lib/main.js:1467:15[90m)[39m
+    at [90m/Users/zaid/Larp-MAXXX/hackathon/web/[39mnode_modules/[4mesbuild[24m/lib/main.js:926:25
+    at [90m/Users/zaid/Larp-MAXXX/hackathon/web/[39mnode_modules/[4mesbuild[24m/lib/main.js:878:52
+    at buildResponseToResult [90m(/Users/zaid/Larp-MAXXX/hackathon/web/[39mnode_modules/[4mesbuild[24m/lib/main.js:924:7[90m)[39m
+    at [90m/Users/zaid/Larp-MAXXX/hackathon/web/[39mnode_modules/[4mesbuild[24m/lib/main.js:951:16
+    at responseCallbacks.<computed> [90m(/Users/zaid/Larp-MAXXX/hackathon/web/[39mnode_modules/[4mesbuild[24m/lib/main.js:603:9[90m)[39m
+    at handleIncomingPacket [90m(/Users/zaid/Larp-MAXXX/hackathon/web/[39mnode_modules/[4mesbuild[24m/lib/main.js:658:12[90m)[39m
+    at Socket.readFromStdout [90m(/Users/zaid/Larp-MAXXX/hackathon/web/[39mnode_modules/[4mesbuild[24m/lib/main.js:581:7[90m)[39m
+[90m    at Socket.emit (node:events:509:20)[39m
+[90m    at addChunk (node:internal/streams/readable:564:12)[39m {
+  errors: [36m[Getter/Setter][39m,
+  warnings: [36m[Getter/Setter][39m
+}
+
+Node.js v25.9.0

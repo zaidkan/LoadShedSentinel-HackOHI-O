@@ -1,0 +1,44 @@
+{
+  "work": "LRP-145",
+  "baseline": "1ee72a24eea12b140182cb8f7ddd9cf83d2509d6",
+  "audit_complete": true,
+  "final_presentation_ready": false,
+  "findings": {
+    "P0": 0,
+    "P1": 5,
+    "P2": 3,
+    "P3": 1
+  },
+  "python": {
+    "passed": 137,
+    "subtests_passed": 72
+  },
+  "frontend": {
+    "component_and_api_harness": "passed",
+    "customer_regressions": 12
+  },
+  "production_build": "passed in identical writable snapshot",
+  "script": {
+    "passed": true,
+    "words": 400,
+    "planned_seconds": 180,
+    "recorded_duration_verified": false
+  },
+  "additional_backend_cases": {
+    "passed": 13,
+    "total": 13
+  },
+  "distinct_browser_cases": {
+    "passed": 16,
+    "product_assertion_failures": 7,
+    "total": 23
+  },
+  "screenshots_reviewed": 20,
+  "canonical_production_files_changed_by_auditor": 0,
+  "baseline_source_hash_mismatches": 0,
+  "limitations": [
+    "Canonical frontend commands hit output write restrictions; exact archived source passed.",
+    "Concurrent canonical polish excluded.",
+    "Software Chromium graphics and emulated viewports; no physical device or deployed transport certification."
+  ]
+}
