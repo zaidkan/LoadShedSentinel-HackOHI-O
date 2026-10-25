@@ -66,7 +66,7 @@ export function CustomerDashboard(props: Props) {
     <div className="customer-demo-notice" role="note"><strong>Simulated Demonstration Preview</strong>
       <span>All service updates and alerts below are a demonstration. No live outage monitoring, text messages, emergency calls, or dispatch.</span></div>
 
-    <section className={`customer-service customer-service--${status?.tone || 'review'}`} aria-labelledby="service-heading" aria-busy={loading}>
+    <section className={`customer-service customer-service--${status?.tone || 'review'}`} data-status={snapshot?.status ?? 'UNKNOWN'} aria-labelledby="service-heading" aria-busy={loading}>
       <div className="customer-service-summary" aria-live="polite">
         <h2 id="service-heading">Your service status</h2>
         <div className="customer-status-line">

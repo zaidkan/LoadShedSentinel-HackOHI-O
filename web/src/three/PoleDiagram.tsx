@@ -10,7 +10,7 @@ export interface PoleDiagramProps {
 export function PoleDiagram({ status, labels = true }: PoleDiagramProps) {
   const visual = CUTOUT_VISUAL[status];
   return <svg viewBox="0 0 640 480" role="img" aria-label={`Equipment diagram showing pole, transformer, Sentinel node, solar panel, and cutout switch in ${status} state.`} className="utility-pole-diagram">
-    <rect width="640" height="480" fill="#121e2b" />
+    <rect width="640" height="480" fill="var(--night-1)" />
     <path d="M312 40V460H328V40Z" fill="#3e2d1d" stroke="#5d432b" strokeWidth="2" />
     <path d="M180 80H460V96H180Z" fill="#2d3f4f" stroke="#485f73" strokeWidth="2" />
     <circle cx="210" cy="72" r="12" fill="#587185" stroke="#7793ab" strokeWidth="2" />
@@ -28,9 +28,9 @@ export function PoleDiagram({ status, labels = true }: PoleDiagramProps) {
       <path d="M254 251V185" stroke="#986e51" strokeWidth="9" /><path d="M254 201V190" stroke={visual.color} strokeWidth="10" />
     </g>}
     {labels ? <>
-      <g stroke="#6c8295" fill="none"><path d="M251 210H167V184H100M405 250H448V231H541M287 333H199V353H100M356 381H445V393H541" /></g>
-      <g fill="#c5d2df" fontSize="13" fontFamily="system-ui, sans-serif"><text x="100" y="174">Cutout · {visual.label.toLowerCase()}</text><text x="448" y="222">Transformer</text><text x="100" y="373">Sentinel node</text><text x="446" y="416">Solar panel</text></g>
-      <text x="320" y="450" textAnchor="middle" fill="#9eafbf" fontSize="12" fontFamily="system-ui, sans-serif">Illustrative 2D equipment diagram · no surveyed geometry</text>
+      <g stroke="var(--on-night-muted)" fill="none"><path d="M251 210H167V184H100M405 250H448V231H541M287 333H199V353H100M356 381H445V393H541" /></g>
+      <g fill="var(--on-night)" fontSize="13" fontFamily="var(--font-body)"><text x="100" y="174">Cutout · {visual.label.toLowerCase()}</text><text x="448" y="222">Transformer</text><text x="100" y="373">Sentinel node</text><text x="446" y="416">Solar panel</text></g>
+      <text x="320" y="450" textAnchor="middle" fill="var(--on-night-muted)" fontSize="12" fontFamily="var(--font-body)">Illustrative 2D equipment diagram · no surveyed geometry</text>
     </> : null}
   </svg>;
 }

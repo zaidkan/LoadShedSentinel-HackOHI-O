@@ -19,7 +19,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
       <div className="counterfactual-header">
         <div className="counterfactual-title-group">
           <div className="counterfactual-badge">
-            <GitCompare className="w-4 h-4 text-sky-400 inline mr-1" />
+            <GitCompare size={16} aria-hidden="true" />
             <span>Flagship Feature · AEP Storm Misdispatch Defense</span>
           </div>
           <h3 id="counterfactual-heading" className="counterfactual-title">
@@ -39,7 +39,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
                 onClick={() => onSelectScenario('upstream_feeder')}
               >
                 <span>Compare Upstream Feeder</span>
-                <ArrowRight className="w-4 h-4 inline ml-1" />
+                <ArrowRight size={16} aria-hidden="true" />
               </button>
             ) : isUpstream ? (
               <button
@@ -48,7 +48,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
                 onClick={() => onSelectScenario('local_protection')}
               >
                 <span>Compare Local Protection</span>
-                <ArrowRight className="w-4 h-4 inline ml-1" />
+                <ArrowRight size={16} aria-hidden="true" />
               </button>
             ) : (
               <button
@@ -57,7 +57,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
                 onClick={() => onSelectScenario('local_protection')}
               >
                 <span>Load Baseline Comparison</span>
-                <ArrowRight className="w-4 h-4 inline ml-1" />
+                <ArrowRight size={16} aria-hidden="true" />
               </button>
             )}
           </div>
@@ -68,7 +68,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
         {/* Hypothesis A */}
         <div className={`counterfactual-col ${isLocal ? 'active' : ''}`}>
           <div className="counterfactual-col-header">
-            <div className="flex items-center gap-2">
+            <div className="counterfactual-hypothesis">
               <span className="hypothesis-tag">Hypothesis A</span>
               <h4>Local Cutout Blown</h4>
             </div>
@@ -77,11 +77,11 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
           <dl className="counterfactual-metrics">
             <div>
               <dt>Physical Cutout</dt>
-              <dd className="text-amber-400 font-mono">OPEN (-117.5° Drop)</dd>
+              <dd className="counterfactual-state mono" data-state="open">OPEN (-117.5° Drop)</dd>
             </div>
             <div>
               <dt>Impact Scope</dt>
-              <dd className="font-mono">3 Sample Premises</dd>
+              <dd className="mono">3 Sample Premises</dd>
             </div>
             <div>
               <dt>Target Equipment</dt>
@@ -89,7 +89,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
             </div>
             <div>
               <dt>Required Dispatch</dt>
-              <dd className="text-emerald-400">2-Person Line Crew (Fuse Link)</dd>
+              <dd>2-Person Line Crew (Fuse Link)</dd>
             </div>
           </dl>
         </div>
@@ -97,7 +97,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
         {/* Hypothesis B */}
         <div className={`counterfactual-col ${isUpstream ? 'active' : ''}`}>
           <div className="counterfactual-col-header">
-            <div className="flex items-center gap-2">
+            <div className="counterfactual-hypothesis">
               <span className="hypothesis-tag">Hypothesis B</span>
               <h4>Upstream Feeder Lockout</h4>
             </div>
@@ -106,11 +106,11 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
           <dl className="counterfactual-metrics">
             <div>
               <dt>Physical Cutout</dt>
-              <dd className="text-sky-400 font-mono">CLOSED (Latched 0°)</dd>
+              <dd className="counterfactual-state mono" data-state="closed">CLOSED (Latched 0°)</dd>
             </div>
             <div>
               <dt>Impact Scope</dt>
-              <dd className="font-mono">16 Sample Premises (Full Branch)</dd>
+              <dd className="mono">16 Sample Premises (Full Branch)</dd>
             </div>
             <div>
               <dt>Target Equipment</dt>
@@ -118,7 +118,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
             </div>
             <div>
               <dt>Required Dispatch</dt>
-              <dd className="text-sky-400">Substation Breaker Patrol Crew</dd>
+              <dd>Substation Breaker Patrol Crew</dd>
             </div>
           </dl>
         </div>
@@ -126,7 +126,7 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
 
       {/* Decisive Operational Impact Banner */}
       <div className="counterfactual-impact-banner">
-        <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+        <ShieldCheck size={20} aria-hidden="true" />
         <div className="counterfactual-impact-text">
           <strong>Heavy Equipment Misdispatch Prevented:</strong>
           <span>
