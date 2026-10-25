@@ -1,0 +1,2384 @@
+{
+  "kind": "counterfactual_simulation",
+  "schema_version": "response_benchmark_v1",
+  "default_inputs": {
+    "shared_repair_hours": 3,
+    "shared_blocker_ready_hours": 0,
+    "evidence_status": "sufficient",
+    "detection_lead_hours": 0,
+    "baseline": {
+      "diagnosis_hours": 0.5,
+      "coordination_hours": 0.5,
+      "wrong_crew_probability": 0.2,
+      "extra_dispatch_wait_hours": 4
+    },
+    "assisted": {
+      "diagnosis_hours": 0.5,
+      "coordination_hours": 0.5,
+      "analysis_overhead_hours": 0.25,
+      "wrong_crew_probability": 0.1,
+      "extra_dispatch_wait_hours": 4
+    }
+  },
+  "cases": [
+    {
+      "id": "modest_verification",
+      "label": "Modest assumed net benefit after explicit verification overhead",
+      "inputs": {
+        "shared_repair_hours": 3,
+        "shared_blocker_ready_hours": 0,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 0.5,
+          "coordination_hours": 0.5,
+          "wrong_crew_probability": 0.2,
+          "extra_dispatch_wait_hours": 4
+        },
+        "assisted": {
+          "diagnosis_hours": 0.5,
+          "coordination_hours": 0.5,
+          "analysis_overhead_hours": 0.25,
+          "wrong_crew_probability": 0.1,
+          "extra_dispatch_wait_hours": 4
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 1.8,
+            "expected": 1.8,
+            "upper": 1.8
+          },
+          "outage_hours": {
+            "lower": 4.8,
+            "expected": 4.8,
+            "upper": 4.8
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.8,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 4.0,
+                "expected": 4.0,
+                "upper": 4.0
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.2,
+              "qualified_ready_hours": {
+                "lower": 5.0,
+                "expected": 5.0,
+                "upper": 5.0
+              },
+              "outage_hours": {
+                "lower": 8.0,
+                "expected": 8.0,
+                "upper": 8.0
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 1.65,
+            "expected": 1.65,
+            "upper": 1.65
+          },
+          "outage_hours": {
+            "lower": 4.65,
+            "expected": 4.65,
+            "upper": 4.65
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.9,
+              "qualified_ready_hours": {
+                "lower": 1.25,
+                "expected": 1.25,
+                "upper": 1.25
+              },
+              "outage_hours": {
+                "lower": 4.25,
+                "expected": 4.25,
+                "upper": 4.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.1,
+              "qualified_ready_hours": {
+                "lower": 5.25,
+                "expected": 5.25,
+                "upper": 5.25
+              },
+              "outage_hours": {
+                "lower": 8.25,
+                "expected": 8.25,
+                "upper": 8.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 0.15000000000000013,
+          "expected": 0.15000000000000013,
+          "upper": 0.15000000000000013
+        },
+        "shared_repair_hours": {
+          "lower": 3.0,
+          "expected": 3.0,
+          "upper": 3.0
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 3,
+          "shared_blocker_ready_hours": 0,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 0.5,
+            "coordination_hours": 0.5,
+            "wrong_crew_probability": 0.2,
+            "extra_dispatch_wait_hours": 4
+          },
+          "assisted": {
+            "diagnosis_hours": 0.5,
+            "coordination_hours": 0.5,
+            "analysis_overhead_hours": 0.25,
+            "wrong_crew_probability": 0.1,
+            "extra_dispatch_wait_hours": 4
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    },
+    {
+      "id": "assumed_repeat_dispatch",
+      "label": "Assumed 20% versus 10% repeat-dispatch rates; not measured",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 0,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.2,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.1,
+          "extra_dispatch_wait_hours": 8
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 2.6,
+            "expected": 2.6,
+            "upper": 2.6
+          },
+          "outage_hours": {
+            "lower": 4.85,
+            "expected": 4.85,
+            "upper": 4.85
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.8,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.2,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 1.8,
+            "expected": 1.8,
+            "upper": 1.8
+          },
+          "outage_hours": {
+            "lower": 4.05,
+            "expected": 4.05,
+            "upper": 4.05
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.9,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.1,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 0.8,
+          "expected": 0.8,
+          "upper": 0.8
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 0,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.2,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.1,
+            "extra_dispatch_wait_hours": 8
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    },
+    {
+      "id": "already_correct",
+      "label": "Already-correct baseline: no advantage",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 0,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0,
+          "extra_dispatch_wait_hours": 8
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 1.0,
+            "expected": 1.0,
+            "upper": 1.0
+          },
+          "outage_hours": {
+            "lower": 3.25,
+            "expected": 3.25,
+            "upper": 3.25
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 1.0,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.0,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 1.0,
+            "expected": 1.0,
+            "upper": 1.0
+          },
+          "outage_hours": {
+            "lower": 3.25,
+            "expected": 3.25,
+            "upper": 3.25
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 1.0,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.0,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 0,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0,
+            "extra_dispatch_wait_hours": 8
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    },
+    {
+      "id": "shared_blocker",
+      "label": "Shared access/upstream gate dominates both workflows",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 12,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.2,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.1,
+          "extra_dispatch_wait_hours": 8
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 2.6,
+            "expected": 2.6,
+            "upper": 2.6
+          },
+          "outage_hours": {
+            "lower": 14.25,
+            "expected": 14.25,
+            "upper": 14.25
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.8,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 14.25,
+                "expected": 14.25,
+                "upper": 14.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.2,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 14.25,
+                "expected": 14.25,
+                "upper": 14.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 1.8,
+            "expected": 1.8,
+            "upper": 1.8
+          },
+          "outage_hours": {
+            "lower": 14.25,
+            "expected": 14.25,
+            "upper": 14.25
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.9,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 14.25,
+                "expected": 14.25,
+                "upper": 14.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.1,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 14.25,
+                "expected": 14.25,
+                "upper": 14.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 12.0,
+          "expected": 12.0,
+          "upper": 12.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 12,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.2,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.1,
+            "extra_dispatch_wait_hours": 8
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    },
+    {
+      "id": "assisted_mistake",
+      "label": "Assisted workflow is less reliable under declared assumptions",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 0,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.1,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.3,
+          "extra_dispatch_wait_hours": 8
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 1.8,
+            "expected": 1.8,
+            "upper": 1.8
+          },
+          "outage_hours": {
+            "lower": 4.05,
+            "expected": 4.05,
+            "upper": 4.05
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.9,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.1,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 3.4,
+            "expected": 3.4,
+            "upper": 3.4
+          },
+          "outage_hours": {
+            "lower": 5.65,
+            "expected": 5.65,
+            "upper": 5.65
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.7,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.3,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": -1.5999999999999999,
+          "expected": -1.5999999999999999,
+          "upper": -1.5999999999999999
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 0,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.1,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.3,
+            "extra_dispatch_wait_hours": 8
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    },
+    {
+      "id": "unknown_sensor",
+      "label": "Unknown sensor: abstain, fall back to baseline",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 0,
+        "evidence_status": "unknown",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.2,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.1,
+          "extra_dispatch_wait_hours": 8
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "insufficient_evidence",
+        "advisory_applied": false,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 2.6,
+            "expected": 2.6,
+            "upper": 2.6
+          },
+          "outage_hours": {
+            "lower": 4.85,
+            "expected": 4.85,
+            "upper": 4.85
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.8,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.2,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 2.6,
+            "expected": 2.6,
+            "upper": 2.6
+          },
+          "outage_hours": {
+            "lower": 4.85,
+            "expected": 4.85,
+            "upper": 4.85
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.8,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.2,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 0,
+          "evidence_status": "unknown",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.2,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.1,
+            "extra_dispatch_wait_hours": 8
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed.",
+          "Sensor evidence is unknown/insufficient: assisted workflow falls back to baseline; no automation benefit is credited."
+        ]
+      }
+    },
+    {
+      "id": "verification_overhead",
+      "label": "Quarter-hour extra verification reduces assumed benefit",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 0,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.2,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.1,
+          "extra_dispatch_wait_hours": 8,
+          "analysis_overhead_hours": 0.25
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 2.6,
+            "expected": 2.6,
+            "upper": 2.6
+          },
+          "outage_hours": {
+            "lower": 4.85,
+            "expected": 4.85,
+            "upper": 4.85
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.8,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.2,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 2.05,
+            "expected": 2.05,
+            "upper": 2.05
+          },
+          "outage_hours": {
+            "lower": 4.3,
+            "expected": 4.3,
+            "upper": 4.3
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.9,
+              "qualified_ready_hours": {
+                "lower": 1.25,
+                "expected": 1.25,
+                "upper": 1.25
+              },
+              "outage_hours": {
+                "lower": 3.5,
+                "expected": 3.5,
+                "upper": 3.5
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.1,
+              "qualified_ready_hours": {
+                "lower": 9.25,
+                "expected": 9.25,
+                "upper": 9.25
+              },
+              "outage_hours": {
+                "lower": 11.5,
+                "expected": 11.5,
+                "upper": 11.5
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 0.5500000000000003,
+          "expected": 0.5500000000000003,
+          "upper": 0.5500000000000003
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 0,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.2,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.1,
+            "extra_dispatch_wait_hours": 8,
+            "analysis_overhead_hours": 0.25
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    },
+    {
+      "id": "partially_masked_wait",
+      "label": "A shared gate absorbs part of the repeat-dispatch wait",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 5,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.2,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0.1,
+          "extra_dispatch_wait_hours": 8
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 2.6,
+            "expected": 2.6,
+            "upper": 2.6
+          },
+          "outage_hours": {
+            "lower": 8.05,
+            "expected": 8.05,
+            "upper": 8.05
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.8,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 7.25,
+                "expected": 7.25,
+                "upper": 7.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.2,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 1.8,
+            "expected": 1.8,
+            "upper": 1.8
+          },
+          "outage_hours": {
+            "lower": 7.65,
+            "expected": 7.65,
+            "upper": 7.65
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.9,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 7.25,
+                "expected": 7.25,
+                "upper": 7.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.1,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 0.39999999999999947,
+          "expected": 0.39999999999999947,
+          "upper": 0.39999999999999947
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 5.0,
+          "expected": 5.0,
+          "upper": 5.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 5,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.2,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0.1,
+            "extra_dispatch_wait_hours": 8
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    },
+    {
+      "id": "lead_is_separate",
+      "label": "A 24-hour warning is not 24 hours of outage avoidance",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 0,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 24,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0,
+          "extra_dispatch_wait_hours": 8
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 1.0,
+            "expected": 1.0,
+            "upper": 1.0
+          },
+          "outage_hours": {
+            "lower": 3.25,
+            "expected": 3.25,
+            "upper": 3.25
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 1.0,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.0,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 1.0,
+            "expected": 1.0,
+            "upper": 1.0
+          },
+          "outage_hours": {
+            "lower": 3.25,
+            "expected": 3.25,
+            "upper": 3.25
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 1.0,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.0,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "detection_lead_hours": 24.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 0,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 24,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0,
+            "extra_dispatch_wait_hours": 8
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    },
+    {
+      "id": "declared_conditional_eight",
+      "label": "Declared conditional eight-hour penalty avoided in one assumed case; not average savings",
+      "inputs": {
+        "shared_repair_hours": 2.25,
+        "shared_blocker_ready_hours": 0,
+        "evidence_status": "sufficient",
+        "detection_lead_hours": 0,
+        "baseline": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 1,
+          "extra_dispatch_wait_hours": 8
+        },
+        "assisted": {
+          "diagnosis_hours": 1,
+          "wrong_crew_probability": 0,
+          "extra_dispatch_wait_hours": 8
+        }
+      },
+      "result": {
+        "kind": "counterfactual_simulation",
+        "schema_version": "response_comparison_v1",
+        "status": "modeled",
+        "advisory_applied": true,
+        "baseline": {
+          "qualified_ready_hours": {
+            "lower": 9.0,
+            "expected": 9.0,
+            "upper": 9.0
+          },
+          "outage_hours": {
+            "lower": 11.25,
+            "expected": 11.25,
+            "upper": 11.25
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 0.0,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 1.0,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "assisted": {
+          "qualified_ready_hours": {
+            "lower": 1.0,
+            "expected": 1.0,
+            "upper": 1.0
+          },
+          "outage_hours": {
+            "lower": 3.25,
+            "expected": 3.25,
+            "upper": 3.25
+          },
+          "outcomes": [
+            {
+              "outcome": "correct_initial_package",
+              "assumed_probability": 1.0,
+              "qualified_ready_hours": {
+                "lower": 1.0,
+                "expected": 1.0,
+                "upper": 1.0
+              },
+              "outage_hours": {
+                "lower": 3.25,
+                "expected": 3.25,
+                "upper": 3.25
+              }
+            },
+            {
+              "outcome": "repeat_dispatch_required",
+              "assumed_probability": 0.0,
+              "qualified_ready_hours": {
+                "lower": 9.0,
+                "expected": 9.0,
+                "upper": 9.0
+              },
+              "outage_hours": {
+                "lower": 11.25,
+                "expected": 11.25,
+                "upper": 11.25
+              }
+            }
+          ]
+        },
+        "savings_hours": {
+          "lower": 8.0,
+          "expected": 8.0,
+          "upper": 8.0
+        },
+        "shared_repair_hours": {
+          "lower": 2.25,
+          "expected": 2.25,
+          "upper": 2.25
+        },
+        "shared_blocker_ready_hours": {
+          "lower": 0.0,
+          "expected": 0.0,
+          "upper": 0.0
+        },
+        "detection_lead_hours": 0.0,
+        "prevented_outage_hours": null,
+        "input_provenance": "user_declared_scenario_assumptions",
+        "inputs": {
+          "shared_repair_hours": 2.25,
+          "shared_blocker_ready_hours": 0,
+          "evidence_status": "sufficient",
+          "detection_lead_hours": 0,
+          "baseline": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 1,
+            "extra_dispatch_wait_hours": 8
+          },
+          "assisted": {
+            "diagnosis_hours": 1,
+            "wrong_crew_probability": 0,
+            "extra_dispatch_wait_hours": 8
+          }
+        },
+        "formula": "outage = max(qualified_ready_hours, shared_blocker_ready_hours) + identical_repair_hours; enumerate correct/wrong-package branches before averaging",
+        "range_semantics": "Assumption envelopes, not confidence intervals or calibrated quantiles; expected uses central times and user-assumed wrong-package probabilities.",
+        "assumptions": [
+          "Identical incident scope, repair duration, staffing and shared upstream/access gate in both arms; only qualified-readiness waiting changes.",
+          "Diagnosis, coordination and analysis overhead are declared sequential, non-overlapping waits from a common outage onset.",
+          "Extra dispatch waiting is avoidable coordination/availability delay, not travel, setup or safety already in a 4.5-adjusted repair workload.",
+          "Wrong-package probabilities are assumed scenario mixture weights, not diagnostic accuracy measured for Sentinel or AEP.",
+          "Both arms share the same blocker/repair realization. Arm-specific interval extremes can vary independently; bounds are not a paired-observation confidence interval.",
+          "Identical workflow inputs represent the same timing realization and produce exactly zero difference, including interval inputs.",
+          "No joint cross-arm wrong-package correlation is needed for the difference of expected durations; no individual causal benefit distribution is inferred.",
+          "Lead time is reported separately; earlier warning does not establish an inevitable failure or an averted outage.",
+          "The supplied AEP ARCOS fields have calendar dates, blank crew/job links and no dispatch/arrival/re-energization timestamps; empirical hourly benefit cannot be computed."
+        ]
+      }
+    }
+  ],
+  "sensitivity_grid": [
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.25
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.44999999999999996
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.6499999999999999
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.8500000000000001
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.050000000000000044
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.25
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.44999999999999996
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.6500000000000001
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.1499999999999999
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.050000000000000044
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.25
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.4500000000000002
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.3500000000000001
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.15000000000000013
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.04999999999999982
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.25
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 2.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.25
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -1.0499999999999998
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -1.85
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -2.65
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.55
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.24999999999999978
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -1.05
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -1.8499999999999999
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 1.35
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.5500000000000003
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.25
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -1.0499999999999998
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 2.15
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 1.35
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.5499999999999998
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 0.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.25
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.4249999999999998
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.8499999999999996
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -1.2750000000000004
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.40000000000000036
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.024999999999999467
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.4499999999999993
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.875
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.7999999999999998
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.375
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.04999999999999982
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.47500000000000053
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 1.2000000000000002
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.7750000000000004
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.35000000000000053
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 5.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": -0.07500000000000018
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.0,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.1,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.2,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.0,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.1,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.2,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    },
+    {
+      "extra_dispatch_wait_hours": 8.0,
+      "shared_blocker_ready_hours": 12.0,
+      "baseline_wrong_crew_probability": 0.3,
+      "assisted_wrong_crew_probability": 0.3,
+      "analysis_overhead_hours": 0.25,
+      "expected_saved_hours": 0.0
+    }
+  ],
+  "break_even": {
+    "formula": "With no shared blocker: (p_baseline - p_assisted) * extra_wait > assisted_extra_overhead",
+    "example_extra_wait_hours": 8,
+    "example_assisted_overhead_hours": 0.25,
+    "required_probability_difference": 0.03125,
+    "limitation": "Only this no-blocker/equal-correct-readiness special case; shared gates require branch enumeration."
+  },
+  "empirical_validation": false,
+  "empirical_aep_hourly_savings_available": false,
+  "disclosure": "All workflow times/probabilities are explicit scenario assumptions. These calculations do not prove an empirical 8\u201310-hour saving or any prevented outage."
+}

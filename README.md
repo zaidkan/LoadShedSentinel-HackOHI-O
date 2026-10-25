@@ -2,6 +2,36 @@
 
 **Distribution Transformer Digital Twin & AI Customer Outage Concierge**
 
+### Preventive monitoring and response evidence
+
+The **Prevention & Evidence** view runs before a fault is declared. It compares
+modeled temperature against ambient/load context and an initial reference,
+checks persistent vibration/acoustic changes, and separates condition-review
+priority from storm readiness. Healthy operating changes, developing trends,
+corroborated changes, storm preparation and unusable telemetry are selectable
+replays on the real anonymized AEP transformer catalog. No replay confirms an
+outage, dispatches a crew or predicts an exact failure time. The comparison
+reference and thresholds are demonstration assumptions, not field calibration.
+
+The same view compares baseline and assisted response under **editable assumed
+repeat-dispatch rates and delays**, with unchanged repair work and shared
+access/upstream bottlenecks. Zero and negative savings remain visible. The
+default illustration is 4.80 versus 4.65 hours (**0.15 modeled hours saved**),
+not an observed result. Unusable telemetry receives no automation credit.
+
+Reproduce the ten named cases and 96 sensitivity combinations with:
+
+```sh
+python scripts/benchmark_response.py
+python -m pytest -q tests/test_preventive.py tests/test_response_comparison.py tests/test_preventive_api.py
+```
+
+See [time-savings evidence and field-validation plan](docs/time_savings_evidence.md),
+[preventive feature sources](docs/preventive_sources.md), and
+[benchmark assumptions](docs/response_benchmark.md). The supplied damage records
+lack hourly dispatch/response outcomes; they cannot establish an 8–10-hour
+Sentinel saving.
+
 **Runtime data scope:** This demo simulates faults using *validated, anonymized dependency paths* extracted from the [official AEP challenge repository](https://github.com/hackohio/aep_challenge_hack26). The checked-in public incident sample contains **16 premises / 12 equipment nodes**. Counts reflect modeled dependencies in that sample, not observed outages or the full 117,549 accepted source paths. See [AEP impact handoff](docs/aep_source_impact_handoff.md).
 
 LoadShed Sentinel bridges the utility distribution blind spot by combining real American Electric Power (AEP) distribution topology, physical transformer telemetry modeling, 4.5× STORMS labor restoration calculations, procedural 3D digital twins, and a proactive, privacy-preserving residential outage concierge.
