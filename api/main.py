@@ -1,13 +1,17 @@
 from __future__ import annotations
+import asyncio
+import copy
 import json
 import os
 import time
 import uuid
 from dataclasses import dataclass, field
+from threading import Lock
 from typing import Dict, Any, Optional, List, Union, Set
 from typing import Literal
 from fastapi import FastAPI, HTTPException, Query, Header
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
 from api.schemas import ScenarioSnapshot, CustomerRisk
@@ -53,9 +57,11 @@ class SessionState:
     authorized_premise_tokens: Set[str] = field(default_factory=set)
     section_demo: Optional[dict] = None
     last_accessed: float = field(default_factory=time.time)
+    lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False, compare=False)
 
 # In-memory runtime state keyed by session
 _sessions: Dict[str, SessionState] = {}
+_sessions_lock = Lock()
 _topology_instance: Optional[Topology] = None
 _aep_impact_instance: Optional[AEPImpact] = None
 
@@ -105,24 +111,20 @@ def _load_initial_snapshot() -> ScenarioSnapshot:
         raise HTTPException(status_code=503, detail=f"AEP source data unavailable: {exc}") from exc
 
 def get_session(session_id: Optional[str] = None) -> SessionState:
-    global _sessions
     sid = session_id.strip() if session_id and session_id.strip() else "default"
-    now = time.time()
-    # Prune stale sessions older than 2 hours (keep default)
-    if len(_sessions) > 50:
-        stale = [k for k, s in _sessions.items() if k != "default" and (now - s.last_accessed) > 7200]
-        for k in stale:
-            _sessions.pop(k, None)
-    if sid not in _sessions:
-        _sessions[sid] = SessionState(
-            session_id=sid,
-            snapshot=_load_initial_snapshot(),
-            context=None,
-            fsm=NotificationFSM()
-        )
-    session = _sessions[sid]
-    session.last_accessed = now
-    return session
+    # Sync reads/new-session handlers also run in worker threads. Protect cache
+    # identity and recency together; dictionary order is oldest to newest access.
+    with _sessions_lock:
+        session = _sessions.get(sid)
+        if session is None:
+            session = SessionState(session_id=sid, snapshot=_load_initial_snapshot())
+        else:
+            _sessions.pop(sid)
+        session.last_accessed = time.time()
+        _sessions[sid] = session
+        while len(_sessions) > 50:
+            _sessions.pop(next(iter(_sessions)))
+        return session
 
 def get_snapshot(session_id: Optional[str] = None) -> ScenarioSnapshot:
     return get_session(session_id).snapshot
@@ -208,9 +210,14 @@ class SelectScenarioRequest(BaseModel):
 
 
 @app.post("/api/scenario/select")
-def select_scenario(req: SelectScenarioRequest, x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
+async def select_scenario(req: SelectScenarioRequest, x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
     """Simulate a fault on selected AEP equipment, calculating dependent premises."""
     session = get_session(x_session_id)
+    async with session.lock:
+        return await _select_scenario(req, session)
+
+
+async def _select_scenario(req: SelectScenarioRequest, session: SessionState):
     if req.scenario_id not in SCENARIO_IDS:
         raise HTTPException(status_code=400, detail="Unknown scenario")
     try:
@@ -223,33 +230,34 @@ def select_scenario(req: SelectScenarioRequest, x_session_id: Optional[str] = He
             if req.access_hours < 0 or req.access_hours > 720:
                 raise HTTPException(status_code=400, detail="access_hours must be between 0 and 720")
             context['access_hours'] = req.access_hours
-        snapshot = generate_scenario(req.scenario_id, context)
+        snapshot = await run_in_threadpool(generate_scenario, req.scenario_id, context)
     except (UnknownAEPAsset, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    session.context = context
-    session.snapshot = snapshot
-    session.fsm = NotificationFSM()
-    session.completed_task_ids.clear()
-    session.authorized_premise_tokens.clear()
-    session.section_demo = None
+    fsm = NotificationFSM()
 
     restoration_summary = ""
-    if session.snapshot.restoration.kind == 'scenario_planning' and session.snapshot.restoration.expected_hours is not None:
-        restoration_summary = f"Expected duration {session.snapshot.restoration.expected_hours:.1f} hours"
+    if snapshot.restoration.kind == 'scenario_planning' and snapshot.restoration.expected_hours is not None:
+        restoration_summary = f"Expected duration {snapshot.restoration.expected_hours:.1f} hours"
 
-    new_alerts = session.fsm.evaluate_triggers(
-        premise_token=session.snapshot.selected_premise_token,
-        incident_id=session.snapshot.incident_id,
-        status=session.snapshot.status,
-        risk=session.snapshot.customer_risk,
+    new_alerts = fsm.evaluate_triggers(
+        premise_token=snapshot.selected_premise_token,
+        incident_id=snapshot.incident_id,
+        status=snapshot.status,
+        risk=snapshot.customer_risk,
         restoration_summary=restoration_summary,
-        timestamp_utc=session.snapshot.timestamp_utc
+        timestamp_utc=snapshot.timestamp_utc
     )
     for alert in new_alerts:
-        if not any(n.type == alert.type and n.text == alert.text for n in session.snapshot.notifications):
-            session.snapshot.notifications.append(alert)
-    return session.snapshot
+        if not any(n.type == alert.type and n.text == alert.text for n in snapshot.notifications):
+            snapshot.notifications.append(alert)
+    session.context = context
+    session.fsm = fsm
+    session.completed_task_ids = set()
+    session.authorized_premise_tokens = set()
+    session.section_demo = None
+    session.snapshot = snapshot
+    return snapshot
 
 
 @app.get("/api/scenario/current", response_model=ScenarioSnapshot)
@@ -280,15 +288,26 @@ class AdvanceRequest(BaseModel):
     record_demo_authorization: Optional[bool] = None
 
 @app.post("/api/scenario/advance")
-def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
+async def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
     """Advances scenario state and evaluates customer notification triggers."""
     session = get_session(x_session_id)
-    snap = session.snapshot
+    async with session.lock:
+        return await _advance_scenario(req, session)
 
+
+async def _advance_scenario(req: AdvanceRequest, session: SessionState):
     if session.section_demo is not None and any((req.status, req.cutout_status, req.action,
             req.completed_task_ids is not None, req.authorized_premises is not None,
             req.record_demo_authorization)):
         raise HTTPException(status_code=400, detail="Use the explicit section-restoration actions while the section demonstration is active")
+
+    # Candidate state is private until every validation, calculation and
+    # notification evaluation succeeds. Failed requests retain no gate events.
+    snap = session.snapshot.model_copy(deep=True)
+    completed_task_ids = set(session.completed_task_ids)
+    authorized_premise_tokens = set(session.authorized_premise_tokens)
+    context = copy.deepcopy(session.context)
+    fsm = copy.deepcopy(session.fsm)
     
     # 1. Validation phase (reject before mutating anything)
     if req.incident_id and req.incident_id != snap.incident_id:
@@ -296,18 +315,23 @@ def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(N
     if req.expected_revision is not None and req.expected_revision != snap.revision:
         raise HTTPException(status_code=409, detail=f"Revision conflict: current {snap.revision}, expected {req.expected_revision}")
     
-    if req.status and req.status not in VALID_STATUSES:
+    if req.status is not None and req.status not in VALID_STATUSES:
         raise HTTPException(status_code=400, detail=f"Invalid status '{req.status}'. Must be one of {sorted(VALID_STATUSES)}")
-    if req.cutout_status and req.cutout_status not in VALID_CUTOUTS:
+    if req.cutout_status is not None and req.cutout_status not in VALID_CUTOUTS:
         raise HTTPException(status_code=400, detail=f"Invalid cutout_status '{req.cutout_status}'. Must be one of {sorted(VALID_CUTOUTS)}")
+
+    if (req.status or snap.status) == "RESTORED" and req.cutout_status not in (None, "CLOSED"):
+        raise HTTPException(status_code=400, detail="RESTORED requires cutout_status CLOSED")
 
     if req.crew_size is not None and (req.crew_size < 1 or req.crew_size > 100):
         raise HTTPException(status_code=400, detail="crew_size must be between 1 and 100")
     if req.access_hours is not None:
         if isinstance(req.access_hours, (int, float)):
-            if req.access_hours < 0 or req.access_hours > 720:
+            if not 0 <= req.access_hours <= 720:
                 raise HTTPException(status_code=400, detail="access_hours must be between 0 and 720")
         elif isinstance(req.access_hours, list):
+            if len(req.access_hours) != 3:
+                raise HTTPException(status_code=400, detail="access_hours list requires three low/expected/high values")
             if not all(isinstance(x, (int, float)) and 0 <= x <= 720 for x in req.access_hours):
                 raise HTTPException(status_code=400, detail="access_hours elements must be between 0 and 720")
             if req.access_hours != sorted(req.access_hours):
@@ -324,37 +348,37 @@ def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(N
             for cid in req.completed_task_ids:
                 if cid not in all_known_blockers:
                     raise HTTPException(status_code=400, detail=f"Unknown blocking task: {cid}")
-            session.completed_task_ids.update(req.completed_task_ids)
+            completed_task_ids.update(req.completed_task_ids)
         else:
-            session.completed_task_ids.update(all_known_blockers)
+            completed_task_ids.update(all_known_blockers)
 
         if req.authorized_premises:
             for p in req.authorized_premises:
                 if p not in premise_blockers:
                     raise HTTPException(status_code=400, detail=f"Unknown premise token for authorization: {p}")
-            session.authorized_premise_tokens.update(req.authorized_premises)
+            authorized_premise_tokens.update(req.authorized_premises)
         else:
-            session.authorized_premise_tokens.update(premise_blockers.keys())
+            authorized_premise_tokens.update(premise_blockers.keys())
     else:
         if req.completed_task_ids is not None:
             for cid in req.completed_task_ids:
                 if cid not in all_known_blockers:
                     raise HTTPException(status_code=400, detail=f"Unknown blocking task: {cid}")
-            session.completed_task_ids.update(req.completed_task_ids)
+            completed_task_ids.update(req.completed_task_ids)
 
         if req.authorized_premises is not None:
             for p in req.authorized_premises:
                 if p not in premise_blockers:
                     raise HTTPException(status_code=400, detail=f"Unknown premise token for authorization: {p}")
-            session.authorized_premise_tokens.update(req.authorized_premises)
+            authorized_premise_tokens.update(req.authorized_premises)
 
     # P0-01: Restoration authorization gating via evaluate_restoration
     if req.status == "RESTORED":
         try:
             eval_results = evaluate_restoration(
                 premise_blockers,
-                session.completed_task_ids,
-                session.authorized_premise_tokens
+                completed_task_ids,
+                authorized_premise_tokens
             )
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=f"Restoration evaluation failed: {exc}") from exc
@@ -380,7 +404,7 @@ def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(N
     new_restoration = snap.restoration
     new_planning_inputs = snap.planning_inputs
     if req.crew_size is not None or req.access_hours is not None:
-        ctx = dict(session.context or {})
+        ctx = dict(context or {})
         if not ctx:
             try:
                 ctx = get_aep_impact().scenario_context(snap.scenario_id)
@@ -392,15 +416,15 @@ def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(N
             ctx['access_hours'] = req.access_hours
 
         try:
-            updated_snap = generate_scenario(snap.scenario_id, ctx)
+            updated_snap = await run_in_threadpool(generate_scenario, snap.scenario_id, ctx)
         except (ValueError, TypeError) as exc:
             raise HTTPException(status_code=400, detail=f"Invalid scenario planning inputs: {exc}") from exc
 
-        session.context = ctx
+        context = ctx
         new_restoration = updated_snap.restoration
         new_planning_inputs = updated_snap.planning_inputs
 
-    # 3. Apply state changes atomically
+    # 3. Finish the candidate snapshot; the live session is still unchanged.
     if req.status:
         snap.status = req.status
         if req.status == "RESTORED" and not req.cutout_status:
@@ -416,7 +440,7 @@ def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(N
     if not rest_sum and snap.restoration.kind == 'scenario_planning' and snap.restoration.expected_hours is not None:
         rest_sum = f"Expected duration {snap.restoration.expected_hours:.1f} hours"
 
-    new_alerts = session.fsm.evaluate_triggers(
+    new_alerts = fsm.evaluate_triggers(
         premise_token=snap.selected_premise_token,
         incident_id=snap.incident_id,
         status=snap.status,
@@ -427,19 +451,28 @@ def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(N
     for alert in new_alerts:
         if not any(n.type == alert.type and n.text == alert.text for n in snap.notifications):
             snap.notifications.append(alert)
+    # Commit without an await while holding the session mutation lock. Returning
+    # this new snapshot also keeps earlier response objects stable after writes.
+    session.context = context
+    session.fsm = fsm
+    session.completed_task_ids = completed_task_ids
+    session.authorized_premise_tokens = authorized_premise_tokens
+    session.snapshot = snap
     return snap
 
 @app.post("/api/scenario/reset")
-def reset_scenario(x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
-    """Resets scenario to base fixture state."""
+async def reset_scenario(x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
+    """Resets scenario to base fixture state under the session mutation lock."""
     session = get_session(x_session_id)
-    session.snapshot = _load_initial_snapshot()
-    session.context = None
-    session.fsm = NotificationFSM()
-    session.completed_task_ids.clear()
-    session.authorized_premise_tokens.clear()
-    session.section_demo = None
-    return session.snapshot
+    async with session.lock:
+        snapshot = await run_in_threadpool(_load_initial_snapshot)
+        session.context = None
+        session.fsm = NotificationFSM()
+        session.completed_task_ids = set()
+        session.authorized_premise_tokens = set()
+        session.section_demo = None
+        session.snapshot = snapshot
+        return snapshot
 
 
 class SectionActionRequest(BaseModel):
@@ -451,17 +484,22 @@ class SectionActionRequest(BaseModel):
 
 
 @app.post("/api/restoration/section-action", response_model=ScenarioSnapshot)
-def section_restoration_action(req: SectionActionRequest,
+async def section_restoration_action(req: SectionActionRequest,
         x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
-    """Replay source-derived partial restoration; never operate physical equipment."""
+    """Replay source-derived partial restoration under the shared mutation lock."""
+    session = get_session(x_session_id)
+    async with session.lock:
+        return await run_in_threadpool(_section_restoration_action, req, session)
+
+
+def _section_restoration_action(req: SectionActionRequest, session: SessionState):
     from engine.step_restoration import build_section_demo, apply_section_action
 
-    session = get_session(x_session_id)
     previous = session.snapshot
     if req.incident_id != previous.incident_id or req.expected_revision != previous.revision:
         raise HTTPException(status_code=409, detail="The incident changed; refresh before applying this section action")
     candidate = previous.model_copy(deep=True)
-    context = session.context
+    context = copy.deepcopy(session.context)
     try:
         if req.action == "start":
             source = get_aep_impact()
@@ -475,7 +513,7 @@ def section_restoration_action(req: SectionActionRequest,
         elif session.section_demo is None:
             raise ValueError("Start a section demonstration before applying its actions")
         elif req.action in ("select_unaffected_premise", "select_faulted_premise"):
-            demo = dict(session.section_demo)
+            demo = copy.deepcopy(session.section_demo)
             group = demo["unaffected_premise_tokens"] if req.action == "select_unaffected_premise" else demo["isolated_premise_tokens"]
             if not group:
                 raise ValueError("This demonstration has no premise in the requested group")
@@ -511,6 +549,9 @@ def section_restoration_action(req: SectionActionRequest,
     candidate.notifications.extend(alert.model_copy(update={"premise_token": candidate.selected_premise_token})
         for alert in alerts if not any(old.type == alert.type and old.text == alert.text
             and old.premise_token == candidate.selected_premise_token for old in candidate.notifications))
+    if req.action == "start":
+        session.completed_task_ids = set()
+        session.authorized_premise_tokens = set()
     session.snapshot = candidate
     session.section_demo = demo
     session.context = context

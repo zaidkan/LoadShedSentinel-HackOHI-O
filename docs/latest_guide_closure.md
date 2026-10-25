@@ -1,6 +1,6 @@
 # Current AEP Data Guide and rubric closure
 
-Updated October 25, 2026 for the integration checkout based on `bb4482d` plus preventive integration `8c58d30` and the staged-restoration/priority changes described below. This supersedes the older `b5d4834` evidence snapshot for these specific capabilities; it is not a claim of an award, field validation or complete production readiness.
+Updated October 25, 2026 for the integration combining latest main `1ee72a2`, preventive integration `8c58d30`, and staged-restoration/priority work `2c563f5`. Final verification is recorded separately from pre-merge evidence below. This supersedes the older `b5d4834` evidence snapshot for these capabilities; it is not a claim of an award, field validation or complete production readiness.
 
 References: the AEP AI Outage Concierge Data Guide supplied by the user on October 25; the [local organizer challenge brief](../aep_challenge_hack26/docs/HackOHIO_2026_AI_Outage_Concierge_Challenge.docx); [official AEP source repository](https://github.com/hackohio/aep_challenge_hack26); and the six criteria listed on the [official event page](https://hackohio2026.devpost.com/). The Guide permits approximate topology, nearest-pole assumptions and reasonable spatial associations for critical locations. A focused, explainable prototype is the standard applied here.
 
@@ -37,7 +37,7 @@ Implementation: [step model](../engine/step_restoration.py), [section API](../ap
 
 ## Priority comparison: corrected mechanism and honest arithmetic
 
-The comparison now reads canonical uppercase facility `kind` values, rather than looking for a nonexistent `facility_type` field. Each job's customer count is the size of its actual source premise set, not the number of hospital records. The two sets are disjoint. Task finishes are retrieved by task ID, so a different schedule order cannot masquerade as a hospital-time improvement.
+The comparison now reads canonical uppercase facility `kind` values, rather than looking for a nonexistent `facility_type` field. It is enabled when the selected transformer's group has a hospital association and a separate routine group is available. Each job's customer count is the size of its actual source premise set, not the number of hospital records. The two sets are disjoint. Task finishes are retrieved by task ID, so a different schedule order cannot masquerade as a hospital-time improvement.
 
 Both jobs use the same declared 25-kVA install/remove category from C21/D21: **8.9739574468 person-hours per job** after the single indirect allowance. With three people, the conditional labor time is approximately **2.9913 hours per job**. This is a workload scenario, not an empirical restoration prediction or a claim that the GIS transformers have that rating.
 
@@ -70,6 +70,8 @@ For the sponsor, the app supplies location/context selection, declared risk band
 
 ## Validation record
 
+### Verified pre-merge baseline: `2c563f5`
+
 Independent source-specific regressions were run from this checkout with Python 3.14, bytecode/cache writes disabled:
 
 ```powershell
@@ -78,7 +80,7 @@ python -m pytest -q -p no:cacheprovider -o pythonpath=. tests/test_step_restorat
 
 **Result: 34 passed, no skips.** They cover original archive hash binding; every source transformer and premise; source-ordered protection; 8/8/16 set partition; both repair/release orders; no automatic restoration; repeated/premature events; unknown or conflicting paths; missing geometry; privacy fields; input immutability; source-based priority groups; independent CMI recomputation; and a controlled same-order case with zero claimed benefit.
 
-Integration verification on October 25, 2026:
+Pre-merge integration verification on October 25, 2026:
 
 - Full backend suite: **261 passed, 72 subtests passed**, with one upstream Starlette/httpx deprecation warning. The POSIX permission-bit assertion is applied only on POSIX; the persistence and corruption checks still run on Windows. This does not certify Windows ACLs.
 - Frontend integration checks passed, including stable session fallback when browser storage is absent, denied or unwritable; request serialization; and section restoration control gates. TypeScript and Vite production build passed (**2,573 modules**).
@@ -86,4 +88,19 @@ Integration verification on October 25, 2026:
 - The browser showed the source-based hospital-associated work comparison at **2.99 versus 5.98 hours** with the same **5.98-hour total** and the disclosed **359 additional customer-minutes** under critical-first. These are conditional scheduling calculations, not measured field benefits.
 - The redesigned 3D loaded successfully; browser console errors were empty. At a 390-pixel requested mobile viewport, the document had no horizontal overflow and the tested action buttons met a 44-pixel touch size. [Verified integrated 3D screenshot](integration-evidence/redesigned-3d.jpg).
 
-No exhaustive full-graph rebuild or repeated 448-combination test was needed because the previously checked base sample is unchanged. These checks establish a working focused prototype; they do not establish calibrated prediction accuracy, a safe field switching plan or operational deployment.
+No exhaustive full-graph rebuild or repeated 448-combination test was needed because the previously checked base sample is unchanged. These pre-merge checks establish a working focused prototype; they do not establish calibrated prediction accuracy, a safe field switching plan or operational deployment.
+
+### Final integration with main `1ee72a2`
+
+The merge preserves the dusk landing page, operator/customer redesign, 3D model and incoming incident comparator, while adding a visible **Prevention** route and the source-dependent section restoration controls. Unsupported claims that cutout position confirms energization, that misdispatch was prevented, and that each incident saves $12,000 were removed from the comparator. Its active footprint now uses the current source scenario rather than a hardcoded three-premise count.
+
+Final checks on October 25:
+
+- **278 backend tests and 72 subtests passed**, including both repair/release orders and source hash checks. One existing Starlette/httpx deprecation warning remains. A concurrent section-write probe returned one success and one stale-revision rejection; rejected actions left the snapshot unchanged.
+- Frontend integration checks passed, including **12 customer dashboard regressions**, stable storage fallback, section action gates, comparator footprint/claim checks, and a deferred-response provider regression proving older selections/planning cannot replace a newer incident. TypeScript and Vite production build passed (**2,598 modules**); Vite still warns about a large JavaScript bundle.
+- Recording script verifier passed: **395 spoken words, four speakers, 180 planned seconds**. This verifies the script, not a recorded/exported video.
+- A freshly restarted merged API and current UI at `localhost:3002` were exercised in the browser: the prevention route loads, persistent changes recommend human condition review, and unusable telemetry changes the comparison from **0.15 modeled hours saved to zero**.
+- Browser priority verification showed **2.99 versus 5.98 hours** for hospital-associated work, the same **5.98-hour total**, and **+359 customer-minutes** under critical-first. The staged journey again produced **16 out → 8 out → 0 out**; repair alone left eight out until explicit release.
+- During partial restoration, the unaffected household displayed simulated restoration while the faulted household displayed an outage. The redesigned 3D appeared and the browser console had no errors. [Current merged partial-restoration screenshot](integration-evidence/merged-partial.png) records eight still out after repair, before release. Laptop rendering was checked again; the 390-pixel mobile result above belongs to the pre-merge layout and is not a new mobile certification.
+
+The data/provenance comparison between `2c563f5` and incoming main found no changes to the AEP network bundle, facility-linking algorithm, GIS/topology importer, workbook importer or source ledger. The preventive replay/benchmark artifacts introduced by this integration remain present in the working merge. This continuity reduces the need for a fresh full-archive reconstruction, but does not replace the merged source-consistency and functional tests.

@@ -1,4 +1,4 @@
-.preventive-page { max-width: 1240px; margin: 0 auto; padding: 28px 20px; color: #cbd5e1; }
+.preventive-page { max-width: 1240px; margin: 24px auto; padding: 28px 20px; color: #cbd5e1; background: var(--night-1, #101b27); border-radius: 14px; }
 .preventive-intro, .preventive-section-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
 .preventive-intro { margin-bottom: 24px; }
 .preventive-page h1 { font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 750; color: #f8fafc; margin: 4px 0 10px; line-height: 1.18; }

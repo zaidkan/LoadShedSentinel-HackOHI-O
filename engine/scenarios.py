@@ -162,8 +162,9 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
                 groups.append(dict(asset_token=token, premise_tokens=premises,
                                    customer_count=len(premises), hospital_facility_tokens=sorted(hospitals),
                                    critical_facility_count=len(hospitals)))
-            candidates = [g for g in groups if g['hospital_facility_tokens']]
-            candidates.sort(key=lambda g: (g['asset_token'] != asset, g['asset_token']))
+            candidates = [g for g in groups if g['hospital_facility_tokens'] and g['asset_token'] == asset]
+            if not candidates:
+                comparison['rationale'] = 'No hospital-associated source group for the selected asset; a comparison was not fabricated from a different asset.'
             chosen = None
             for hospital_group in candidates:
                 ordinary = [g for g in groups if not g['hospital_facility_tokens']

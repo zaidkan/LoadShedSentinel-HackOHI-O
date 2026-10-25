@@ -1,3 +1,10 @@
+import asyncio
+import copy
+import threading
+
+import httpx
+import pytest
+import api.main as api
 from fastapi.testclient import TestClient
 from api.main import app
 
@@ -250,4 +257,168 @@ def test_customer_view_revision_and_escalation_preview():
     assert "Simulated demonstration preview" in cust_view["alert_plan"]["escalation_policy"]
     assert "not connected to live 911" in cust_view["alert_plan"]["escalation_policy"]
 
+
+
+
+# Run 3: real endpoint regressions for session integrity and cache policy.
+def _selected_session():
+    sid = client.post('/api/session/new').json()['session_id']
+    headers = {'X-Session-ID': sid}
+    selected = client.post('/api/scenario/select', headers=headers,
+                           json={'scenario_id': 'confirmed_replacement'})
+    assert selected.status_code == 200
+    return headers, api._sessions[sid]
+
+
+def _application_state(session):
+    return copy.deepcopy(dict(snapshot=session.snapshot.model_dump(mode='json'), context=session.context,
+                              completed=session.completed_task_ids, authorized=session.authorized_premise_tokens,
+                              notifications=vars(session.fsm)))
+
+
+@pytest.mark.parametrize('payload', [
+    {'status': 'RESTORED', 'action': 'record_demo_authorization', 'access_hours': [1, 2]},
+    {'action': 'record_demo_authorization', 'authorized_premises': ['P-UNKNOWN']},
+    {'status': 'RESTORED', 'completed_task_ids': ['replace_transformer']},
+    {'completed_task_ids': ['replace_transformer'], 'authorized_premises': ['P-UNKNOWN']},
+])
+def test_rejected_advance_preserves_all_application_state(payload):
+    headers, session = _selected_session()
+    before = _application_state(session)
+    rejected = client.post('/api/scenario/advance', headers=headers, json=payload)
+    assert rejected.status_code == 400
+    assert _application_state(session) == before
+    # A failed combined event must never authorize a subsequent plain restoration.
+    assert client.post('/api/scenario/advance', headers=headers,
+                       json={'status': 'RESTORED'}).status_code == 400
+    assert _application_state(session) == before
+
+
+@pytest.mark.parametrize('cutout', ['OPEN', 'UNKNOWN'])
+def test_restored_transition_rejects_conflicting_explicit_cutout_atomically(cutout):
+    headers, session = _selected_session()
+    before = _application_state(session)
+    rejected = client.post('/api/scenario/advance', headers=headers, json={
+        'status': 'RESTORED', 'action': 'record_demo_authorization', 'cutout_status': cutout})
+    assert rejected.status_code == 400
+    assert _application_state(session) == before
+
+
+@pytest.mark.parametrize('cutout', [None, 'CLOSED'])
+def test_restored_transition_closes_cutout_and_cannot_be_reopened(cutout):
+    headers, session = _selected_session()
+    payload = {'status': 'RESTORED', 'action': 'record_demo_authorization'}
+    if cutout is not None:
+        payload['cutout_status'] = cutout
+    restored = client.post('/api/scenario/advance', headers=headers, json=payload)
+    assert restored.status_code == 200
+    assert restored.json()['cutout_status'] == 'CLOSED'
+    before = _application_state(session)
+    assert client.post('/api/scenario/advance', headers=headers,
+                       json={'cutout_status': 'OPEN'}).status_code == 400
+    assert _application_state(session) == before
+    assert len([n for n in restored.json()['notifications'] if n['type'] == 'RESTORATION_COMPLETE']) == 1
+
+
+def test_equal_revision_concurrent_advances_allow_exactly_one_commit(monkeypatch):
+    headers, session = _selected_session()
+    revision = session.snapshot.revision
+    first_entered = threading.Event()
+    release_first = threading.Event()
+    original_generate = api.generate_scenario
+
+    def gated_generate(scenario_id, context):
+        # Control timing only; both requests use the actual calculator and inputs.
+        if context.get('crew_size') == 4:
+            first_entered.set()
+            assert release_first.wait(5), 'test did not release the first calculator'
+        return original_generate(scenario_id, context)
+
+    monkeypatch.setattr(api, 'generate_scenario', gated_generate)
+
+    async def exercise():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as ac:
+            first = asyncio.create_task(ac.post('/api/scenario/advance', headers=headers,
+                json={'expected_revision': revision, 'crew_size': 4}))
+            second = None
+            try:
+                assert await asyncio.to_thread(first_entered.wait, 3)
+                second = asyncio.create_task(ac.post('/api/scenario/advance', headers=headers,
+                    json={'expected_revision': revision, 'crew_size': 6}))
+                # On the old threaded endpoint the stale writer commits while the
+                # first calculator is held. With a session lock it must wait.
+                await asyncio.wait({second}, timeout=.15)
+            finally:
+                release_first.set()
+                responses = await asyncio.gather(*([first, second] if second else [first]))
+            return responses
+
+    responses = asyncio.run(exercise())
+    assert [response.status_code for response in responses] == [200, 409]
+    assert responses[0].json()['revision'] == revision + 1
+    assert session.snapshot.revision == revision + 1
+    assert session.snapshot.planning_inputs.crew_size == 4
+
+
+@pytest.mark.parametrize('path,payload', [('/api/scenario/select', {'scenario_id': 'upstream_feeder'}),
+                                         ('/api/scenario/reset', None)])
+def test_select_and_reset_wait_for_the_same_session_mutation_lock(path, payload):
+    headers, session = _selected_session()
+    before = _application_state(session)
+
+    async def exercise():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as ac:
+            async with session.lock:
+                pending = asyncio.create_task(ac.post(path, headers=headers, json=payload))
+                done, _ = await asyncio.wait({pending}, timeout=.05)
+                assert not done
+                assert _application_state(session) == before
+            response = await pending
+            assert response.status_code == 200
+
+    asyncio.run(exercise())
+    assert session.snapshot.scenario_id == ('upstream_feeder' if path.endswith('select') else 'local_protection')
+
+
+def test_session_cache_is_capped_and_evicts_the_least_recently_used_session(monkeypatch):
+    monkeypatch.setattr(api, '_sessions', {})
+    sessions = []
+    for _ in range(50):
+        response = client.post('/api/session/new')
+        assert response.status_code == 200
+        sessions.append(response.json()['session_id'])
+        assert len(api._sessions) <= 50
+    # Touch the oldest session via a read; the next-oldest must be evicted.
+    client.get('/api/scenario/current', headers={'X-Session-ID': sessions[0]})
+    extra = client.post('/api/session/new').json()['session_id']
+    assert len(api._sessions) == 50
+    assert sessions[0] in api._sessions
+    assert sessions[1] not in api._sessions
+    assert extra in api._sessions
+    for _ in range(5):
+        client.post('/api/session/new')
+        assert len(api._sessions) == 50
+
+
+def test_counterfactual_comparator_scenarios_contract():
+    """Verify Counterfactual Comparator contract: local protection vs upstream feeder."""
+    headers = {"X-Session-ID": "test-comparator-session"}
+    
+    # 1. Hypothesis A: Local Protection Operation
+    res_local = client.post("/api/scenario/select", headers=headers, json={"scenario_id": "local_protection"})
+    assert res_local.status_code == 200
+    snap_local = res_local.json()
+    assert snap_local["scenario_id"] == "local_protection"
+    assert snap_local["cutout_status"] == "OPEN"
+    assert len(snap_local["affected_premise_tokens"]) == 3
+    assert snap_local["impact_source"]["fault_asset_kind"] == "TRANSFORMER"
+    
+    # 2. Hypothesis B: Upstream Feeder Lockout
+    res_upstream = client.post("/api/scenario/select", headers=headers, json={"scenario_id": "upstream_feeder"})
+    assert res_upstream.status_code == 200
+    snap_upstream = res_upstream.json()
+    assert snap_upstream["scenario_id"] == "upstream_feeder"
+    assert snap_upstream["cutout_status"] == "CLOSED"
+    assert len(snap_upstream["affected_premise_tokens"]) == 16
+    assert snap_upstream["impact_source"]["fault_asset_kind"] == "CIRCUIT_BREAKER"
 

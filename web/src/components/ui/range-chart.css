@@ -1,0 +1,166 @@
+.range-chart {
+  --rc-ink: var(--ink);
+  --rc-muted: var(--muted);
+  --rc-grid: var(--line);
+  --rc-band: var(--accent-soft);
+  --rc-band-edge: var(--accent);
+  --rc-bar: color-mix(in srgb, var(--ink-2) 22%, transparent);
+  --rc-bar-edge: var(--ink-2);
+  margin: 0;
+}
+
+.range-chart[data-tone="night"] {
+  --rc-ink: var(--on-night);
+  --rc-muted: var(--on-night-muted);
+  --rc-grid: var(--line-night);
+  --rc-band: var(--accent-night-wash);
+  --rc-band-edge: var(--accent-night);
+}
+
+.range-chart-plot {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  padding-bottom: 1.75rem;
+}
+
+.range-chart-grid span {
+  position: absolute;
+  top: 0;
+  bottom: 1.5rem;
+  width: 1px;
+  background: var(--rc-grid);
+}
+
+.range-chart-lane {
+  position: relative;
+  height: 3.25rem;
+}
+
+.range-chart-lane--bar {
+  height: 2rem;
+}
+
+.range-chart-band {
+  position: absolute;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  border: 1px solid var(--rc-band-edge);
+  border-radius: var(--radius-s);
+  background: var(--rc-band);
+}
+
+.range-chart-band-label {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 0.35rem);
+  color: var(--rc-muted);
+  font-size: var(--text-micro);
+  font-weight: 560;
+  white-space: nowrap;
+}
+
+.range-chart-expected {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--rc-ink);
+}
+
+.range-chart-expected span {
+  position: absolute;
+  top: calc(100% + 0.2rem);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-xs);
+  background: var(--rc-ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  white-space: nowrap;
+}
+
+.range-chart[data-tone="night"] .range-chart-expected span {
+  color: var(--night-0);
+}
+
+.range-chart-lane--bar + .range-chart-lane--bar,
+.range-chart-lane + .range-chart-lane--bar {
+  margin-top: 0.9rem;
+}
+
+.range-chart-bar {
+  position: absolute;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  left: 0;
+  border: 1.5px solid var(--rc-bar-edge);
+  border-left: 0;
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+  background: var(--rc-bar);
+  transform-origin: left center;
+}
+
+[data-motion="full"] .range-chart-bar {
+  animation: range-fill var(--dur-ui) var(--ease-out) both;
+}
+
+@keyframes range-fill {
+  from { transform: scaleX(0); }
+}
+
+.range-chart-bar[data-tone="soft"] {
+  border-width: 1px;
+  border-style: dashed;
+  background: transparent;
+}
+
+.range-chart-bar-label {
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--rc-ink);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.range-chart-axis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.25rem;
+}
+
+.range-chart-axis span {
+  position: absolute;
+  transform: translateX(-50%);
+  color: var(--rc-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  white-space: nowrap;
+}
+
+.range-chart-axis span:first-child {
+  transform: none;
+}
+
+.range-chart-axis span:last-child {
+  transform: translateX(-100%);
+}
+
+.range-chart-empty {
+  position: absolute;
+  inset: 0.4rem 0;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--rc-band-edge);
+  border-radius: var(--radius-s);
+  color: var(--rc-muted);
+  font-size: var(--text-small);
+}

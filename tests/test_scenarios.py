@@ -2,6 +2,8 @@
 import copy
 import unittest
 
+import pytest
+
 class ScenarioTests(unittest.TestCase):
     def generate(self, scenario, context=None):
         from engine.scenarios import generate_scenario
@@ -154,3 +156,65 @@ class ScenarioTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+@pytest.mark.parametrize('asset,hospital_count', [('ASSET-4D3811483AD1FB8F', 1),
+                                                ('ASSET-253FD0B7C3F209A9', 4)])
+def test_canonical_hospital_associations_enable_priority_comparison(asset, hospital_count):
+    from engine.aep_impact import AEPImpact
+    from engine.scenarios import generate_scenario
+    source = AEPImpact.load()
+    context = source.scenario_context('confirmed_replacement', asset)
+    records = context['source_impact']['critical_facility_impact']['critical_facilities']
+    assert sum(record['kind'] == 'HOSPITAL' for record in records) == hospital_count
+    comparison = generate_scenario('confirmed_replacement', context).restoration.priority_comparison
+    assert comparison['enabled'] is True
+    assert comparison['hospital_first']['sequence'][0] == 'hospital_service'
+    # Independent arithmetic from actual workbook C21/D21, not from the scheduler.
+    person_hours = (1.1880851063829778 + 0.8061276595744681) * 4.5
+    job_duration = person_hours / 3
+    assert comparison['person_hours_per_job'] == pytest.approx(person_hours)
+    assert comparison['hospital_first']['hospital_finish_hours'] == pytest.approx(job_duration)
+    assert comparison['unprioritized']['hospital_finish_hours'] == pytest.approx(2 * job_duration)
+    assert comparison['hospital_first']['total_finish_hours'] == pytest.approx(2 * job_duration)
+    assert comparison['unprioritized']['total_finish_hours'] == pytest.approx(2 * job_duration)
+    critical, ordinary = comparison['groups']
+    assert critical['asset_token'] == asset
+    assert critical['customer_count'] == len(source.affected(asset))
+    assert not set(critical['premise_tokens']) & set(ordinary['premise_tokens'])
+    assert comparison['total_customer_count'] == len(set(critical['premise_tokens']) | set(ordinary['premise_tokens']))
+    assert comparison['critical_facility_count'] == hospital_count
+    assert 'declared two-repair' in comparison['rationale'].lower()
+    assert 'not service confirmations' in comparison['rationale'].lower()
+
+
+def test_all_nonhospital_transformer_assets_keep_priority_comparison_disabled():
+    from engine.aep_impact import AEPImpact
+    from engine.scenarios import generate_scenario
+    source = AEPImpact.load()
+    checked = 0
+    for asset in source.selectable_assets():
+        if asset['kind'] != 'TRANSFORMER':
+            continue
+        context = source.scenario_context('confirmed_replacement', asset['asset_token'])
+        facilities = context['source_impact']['critical_facility_impact']['critical_facilities']
+        if any(record['kind'] == 'HOSPITAL' for record in facilities):
+            continue
+        comparison = generate_scenario('confirmed_replacement', context).restoration.priority_comparison
+        assert comparison['enabled'] is False
+        checked += 1
+    assert checked == 4
+
+
+def test_legacy_hospital_facility_type_remains_supported(monkeypatch):
+    from engine.aep_impact import AEPImpact
+    from engine.scenarios import generate_scenario
+    original = AEPImpact.affected_critical_facilities
+    def legacy_records(self, asset):
+        summary = original(self, asset)
+        records = [{**{key: value for key, value in record.items() if key != 'kind'},
+                    'facility_type': record['kind'].lower()} for record in summary['critical_facilities']]
+        return {**summary, 'critical_facilities': records}
+    monkeypatch.setattr(AEPImpact, 'affected_critical_facilities', legacy_records)
+    context = AEPImpact.load().scenario_context('confirmed_replacement')
+    assert generate_scenario('confirmed_replacement', context).restoration.priority_comparison['enabled'] is True

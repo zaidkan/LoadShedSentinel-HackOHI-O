@@ -2,7 +2,7 @@
 
 **Locked edit:** 00:00–03:00, exactly 180 seconds. **Spoken budget:** 395 words. Person 1 speaks for the data team, Person 2 for the twin and labor engine, Person 3 for the utility interface, and Person 4 for the customer concierge and orchestration. Read only the four quoted narration blocks. Labels, formulas, screen cues and variation notes are not spoken.
 
-Source reviewed: latest integration based on `bb4482d` plus `8c58d30` and the priority/section-restoration fixes recorded in [the current crosswalk](latest_guide_closure.md). The planned timecodes and spoken word count do not certify a recorded performance or exported video duration.
+Feature story reviewed: the integration committed as `2c563f5`, including prevention, source-based priority comparison and partial restoration. Incoming `1ee72a2` adds the dusk redesign and further changes; capture that merged version only after its final integration checks pass. The [current crosswalk](latest_guide_closure.md) distinguishes the verified pre-merge build from that pending final check. Planned timecodes and word counts do not certify a recorded performance or exported video duration.
 
 | Speaker | Slot | Duration | Narration | Delivery window | Silent handoff / hold |
 |---|---|---:|---:|---|---|
@@ -50,7 +50,7 @@ The website directly provides interactive controls for crew/access sensitivity, 
 - **01:12–01:23:** With three workers and zero access delay, show the separate two-job comparison: hospital-associated work finishes at **2.99 versus 5.98 hours**, total work finishes at **5.98 hours** under both policies. Show the increased ordinary customer-minutes and assumed facility association. Work completion still requires modeled release authorization.
 - **01:23–01:25:** Hold the supplied work package and pass the same replacement scenario to Person 3.
 
-[UI Variation Note] Crop around the asset and assumptions rather than fixed pixels. The requested **45-degree cutout** is a recording discrepancy at this revision: `web/src/three/visual-state.ts` uses `OPEN.angle = -2.05` radians, about 117.5 degrees of hinge rotation, not 45 degrees. The narration deliberately says open/closed/unknown. Use a “45-degree” caption only after the UI owner changes and verifies that visual; do not alter source code as part of this script task. Preserve workbook cells, units, multiplier and declared-rating disclosure if panel copy changes.
+[UI Variation Note] Crop around the asset and assumptions rather than fixed pixels. The requested **45-degree cutout** differed from the pre-merge legacy renderer: `web/src/three/visual-state.ts` used `OPEN.angle = -2.05` radians, about 117.5 degrees of hinge rotation. Verify the final dusk model before using any angle caption; the narration deliberately avoids an angle claim. Preserve workbook cells, units, multiplier and declared-rating disclosure if panel copy changes.
 
 ## 01:25–02:15 — Person 3 — Utility Interface & Controls
 
@@ -61,10 +61,10 @@ The website directly provides interactive controls for crew/access sensitivity, 
 **Screen cues, not spoken**
 
 - **01:25–01:38:** Show the scenario/equipment selectors and **Feeder circuit** SVG map. Select an equipment glyph to expose its details. Keep the arrow legend “upstream → downstream,” current-asset outline and unconfirmed equipment states visible.
-- **01:38–01:50:** Show crew/access bounds and **6 workers / 2 h access → 3.50 h expected**. Reset to **3 / 0**, then start the modeled section demo and isolate. Keep the simulation label visible.
+- **01:38–01:50:** Show crew/access bounds (**2–8 workers / 0–24 h access**) and **6 workers / 2 h access → 3.50 h expected**. Reset to **3 / 0**, then start the modeled section demo and isolate. Keep the simulation label visible.
 - **01:50–02:07:** Capture **16 out → authorize unaffected → 8 out → complete repair → still 8 out → authorize repaired → 0 out**. Use an insert captured at the partial state to show the unaffected household RESTORED while the faulted household remains OUTAGE.
-- **02:07–02:13:** Briefly show the editable response comparison and a zero-benefit case in **Prevention & Evidence**. Then return to Customer Concierge for the final speaker. Do not narrate a measured 8–10-hour saving.
-- **02:13–02:15:** Hold the matching customer range for Person 4.
+- **02:07–02:13:** Briefly show a prepared zero-benefit response-comparison take from **Prevention & Evidence**. Reset to the same replacement asset at **3 workers / 0 access**, then return to Customer Concierge for Person 4. This new declared incident has a **2.99 h** range; a fully restored premise correctly has no remaining repair-time promise. Do not narrate a measured 8–10-hour saving.
+- **02:13–02:15:** Hold that replacement customer view and its matching current revision for Person 4.
 
 [UI Variation Note] Bind shots to the controls' purpose, not their exact position or wording. Rounded expected hours may display fewer decimals. If a verified minor change alters the numeric example, replace the sentence beginning “Six workers” with “The updated expected duration appears in both views,” recount the script and retain the 50-second slot. If an update fails, use the visible retry/reset behavior and record a successful take; do not hide a stale range behind an overlay.
 
@@ -82,12 +82,14 @@ The website directly provides interactive controls for crew/access sensitivity, 
 - **02:52–02:58:** Deliver the closing sentence over the customer page and source labels. Keep modeled planning and simulated delivery visible.
 - **02:58–03:00:** Silent closing hold: “Transparent planning. Practical preparation.” End picture and sound at exactly **03:00**.
 
-[UI Variation Note] Reframe cards if labels move; keep uncertainty, confidence, assumptions and demo-delivery copy in the shot. Use actual alert history or its empty state; never fabricate a sent message. If a mobility control is added and verified before recording, replace the labelled API insert with that real interaction without lengthening the narration. Keep household runtime separate from the sensor-node battery readout.
+[UI Variation Note] Reframe cards if labels move; keep uncertainty, confidence, assumptions and demo-delivery copy in the shot. Use actual alert history or its empty state; never fabricate a sent message. Preserve the real mobility interaction and its declared-needs guidance without lengthening the narration. Keep household runtime separate from the sensor-node battery readout.
 
 ### Recording handoff and verification
 
 Speaker changes occur at 00:40, 01:25 and 02:15. Use straight cuts or brief audio crossfades inside the existing handoff holds; never add transition time. Rehearse against the locked slots, retake long lines and trim pauses before changing the spoken wording. Record current scenario/revision and retain the successful input/range proof alongside the take. The Retry Connection and Retry topology controls can be checked during preflight; deliberately failing a request is not part of the timed walkthrough.
 
-Run `python3 verification/verify_script.py` from the private staging root after any narration or timecode edit. It checks the four speaker roles, contiguous 40/45/50/45-second slots, four variation tags, 380–420 quoted spoken words and the 180-second endpoint. The edit plan's word count uses whitespace-delimited tokens; numbers and cell references are written as spoken words to avoid shorthand inflation. A E P means the three spoken letters; pronounce C twenty one and D twenty one as cell references.
+**Verified planned total: 395 spoken words; 180 seconds.** Counts by Person 1–4: **89 / 93 / 110 / 103**. Speaker slots are **40 + 45 + 50 + 45 = 180 seconds**; delivery windows total **172 seconds**, with **8 seconds** of silent holds. Exactly four bracketed UI variation notes accompany the four speakers.
+
+Run `python -X utf8 verification/verify_script.py` from the repository root after any narration or timecode edit. It checks the roles, timing table, contiguous slots, four variation tags, 380–420 quoted spoken words and the 180-second endpoint, and regenerates `verification/timecodes-and-words.json`. UTF-8 mode supports the script's typography on Windows. Counts use whitespace-delimited tokens in the four narration blocks; numbers and cell references are written as spoken words. A E P means the three spoken letters; pronounce C twenty one and D twenty one as cell references.
 
 Before delivery, inspect the actual exported media duration and play its ending. A valid script timeline alone cannot prove that an unrecorded or unexported video is exactly three minutes.

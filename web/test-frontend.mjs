@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
+import { runInNewContext } from 'node:vm';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { runInNewContext } from 'node:vm';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const require = createRequire(resolve(root, 'package.json'));
@@ -19,6 +19,7 @@ await build({
     resolve(root, 'src/components/utility/SectionRestorationControls.tsx'),
     resolve(root, 'src/components/utility/TelemetryHUD.tsx'),
     resolve(root, 'src/components/utility/EvidencePanel.tsx'),
+    resolve(root, 'src/components/utility/CounterfactualCompareCard.tsx'),
     resolve(root, 'src/pages/CustomerPage.tsx'),
     resolve(root, 'src/services/api.ts'),
   ],
@@ -31,12 +32,13 @@ await build({
 });
 
 const { PlanningPanels } = require(resolve(root, 'dist-test/components/utility/PlanningPanels.cjs'));
-const { SectionRestorationControls } = require(resolve(root, 'dist-test/components/utility/SectionRestorationControls.cjs'));
 const { TelemetryHUD } = require(resolve(root, 'dist-test/components/utility/TelemetryHUD.cjs'));
 const { EvidencePanel } = require(resolve(root, 'dist-test/components/utility/EvidencePanel.cjs'));
+const { CounterfactualCompareCard } = require(resolve(root, 'dist-test/components/utility/CounterfactualCompareCard.cjs'));
 const { CustomerPage } = require(resolve(root, 'dist-test/pages/CustomerPage.cjs'));
 const api = require(resolve(root, 'dist-test/services/api.cjs'));
 
+const { SectionRestorationControls } = require(resolve(root, 'dist-test/components/utility/SectionRestorationControls.cjs'));
 const fixture = JSON.parse(await readFile(resolve(root, '../fixtures/scenario_fixture.json'), 'utf8'));
 
 console.log('--- Test 1: PlanningPanels component rendering & states ---');
@@ -127,6 +129,33 @@ console.log('--- Test 4: advanceScenario parameter serialization ---');
   console.log('✔ advanceScenario serialized action and blocker parameters passed');
 }
 
+console.log('--- Test 5: CounterfactualCompareCard rendering & hypotheses ---');
+{
+  const cardHtml = renderToStaticMarkup(React.createElement(CounterfactualCompareCard, {
+    snapshot: { ...fixture, scenario_id: 'local_protection' },
+  }));
+  assert.match(cardHtml, /Counterfactual Incident Comparator/);
+  assert.match(cardHtml, /Local Cutout Blown/);
+  assert.match(cardHtml, /Upstream Feeder Lockout/);
+  assert.match(cardHtml, /OPEN \(-117\.5° Drop\)/);
+  assert.match(cardHtml, /CLOSED \(Latched 0°\)/);
+  assert.match(cardHtml, new RegExp(`${fixture.affected_premise_tokens.length} Sample Premises`));
+  assert.match(cardHtml, /Load upstream scenario to calculate/);
+  assert.match(cardHtml, /Cutout position alone cannot confirm voltage/);
+  assert.doesNotMatch(cardHtml, /\$12,000|Misdispatch Prevented/);
+  const other = renderToStaticMarkup(React.createElement(CounterfactualCompareCard, {
+    snapshot: { ...fixture, scenario_id: 'upstream_feeder', affected_premise_tokens: ['one', 'two'] },
+  }));
+  assert.match(other, /2 Sample Premises/);
+  assert.match(other, /Load local scenario to calculate/);
+  console.log('✔ CounterfactualCompareCard render & hypotheses verified');
+}
+
+// Customer household-generation races and loaded dashboard states.
+await import('./test-customer.mjs');
+await import('./test-incident.mjs');
+console.log('All frontend integration and customer dashboard checks passed.');
+
 console.log('--- Session fallback: unavailable, denied and unwritable storage ---');
 {
   const code = await readFile(resolve(root, 'dist-test/services/api.cjs'), 'utf8');
@@ -184,5 +213,3 @@ console.log('--- Section restoration: separate isolation, repair and release gat
   assert.ok(enabled(render(partial), 'Inspect unaffected customer'));
   console.log('✔ Early release, repair-first and customer inspection controls respect modeled gates');
 }
-
-console.log('\nAll frontend integration checks passed successfully.');

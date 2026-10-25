@@ -68,21 +68,39 @@ export interface PreparednessGuidance {
   detail: string;
 }
 
-let memorySessionId: string | null = null;
+let _memorySessionId: string | null = null;
 
 export function getSessionId(): string {
-  if (memorySessionId) return memorySessionId;
-  // Storage can be absent in SSR/tests, or throw under browser privacy policy.
-  // Preserve one module-local identity across all requests in either case.
+  let sid: string | null = null;
   try {
-    const stored = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('loadshed_session_id') : null;
-    if (typeof stored === 'string' && stored.trim()) memorySessionId = stored;
-  } catch { /* Keep the in-memory fallback when storage access is denied. */ }
-  if (!memorySessionId) memorySessionId = 'sess_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
+    const storage = typeof window !== 'undefined' ? window.sessionStorage : (typeof globalThis !== 'undefined' ? (globalThis as any).sessionStorage : null);
+    if (storage) {
+      sid = storage.getItem('loadshed_session_id');
+    }
+  } catch {
+    sid = null;
+  }
+
+  if (sid) {
+    _memorySessionId = sid;
+    return sid;
+  }
+
+  if (_memorySessionId) {
+    return _memorySessionId;
+  }
+
+  sid = 'sess_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
+  _memorySessionId = sid;
   try {
-    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('loadshed_session_id', memorySessionId);
-  } catch { /* The stable in-memory ID still isolates this client instance. */ }
-  return memorySessionId;
+    const storage = typeof window !== 'undefined' ? window.sessionStorage : (typeof globalThis !== 'undefined' ? (globalThis as any).sessionStorage : null);
+    if (storage) {
+      storage.setItem('loadshed_session_id', sid);
+    }
+  } catch {
+    // quota or security error fallback to memory
+  }
+  return sid;
 }
 
 function sessionHeaders(extraHeaders: Record<string, string> = {}): Record<string, string> {
@@ -126,7 +144,7 @@ export async function fetchCustomerSnapshot(): Promise<CustomerSnapshotView> {
   return res.json();
 }
 
-export async function lookupPremiseTopology(premiseId: string): Promise<any> {
+export async function lookupPremiseTopology(premiseId: string): Promise<TopologyTrace> {
   const res = await fetch(`/api/topology/lookup?premise_id=${encodeURIComponent(premiseId)}`, {
     headers: sessionHeaders(),
   });
@@ -205,4 +223,41 @@ export async function fetchAEPAssets(): Promise<AEPSourceAsset[]> {
   });
   if (!res.ok) throw new Error('AEP source data unavailable: ' + res.status);
   return res.json();
+}
+
+export interface AEPSourceSummary {
+  provenance: string;
+  origin: string;
+  scope: string;
+  premises_in_sample: number;
+  equipment_in_sample: number;
+  basis: string;
+  is_live_outage_data: boolean;
+  is_full_territory_impact_count: boolean;
+  limitations: string[];
+}
+
+export async function fetchAEPSource(): Promise<AEPSourceSummary> {
+  const res = await fetch('/api/aep/source');
+  if (!res.ok) throw new Error('AEP source summary unavailable: ' + res.status);
+  return res.json();
+}
+
+export interface TopologyEquipment {
+  asset_token: string;
+  kind: string;
+}
+
+export interface TopologyTrace {
+  status: 'KNOWN' | 'UNKNOWN' | string;
+  premise_token?: string;
+  path: string[];
+  equipment?: TopologyEquipment[];
+  direction?: string;
+  endpoint?: string;
+  substation_status?: string;
+  basis?: string;
+  scope?: string;
+  limitations?: string[];
+  reason?: string;
 }

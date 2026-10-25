@@ -275,10 +275,21 @@ def test_priority_comparison_uses_disjoint_source_groups_and_actual_customer_cou
     context = source.scenario_context('confirmed_replacement', transformer)
     snapshot = generate_scenario('confirmed_replacement', context)
     comparison = snapshot.restoration.priority_comparison
+    assert set(snapshot.affected_premise_tokens) == set(source.affected(transformer))
+    assert snapshot.restoration.labor_work_hours == pytest.approx(8.973957446808507)
+    selected_hospitals = {record['facility_token'] for record in source.affected_critical_facilities(transformer)['critical_facilities']
+                          if record['kind'] == 'HOSPITAL'}
+    if not selected_hospitals:
+        assert comparison['enabled'] is False
+        assert comparison['groups'] == []
+        assert comparison['hospital_first'] is None and comparison['unprioritized'] is None
+        assert 'selected asset' in comparison['rationale']
+        return
     assert comparison['enabled'] is True
     assert comparison['scope'] == 'separate_two_concurrent_transformer_repair_scenario'
     groups = {group['task_id']: group for group in comparison['groups']}
     assert set(groups) == {'hospital_service', 'feeder_branch'}
+    assert groups['hospital_service']['asset_token'] == transformer
     covered = set()
     for group in groups.values():
         expected = {premise for premise, path in source.paths.items()
