@@ -172,6 +172,7 @@ def select_scenario(req: SelectScenarioRequest):
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     _current_context = context
     _current_snapshot = snapshot
+    _fsm = NotificationFSM()
 
     restoration_summary = ""
     if _current_snapshot.restoration.kind == 'scenario_planning' and _current_snapshot.restoration.expected_hours is not None:

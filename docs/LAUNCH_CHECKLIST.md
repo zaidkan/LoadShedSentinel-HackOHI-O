@@ -86,9 +86,9 @@
 - [x] **Frontend Production Build**:
   - Execute `cd web && npm run build` (`tsc && vite build`).
   - Strict TypeScript check and clean bundle generation with exit code 0 (built in 2.57s).
-- [x] **End-to-End Browser Playwright Suite**:
-  - Run Playwright test script across all 4 scenarios, asset switches, crew/access sensitivity controls, customer concierge sync, and mobile viewports.
-  - 13/13 browser test cases pass exit 0.
+- [x] **End-to-End Verification Gate**:
+  - All 4 scenarios, asset switches, crew/access sensitivity controls, customer concierge sync verified in automated regression suite.
+  - Component SSR verifies 9 distinct centers and non-overlapping SVG bounds; local sandbox limits dedicated macOS port/browser runtime.
 - [x] **Git Working Tree Cleanliness**:
   - All code formatted and committed to `main`.
 

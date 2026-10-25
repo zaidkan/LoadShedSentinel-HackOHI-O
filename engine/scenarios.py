@@ -141,47 +141,61 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
             'no separate travel, safety or setup allowance is added.')
 
         # F02: Multi-section priority scheduling comparison
-        # Compare hospital-first scheduling vs unprioritized FIFO for 3-person crew
-        hosp_tasks = [
-            dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
-                 criticality=['hospital'], customer_count=1, dependencies=[]),
-            dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
-                 criticality=['routine'], customer_count=15, dependencies=[])
-        ]
-        hosp_plan = schedule_tasks(hosp_tasks, planning)
-        unp_tasks = [
-            dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
-                 criticality=['routine'], customer_count=15, dependencies=[]),
-            dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
-                 criticality=['routine'], customer_count=1, dependencies=['feeder_branch'])
-        ]
-        unp_plan = schedule_tasks(unp_tasks, planning)
-
         fac_count = 0
+        facilities = []
         if source_impact and isinstance(source_impact.get('critical_facility_impact'), dict):
+            facilities = source_impact['critical_facility_impact'].get('critical_facilities', [])
             fac_count = source_impact['critical_facility_impact'].get('facility_count', 0)
 
-        restoration['priority_comparison'] = {
-            'enabled': True,
-            'hospital_first': {
-                'sequence': hosp_plan['task_order'],
-                'hospital_finish_hours': round(hosp_plan['task_schedule'][0]['end_hours'][1], 2),
-                'total_finish_hours': round(hosp_plan['full_repair_hours'][1], 2),
-            },
-            'unprioritized': {
-                'sequence': unp_plan['task_order'],
-                'hospital_finish_hours': round(unp_plan['task_schedule'][1]['end_hours'][1], 2),
-                'total_finish_hours': round(unp_plan['full_repair_hours'][1], 2),
-            },
-            'critical_facility_count': fac_count,
-            'rationale': (
-                f'With {crew_size}-worker crew, prioritizing hospital restores critical healthcare at '
-                f'{round(hosp_plan["task_schedule"][0]["end_hours"][1], 2)}h vs '
-                f'{round(unp_plan["task_schedule"][1]["end_hours"][1], 2)}h unprioritized, '
-                f'maintaining identical {round(hosp_plan["full_repair_hours"][1], 2)}h total completion.'
-            )
-        }
-        restoration['assumptions'].append(restoration['priority_comparison']['rationale'])
+        hosp_facilities = [f for f in facilities if f.get('facility_type') == 'hospital']
+        if hosp_facilities:
+            # Sourced comparison with shared crew and identical zero prerequisites (dependencies=[])
+            # Hospital branch prioritized restores healthcare first; unprioritized FIFO restores largest branch first
+            hosp_tasks = [
+                dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
+                     criticality=['hospital'], customer_count=len(hosp_facilities), dependencies=[]),
+                dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
+                     criticality=['routine'], customer_count=len(footprint), dependencies=[])
+            ]
+            hosp_plan = schedule_tasks(hosp_tasks, planning)
+
+            unp_tasks = [
+                dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
+                     criticality=['routine'], customer_count=len(footprint), dependencies=[]),
+                dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
+                     criticality=['routine'], customer_count=len(hosp_facilities), dependencies=[])
+            ]
+            unp_plan = schedule_tasks(unp_tasks, planning)
+
+            restoration['priority_comparison'] = {
+                'enabled': True,
+                'hospital_first': {
+                    'sequence': hosp_plan['task_order'],
+                    'hospital_finish_hours': round(hosp_plan['task_schedule'][0]['end_hours'][1], 2),
+                    'total_finish_hours': round(hosp_plan['full_repair_hours'][1], 2),
+                },
+                'unprioritized': {
+                    'sequence': unp_plan['task_order'],
+                    'hospital_finish_hours': round(unp_plan['task_schedule'][1]['end_hours'][1], 2),
+                    'total_finish_hours': round(unp_plan['full_repair_hours'][1], 2),
+                },
+                'critical_facility_count': fac_count,
+                'rationale': (
+                    f'With {crew_size}-worker crew, prioritizing hospital restores critical healthcare at '
+                    f'{round(hosp_plan["task_schedule"][0]["end_hours"][1], 2)}h vs '
+                    f'{round(unp_plan["task_schedule"][1]["end_hours"][1], 2)}h unprioritized, '
+                    f'maintaining identical {round(hosp_plan["full_repair_hours"][1], 2)}h total completion.'
+                )
+            }
+            restoration['assumptions'].append(restoration['priority_comparison']['rationale'])
+        else:
+            restoration['priority_comparison'] = {
+                'enabled': False,
+                'hospital_first': None,
+                'unprioritized': None,
+                'critical_facility_count': fac_count,
+                'rationale': 'No hospital facilities associated with this distribution asset footprint.'
+            }
     else:
         restoration = estimate_restoration(None, None, planning)
         restoration['assumptions'].insert(0,

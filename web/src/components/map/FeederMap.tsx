@@ -70,7 +70,7 @@ export function fitFeederCoordinates(topology: FeederTopology, width: number, he
   if (!points.length) return (_point: Position): Position => [width / 2, height / 2];
   const xs = points.map(p => p[0]), ys = points.map(p => p[1]);
   const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
-  const scale = Math.min(maxX > minX ? (width - 88) / (maxX - minX) : Infinity, maxY > minY ? (height - 88) / (maxY - minY) : Infinity);
+  const scale = Math.min(maxX > minX ? (width - 160) / (maxX - minX) : Infinity, maxY > minY ? (height - 140) / (maxY - minY) : Infinity);
   const safeScale = Number.isFinite(scale) ? scale : 1;
   return (p: Position): Position => [width / 2 + (p[0] - (minX + maxX) / 2) * safeScale, height / 2 - (p[1] - (minY + maxY) / 2) * safeScale];
 }
@@ -134,7 +134,7 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
       if (list.length === 1) {
         offsets.set(list[0].token, [0, 0]);
       } else {
-        const radius = 28;
+        const radius = 48;
         list.forEach((node, idx) => {
           const angle = (idx * 2 * Math.PI) / list.length - Math.PI / 2;
           offsets.set(node.token, [
@@ -173,7 +173,8 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
             {parsed.nodes.map(node => {
               const base = project!(node.position);
               const offset = nodeOffsets.get(node.token) || [0, 0];
-              const x = base[0] + offset[0], y = base[1] + offset[1];
+              const x = Math.max(30, Math.min(width - 30, base[0] + offset[0]));
+              const y = Math.max(30, Math.min(270, base[1] + offset[1]));
               const selected = node.token === snapshot.current_asset_id;
               const description = `${node.token} · ${node.label} · ${selected ? CUTOUT_TEXT[snapshot.cutout_status] : 'Energization not supplied'}`;
               return <g key={node.token} transform={`translate(${x} ${y})`} role="button" tabIndex={0} aria-label={description} aria-pressed={active?.token === node.token}

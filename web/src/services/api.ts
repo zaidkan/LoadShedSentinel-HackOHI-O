@@ -37,6 +37,7 @@ export interface CustomerSnapshotView {
     recipient_role: string;
     channels: string[];
     cadence_policy: string;
+    escalation_policy?: string;
     suppression_reason: string | null;
   };
   disclosure: string;

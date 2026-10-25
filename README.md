@@ -22,7 +22,7 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
    - Models edge IoT solar/battery node physics (25 W PV panel, 41 Wh battery, sleep/wake power budget).
 
 3. **Procedural 3D Digital Twin & Utility Operator Console**:
-   - Interactive Three.js/WebGL procedural utility pole, distribution transformer, sensor pod, and animated cutout fuse switch (latched energized vs 45° blown drop).
+   - Interactive Three.js/WebGL procedural utility pole, distribution transformer, sensor pod, and animated cutout switch (latched switch vs modeled blown drop).
    - Source-derived schematic SVG feeder map visualizing provided upstream equipment relationships (not measured power flow or live state).
    - Telemetry HUD with protective cutout state, modeled battery/solar status, and communications connectivity.
 
@@ -38,8 +38,8 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
 
 | Scenario | Incident ID | Cutout Switch | Root Cause Diagnosis | Crew Packaging |
 |---|---|---|---|---|
-| **1. Local Protection Fault** | `INC-2026-0881` | OPEN (45° drop) | Cutout fuse blown on transient surge; equipment condition unconfirmed | Line Crew (2 lineworkers), bucket truck, replacement fuse link |
-| **2. Upstream Feeder Trip** | `INC-2026-0894` | CLOSED (energized) | Upstream recloser lockout; does not infer local transformer replacement | Upstream Substation/Feeder Crew; avoids false local replacement |
+| **1. Local Protection Fault** | `INC-2026-0881` | OPEN (blown drop) | Cutout fuse blown on transient surge; equipment condition unconfirmed | Line Crew (2 lineworkers), bucket truck, replacement fuse link |
+| **2. Upstream Feeder Trip** | `INC-2026-0894` | CLOSED (switch latched) | Upstream recloser lockout; does not infer local transformer replacement | Upstream Substation/Feeder Crew; avoids false local replacement |
 | **3. Confirmed Replacement** | `INC-2026-0902` | OPEN (blown) | Declared field confirmation; physical replacement required | Line Crew (3 lineworkers), 25 kVA transformer replacement (workbook rate: 8.97 person-hours) |
 | **4. Insufficient Evidence** | `INC-2026-0917` | UNKNOWN | Ambiguous telemetry; abstains from premature ETR commitment | Trouble Shooter patrol dispatched for physical inspection before commitment |
 

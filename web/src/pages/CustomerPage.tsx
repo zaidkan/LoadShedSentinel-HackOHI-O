@@ -292,6 +292,9 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           <div><dt className="font-semibold text-white">Recipient role (demo)</dt><dd className="text-slate-300">{snapshot?.alert_plan?.recipient_role ? humanize(snapshot.alert_plan.recipient_role) : 'Recipient role not supplied'}</dd></div>
           <div><dt className="font-semibold text-white">Dispatch channel</dt><dd className="text-slate-300">{snapshot?.alert_plan?.channels?.length ? snapshot.alert_plan.channels.join(' / ') : 'Channel not supplied'}</dd></div>
           <div><dt className="font-semibold text-white">Milestone cadence</dt><dd className="text-slate-300">{snapshot?.alert_plan?.cadence_policy || 'Milestone cadence not supplied'}</dd></div>
+          {snapshot?.alert_plan?.escalation_policy && (
+            <div><dt className="font-semibold text-white">Escalation policy</dt><dd className="text-slate-300">{snapshot.alert_plan.escalation_policy}</dd></div>
+          )}
         </dl>
         {snapshot?.alert_plan?.suppression_reason && <p className="text-sm text-amber-300">Suppression reason: {snapshot.alert_plan.suppression_reason}</p>}
       </section>
