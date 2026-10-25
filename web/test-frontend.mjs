@@ -146,3 +146,6 @@ console.log('--- Test 5: CounterfactualCompareCard rendering & hypotheses ---');
 // Customer household-generation races and loaded dashboard states.
 await import('./test-customer.mjs');
 console.log('All frontend integration and customer dashboard checks passed.');
+
+// Route loading, graphics recovery, visibility and supply-path isolation.
+await import('./test-performance.mjs');

@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { IncidentProvider, useIncident } from './app/incident';
 import { MotionProvider } from './app/motion';
 import { useRoute, type RoutePath } from './app/router';
 import { AppFrame } from './components/shell/AppFrame';
-import { CustomerPage } from './pages/CustomerPage';
-import { LandingPage } from './pages/LandingPage';
-import { UtilityPage } from './pages/UtilityPage';
+const CustomerPage = lazy(() => import('./pages/CustomerPage').then(module => ({ default: module.CustomerPage })));
+const LandingPage = lazy(() => import('./pages/LandingPage').then(module => ({ default: module.LandingPage })));
+const UtilityPage = lazy(() => import('./pages/UtilityPage').then(module => ({ default: module.UtilityPage })));
 import './components/shell/shell.css';
 
 const TITLES: Record<RoutePath, string> = {
@@ -60,7 +60,7 @@ export function App() {
   return (
     <MotionProvider>
       <IncidentProvider>
-        <Routes />
+        <Suspense fallback={<p role="status">Loading view…</p>}><Routes /></Suspense>
       </IncidentProvider>
     </MotionProvider>
   );

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useState } from 'react';
+import { Component, lazy, Suspense, useRef, useState, type ReactNode } from 'react';
 import type { CutoutStatus, SolarNode } from '../../../contracts/types';
 import { CUTOUT_VISUAL } from './visual-state';
 import { PoleDiagram } from './PoleDiagram';
@@ -11,6 +11,14 @@ import type { SubjectOffset } from './sentinel/CameraDirector';
 import type { Detail } from './sentinel/primitives';
 
 const SentinelScene = lazy(() => import('./sentinel/SentinelScene'));
+
+/** Lives outside the lazy module so a failed chunk download still has a 2D fallback. */
+class SceneLoadBoundary extends Component<{ children: ReactNode; fallback: ReactNode; onUnavailable: () => void }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch() { this.props.onUnavailable(); }
+  render() { return this.state.failed ? this.props.fallback : this.props.children; }
+}
 
 /** Keeps a focused part clear of the inspect card: beside it on wide panels, above it on narrow ones. */
 const CARD_CLEARANCE: Record<'wide' | 'compact', SubjectOffset> = { wide: { x: -0.22, y: 0 }, compact: { x: 0, y: 0.24 } };
@@ -60,7 +68,7 @@ export function AssetViewport(props: AssetViewportProps) {
   const [diagram, setDiagram] = useState(false);
   const [detail, setDetail] = useState<Detail>('high');
   const [webgl] = useState(supportsWebgl);
-  const [unavailable, setUnavailable] = useState<SentinelUnavailableReason | null>(null);
+  const [unavailable, setUnavailable] = useState<SentinelUnavailableReason | 'load-error' | null>(null);
   const [focus, setFocus] = useState<SentinelFocus>('overview');
   const compact = useMediaQuery('(max-width: 720px)');
   const scene = useRef<SentinelSceneHandle>(null);
@@ -78,8 +86,8 @@ export function AssetViewport(props: AssetViewportProps) {
       <div className={`utility-cutout-readout utility-state-${status.toLowerCase()}`} aria-live="polite"><span className="utility-status-dot" /><span>Cutout <strong>{CUTOUT_VISUAL[status].label}</strong></span>{status === 'UNKNOWN' ? <small>Position not asserted</small> : null}</div>
       {useDiagram ? <>
         <PoleDiagram status={status} />
-        {!diagram && graphicsUnavailable ? <p className="utility-fallback-note" role="status">{webgl ? fallbackNote : '3D unavailable'} · showing equipment diagram</p> : null}
-      </> : <Suspense fallback={<div className="utility-scene-loading" role="status">Preparing 3D model…</div>}>
+        {!diagram && graphicsUnavailable ? <p className="utility-fallback-note" role="status">{webgl ? fallbackNote : '3D unavailable'} · showing equipment diagram{unavailable === 'load-error' ? <>. Reload the page to try 3D again. <button type="button" onClick={() => window.location.reload()}>Reload page</button></> : null}</p> : null}
+      </> : <SceneLoadBoundary fallback={<PoleDiagram status={status} />} onUnavailable={() => setUnavailable('load-error')}><Suspense fallback={<div className="utility-scene-loading" role="status">Preparing 3D model…</div>}>
         <SentinelScene
           ref={scene}
           mode="inspection"
@@ -92,7 +100,7 @@ export function AssetViewport(props: AssetViewportProps) {
           label={`Orbitable illustrative model for ${assetId}; cutout ${status.toLowerCase()}; focus ${focusLabel(focus).toLowerCase()}`}
           onUnavailable={setUnavailable}
         />
-      </Suspense>}
+      </Suspense></SceneLoadBoundary>}
       {!useDiagram && active ? <aside className="utility-inspect-card" aria-live="polite" aria-label={`${active.label} details`}>
         <div className="utility-inspect-card-title"><span>{active.index}</span><h3>{active.label}</h3></div>
         <p>{active.summary}</p>

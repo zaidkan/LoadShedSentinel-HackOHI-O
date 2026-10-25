@@ -114,8 +114,7 @@ export function SupplyPath({ snapshot }: SupplyPathProps) {
   const host = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(() => typeof window === 'undefined' ? 1200 : Math.min(window.innerWidth - 48, 1400));
   const [extra, setExtra] = useState<string[]>([]);
-  const [traces, setTraces] = useState<TopologyTrace[] | null>(null);
-  const [failed, setFailed] = useState(false);
+  const [resolved, setResolved] = useState<{ key: string; traces: TopologyTrace[] | null; failed: boolean } | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [pinned, setPinned] = useState(snapshot.selected_premise_token);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -125,6 +124,12 @@ export function SupplyPath({ snapshot }: SupplyPathProps) {
   const underReview = snapshot.status === 'UNDER_REVIEW';
   const affected = useMemo(() => new Set(snapshot.affected_premise_tokens), [snapshot.affected_premise_tokens]);
   const premises = useMemo(() => [...new Set([...snapshot.affected_premise_tokens, snapshot.selected_premise_token, ...extra])].filter(Boolean), [snapshot.affected_premise_tokens, snapshot.selected_premise_token, extra]);
+
+  // Match during render, before effects run, so a new incident never paints the old forest.
+  const requestKey = JSON.stringify([snapshot.incident_id, snapshot.scenario_id, snapshot.current_asset_id, premises, attempt]);
+  const traces = resolved?.key === requestKey ? resolved.traces : null;
+  const failed = resolved?.key === requestKey && resolved.failed;
+  const reservedHeight = Math.max(236, premises.length * 32 + 104);
 
   useEffect(() => {
     if (!host.current) return;
@@ -137,12 +142,13 @@ export function SupplyPath({ snapshot }: SupplyPathProps) {
 
   useEffect(() => {
     let live = true;
-    setFailed(false);
+    setResolved({ key: requestKey, traces: null, failed: false });
     Promise.all(premises.map(traceOf))
-      .then(result => { if (live) setTraces(result); })
-      .catch(() => { if (live) setFailed(true); });
+      .then(result => { if (live) setResolved({ key: requestKey, traces: result, failed: false }); })
+      .catch(() => { if (live) setResolved({ key: requestKey, traces: null, failed: true }); });
     return () => { live = false; };
-  }, [premises, attempt]);
+  // The key encodes every trace input; equivalent snapshot arrays reuse the resolved forest.
+  }, [requestKey]);
 
   const forest = useMemo(() => buildForest(traces ?? []), [traces]);
   const geometry = useMemo(() => layout(forest, Math.max(width, 720)), [forest, width]);
@@ -155,7 +161,7 @@ export function SupplyPath({ snapshot }: SupplyPathProps) {
     while (cursor) { path.add(cursor.token); cursor = cursor.parent ? forest.nodes.get(cursor.parent) : undefined; }
     return path;
   }, [forest, fault, underReview]);
-  const active = hovered ?? pinned;
+  const active = !traces ? snapshot.selected_premise_token : hovered ?? pinned;
   const activeChain = forest.chains.get(active) ?? [];
   const traced = new Set([...activeChain, active]);
   const assetInfo = new Map<string, AEPSourceAsset>(aepAssets.map(asset => [asset.asset_token, asset]));
@@ -195,7 +201,8 @@ export function SupplyPath({ snapshot }: SupplyPathProps) {
     }
   };
 
-  const summary = !fault ? 'The simulated fault asset is not on a traced path in this slice.'
+  const summary = !traces ? (failed ? 'Supply paths could not be traced for this incident.' : 'Tracing supplied paths for this incident…')
+    : !fault ? 'The simulated fault asset is not on a traced path in this slice.'
     : underReview ? `Fault location and footprint are not asserted while evidence conflicts. The selected premise path is shown for context.`
     : `Simulated fault at ${kindLabel(forest.nodes.get(fault)!.kind).toLowerCase()} ${tokenTail(fault)} reaches ${lit} of ${source?.sample_premise_count ?? premises.length} sample premises${source?.full_source_known_dependent_count && source.full_source_known_dependent_count > lit ? ` (${numberText(source.full_source_known_dependent_count, 0)} known dependents in the full AEP source)` : ''}.`;
 
@@ -211,7 +218,7 @@ export function SupplyPath({ snapshot }: SupplyPathProps) {
       </div>
     </header>
 
-    <div className="supply-sheet" ref={host} data-compact={compact ? 'true' : 'false'}>
+    <div className="supply-sheet" ref={host} data-compact={compact ? 'true' : 'false'} style={{ minHeight: reservedHeight }} aria-busy={!traces && !failed}>
       {failed ? <div className="supply-empty" role="alert"><p>Supply paths could not be traced.</p><button type="button" className="btn btn--small" onClick={() => setAttempt(value => value + 1)}>Retry trace</button></div>
         : !traces ? <p className="supply-empty" role="status">Tracing supply paths…</p>
         : !forest.roots.length ? <p className="supply-empty" role="status">No supplied path for the premises in this incident.</p>
@@ -300,7 +307,7 @@ export function SupplyPath({ snapshot }: SupplyPathProps) {
           <li data-kind="premise"><span>Premise</span><span className="mono">{tokenTail(active)}</span>{premiseState(active) === 'affected' ? <span className="state" data-state="critical">In footprint</span> : null}</li>
           {[...readout].reverse().map(token => <li key={token} data-fault={token === fault || undefined}><span>{kindLabel(forest.nodes.get(token)!.kind)}</span><span className="mono">{tokenTail(token)}</span>{token === fault ? <span className="state" data-state={underReview ? 'unknown' : 'critical'}>{underReview ? 'Fault not asserted' : 'Simulated fault'}</span> : null}</li>)}
           <li data-kind="substation"><span>Substation</span><span className="muted">{activeTrace?.substation_status === 'UNKNOWN' || !activeTrace?.substation_status ? 'Not identified' : activeTrace.substation_status}</span></li>
-        </ol> : <p className="muted small">No supplied path for this premise.</p>}
+        </ol> : <p className="muted small">{failed ? 'Supply paths could not be traced.' : !traces ? 'Tracing supply paths…' : 'No supplied path for this premise.'}</p>}
         {activeTrace?.limitations?.length ? <ul className="supply-limits">{activeTrace.limitations.map(item => <li key={item}>{item}</li>)}</ul> : null}
       </div>
 

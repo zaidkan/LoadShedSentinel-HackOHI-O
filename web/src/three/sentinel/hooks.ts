@@ -15,13 +15,21 @@ export const useReducedMotion = () => useMediaQuery('(prefers-reduced-motion: re
 
 /** Pauses rendering while the scene is scrolled out of view or the tab is hidden. */
 export function useInView(ref: RefObject<Element>, rootMargin = '120px') {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(() => typeof document === 'undefined' || document.visibilityState === 'visible');
   useEffect(() => {
     const element = ref.current;
-    if (!element || typeof IntersectionObserver === 'undefined') return;
-    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { rootMargin });
-    observer.observe(element);
-    return () => observer.disconnect();
+    let intersecting = true;
+    const update = () => setVisible(intersecting && document.visibilityState === 'visible');
+    document.addEventListener('visibilitychange', update);
+    const observer = element && typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver(([entry]) => { intersecting = entry.isIntersecting; update(); }, { rootMargin })
+      : null;
+    if (element) observer?.observe(element);
+    update();
+    return () => {
+      document.removeEventListener('visibilitychange', update);
+      observer?.disconnect();
+    };
   }, [ref, rootMargin]);
   return visible;
 }
