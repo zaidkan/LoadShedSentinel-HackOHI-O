@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "total_seconds": 180,
+  "total_spoken_words": 400,
+  "delivery_seconds": 172,
+  "silent_seconds": 8,
+  "segments": [
+    {
+      "speaker": 1,
+      "role": "Data & Topology",
+      "start": "00:00",
+      "end": "00:40",
+      "duration_seconds": 40,
+      "spoken_words": 89,
+      "delivery_seconds": 38,
+      "words_per_delivery_minute": 140.53
+    },
+    {
+      "speaker": 2,
+      "role": "Twin & Labor Engine",
+      "start": "00:40",
+      "end": "01:25",
+      "duration_seconds": 45,
+      "spoken_words": 95,
+      "delivery_seconds": 43,
+      "words_per_delivery_minute": 132.56
+    },
+    {
+      "speaker": 3,
+      "role": "Utility Interface & Controls",
+      "start": "01:25",
+      "end": "02:15",
+      "duration_seconds": 50,
+      "spoken_words": 109,
+      "delivery_seconds": 48,
+      "words_per_delivery_minute": 136.25
+    },
+    {
+      "speaker": 4,
+      "role": "Customer Concierge & Orchestration",
+      "start": "02:15",
+      "end": "03:00",
+      "duration_seconds": 45,
+      "spoken_words": 107,
+      "delivery_seconds": 43,
+      "words_per_delivery_minute": 149.3
+    }
+  ],
+  "word_count_rule": "Whitespace-delimited words in the four quoted narration blocks only; numeric facts spelled out.",
+  "scope": "Script timing and word budget; recorded media duration not yet verified."
+}
