@@ -147,7 +147,12 @@
 }
 
 .range-chart-empty {
-  padding-top: 1rem;
+  position: absolute;
+  inset: 0.4rem 0;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--rc-band-edge);
+  border-radius: var(--radius-s);
   color: var(--rc-muted);
   font-size: var(--text-small);
 }
