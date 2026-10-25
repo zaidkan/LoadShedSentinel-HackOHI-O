@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import './index.css';
+import App from './App';
 
 const SentinelPreviewPage = lazy(() => import('./pages/SentinelPreviewPage'));
 
