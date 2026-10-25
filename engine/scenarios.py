@@ -13,14 +13,16 @@ from api.schemas import ScenarioSnapshot
 from engine.crew import recommend_crew
 from engine.diagnosis import assess_incident
 from engine.energy import simulate_energy
-from engine.restoration import estimate_restoration, labor_person_hours
+from engine.outage_risk import calculate_outage_risk
+from engine.restoration import estimate_restoration, schedule_tasks
+from pipeline.import_labor import load_labor_catalog, map_damage_to_work_packages
 
 SCENARIO_IDS = ('local_protection', 'upstream_feeder', 'confirmed_replacement', 'insufficient_evidence')
 _CONTEXT_KEYS = {
     'timestamp_utc', 'incident_id', 'current_asset_id', 'upstream_asset_id', 'revision',
     'selected_premise_token', 'local_premise_tokens', 'feeder_premise_tokens',
     'crew_size', 'queue_hours', 'access_hours', 'energization_hours', 'duration_factors',
-    'source_impact',
+    'source_impact', 'risk_inputs',
 }
 
 
@@ -48,9 +50,9 @@ def _integer(value, name, maximum):
 def generate_scenario(scenario_id: str, context: dict) -> ScenarioSnapshot:
     """Synthesize evidence, review-only work packages and disclosed planning ranges.
 
-Direct person-hours (local=1, feeder=3, replacement=6) are illustrative scenario
-assumptions, NOT workbook rates. The 4.5 allowance is applied once before dividing
-by crew size. No contradictory-evidence case gets an outage confirmation or ETR.
+The confirmed replacement declares one 25-kVA transformer construction unit,
+sourced from the workbook. Its rating is a scenario assumption, not a verified
+GIS attribute. Other scenarios have no selected repair workload or duration.
 """
     if not isinstance(scenario_id, str) or scenario_id not in SCENARIO_IDS:
         raise ValueError('Unknown demonstration scenario')
@@ -119,27 +121,93 @@ by crew size. No contradictory-evidence case gets an outage confirmation or ETR.
     planning = {key: context[key] for key in ('queue_hours', 'access_hours', 'energization_hours', 'duration_factors') if key in context}
     planning['timestamp_utc'] = timestamp
     # Validate planning overrides even when uncertainty prevents an actual estimate.
-    direct_hours = {'local_protection': 1, 'upstream_feeder': 3, 'confirmed_replacement': 6, 'insufficient_evidence': 1}[scenario_id]
-    planning['tasks'] = [
-        dict(id='assessment', person_hours=labor_person_hours(.5)['adjusted_person_hours'], crew_size=crew_size,
-             crew_id='demo-crew', dependencies=[]),
-        dict(id='work_package', person_hours=labor_person_hours(direct_hours - .5)['adjusted_person_hours'], crew_size=crew_size,
-             crew_id='demo-crew', dependencies=['assessment']),
-    ]
-    restoration = estimate_restoration(None, None, planning)
-    if restoration['kind'] == 'unavailable': raise ValueError('Invalid planning context: ' + '; '.join(restoration['assumptions']))
-    if scenario_id == 'insufficient_evidence':
-        restoration = estimate_restoration(None, None, {'timestamp_utc': timestamp})
-        restoration['assumptions'].insert(0, 'Contradictory telemetry: assess before choosing a repair package or restoration range.')
+    schedule_tasks([dict(id='validate_inputs', person_hours=0, crew_size=crew_size,
+                         dependencies=[])], planning)
+    planning['crew_size'] = crew_size
+    if scenario_id == 'confirmed_replacement':
+        catalog = load_labor_catalog()
+        damage = dict(asset_type='Transformer', transformer_kva=25, quantity=1,
+                      quantity_unit='construction_unit', operation='replace')
+        mapped = map_damage_to_work_packages(damage, catalog)
+        package = next(iter(mapped['work_packages']), None)
+        restoration = estimate_restoration(package, package['labor_ref'] if package else None, planning)
+        restoration['assumptions'].insert(0,
+            f'Declared scenario package for asset={asset}: one 25-kVA transformer, replace, '
+            'quantity=1 construction_unit; rating is not verified from GIS. '
+            'Workbook category average, subject to dispatcher review; associated equipment '
+            'and assessment labor are outside this selected transformer component scope.')
+        restoration['assumptions'].append(
+            f'Single indirect allowance source={catalog["basis_evidence"]}; '
+            'no separate travel, safety or setup allowance is added.')
+
+        # F02: Multi-section priority scheduling comparison
+        fac_count = 0
+        facilities = []
+        if source_impact and isinstance(source_impact.get('critical_facility_impact'), dict):
+            facilities = source_impact['critical_facility_impact'].get('critical_facilities', [])
+            fac_count = source_impact['critical_facility_impact'].get('facility_count', 0)
+
+        hosp_facilities = [f for f in facilities if f.get('facility_type') == 'hospital']
+        if hosp_facilities:
+            # Sourced comparison with shared crew and identical zero prerequisites (dependencies=[])
+            # Hospital branch prioritized restores healthcare first; unprioritized FIFO restores largest branch first
+            hosp_tasks = [
+                dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
+                     criticality=['hospital'], customer_count=len(hosp_facilities), dependencies=[]),
+                dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
+                     criticality=['routine'], customer_count=len(footprint), dependencies=[])
+            ]
+            hosp_plan = schedule_tasks(hosp_tasks, planning)
+
+            unp_tasks = [
+                dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
+                     criticality=['routine'], customer_count=len(footprint), dependencies=[]),
+                dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
+                     criticality=['routine'], customer_count=len(hosp_facilities), dependencies=[])
+            ]
+            unp_plan = schedule_tasks(unp_tasks, planning)
+
+            restoration['priority_comparison'] = {
+                'enabled': True,
+                'hospital_first': {
+                    'sequence': hosp_plan['task_order'],
+                    'hospital_finish_hours': round(hosp_plan['task_schedule'][0]['end_hours'][1], 2),
+                    'total_finish_hours': round(hosp_plan['full_repair_hours'][1], 2),
+                },
+                'unprioritized': {
+                    'sequence': unp_plan['task_order'],
+                    'hospital_finish_hours': round(unp_plan['task_schedule'][1]['end_hours'][1], 2),
+                    'total_finish_hours': round(unp_plan['full_repair_hours'][1], 2),
+                },
+                'critical_facility_count': fac_count,
+                'rationale': (
+                    f'With {crew_size}-worker crew, prioritizing hospital restores critical healthcare at '
+                    f'{round(hosp_plan["task_schedule"][0]["end_hours"][1], 2)}h vs '
+                    f'{round(unp_plan["task_schedule"][1]["end_hours"][1], 2)}h unprioritized, '
+                    f'maintaining identical {round(hosp_plan["full_repair_hours"][1], 2)}h total completion.'
+                )
+            }
+            restoration['assumptions'].append(restoration['priority_comparison']['rationale'])
+        else:
+            restoration['priority_comparison'] = {
+                'enabled': False,
+                'hospital_first': None,
+                'unprioritized': None,
+                'critical_facility_count': fac_count,
+                'rationale': 'No hospital facilities associated with this distribution asset footprint.'
+            }
     else:
-        restoration['assumptions'].insert(0, f'Illustrative direct person-hours={direct_hours}; not workbook rates. Assessment then work package depend on human review; apply 4.5 once, crew size={crew_size}.')
+        restoration = estimate_restoration(None, None, planning)
+        restoration['assumptions'].insert(0,
+            'Contradictory telemetry: assess before choosing a repair package or restoration range.'
+            if scenario_id == 'insufficient_evidence' else
+            'No repair construction unit has been selected for this protection/interruption scenario; '
+            'assessment is required before assigning a sourced workload or duration.')
 
     solar = simulate_energy({'initial_soc_pct': 85}, {},
                             {'start_utc': (date - timedelta(hours=1)).isoformat(), 'hours': 1, 'connectivity': 'ONLINE'})['solar']
     uncertain = scenario_id == 'insufficient_evidence'
-    notifications = [] if uncertain else [dict(
-        type='OUTAGE_CONFIRMED', delivery_mode='demo', sent_at_utc=timestamp,
-        text='Declared demonstration outage for this scenario footprint; cause and work package remain subject to utility review. No real message sent.')]
+    notifications = []
     scope_note = ('Premise dependency footprint computed from anonymized AEP challenge upstream paths '
                   'in a 16-premise selected subnet, NOT a territory-wide affected count or live outage. '
                   if source_impact is not None else
@@ -151,12 +219,14 @@ by crew size. No contradictory-evidence case gets an outage confirmation or ETR.
         crew_recommendation=crew, restoration=restoration, solar=solar,
         affected_premise_tokens=[] if uncertain else list(footprint),
         impact_source=source_impact,
-        customer_risk=dict(band='UNKNOWN' if uncertain else 'HIGH', confidence_kind='scenario_only',
-                           drivers=['Conflicting scenario telemetry; impact unconfirmed'] if uncertain else
-                           ['Simulated fault on AEP-supplied equipment dependencies' if source_impact is not None else 'Declared storm/outage demonstration',
-                            'Selected source-derived breaker dependency' if scenario_id == 'upstream_feeder' and source_impact is not None else
-                            'Selected source-derived transformer dependency' if source_impact is not None else
-                            ('Declared feeder group' if scenario_id == 'upstream_feeder' else 'Declared local premise group')]),
+        customer_risk=calculate_outage_risk(
+            context.get('risk_inputs', {
+                # Declared storm/operating assumptions, not observations from AEP.
+                'wind_kph': 70, 'ambient_temperature_c': 35,
+                'transformer_load_factor': 1.15 if scenario_id == 'confirmed_replacement' else .95,
+                'health_index': 35 if scenario_id == 'confirmed_replacement' else 80,
+            }), conflicting_evidence=uncertain),
+        planning_inputs=dict(crew_size=crew_size, access_hours=planning.get('access_hours', 0.0)),
         notifications=notifications,
         disclosure='Demonstration only: modeled telemetry and scenario field findings, not live AEP observations. '
                    + scope_note + 'Planning ranges are not utility commitments; '

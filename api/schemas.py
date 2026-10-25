@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Optional, Union, Literal
+from typing import List, Optional, Union, Literal, Dict, Any
 from pydantic import BaseModel, Field
 
 Provenance = Literal[
@@ -61,6 +61,7 @@ class Restoration(BaseModel):
     labor_work_unit: Optional[str] = None
     assumptions: List[str] = Field(default_factory=list)
     last_updated_utc: str
+    priority_comparison: Optional[Dict[str, Any]] = None
 
 class SolarNode(BaseModel):
     battery_soc_pct: float
@@ -75,6 +76,10 @@ class CustomerRisk(BaseModel):
     band: RiskBand
     drivers: List[str] = Field(default_factory=list)
     confidence_kind: str
+
+class PlanningInputs(BaseModel):
+    crew_size: int
+    access_hours: Union[float, List[float]]
 
 class NotificationItem(BaseModel):
     type: str
@@ -95,6 +100,7 @@ class ScenarioSnapshot(BaseModel):
     hypotheses: List[Hypothesis] = Field(default_factory=list)
     crew_recommendation: CrewPackage
     restoration: Restoration
+    planning_inputs: Optional[PlanningInputs] = None
     solar: SolarNode
     affected_premise_tokens: List[str] = Field(default_factory=list)
     impact_source: Optional[dict] = None

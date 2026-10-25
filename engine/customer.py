@@ -252,6 +252,27 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
         for n in snapshot.notifications
     ]
     
+    risk_band = getattr(snapshot.customer_risk, "band", "UNKNOWN")
+    is_eligible = (
+        snapshot.status in ('OUTAGE', 'AT_RISK', 'UNDER_REVIEW')
+        or (snapshot.status == 'NORMAL' and risk_band in ('HIGH', 'MODERATE'))
+    )
+    if is_eligible:
+        suppression_reason = None
+    elif snapshot.status == 'RESTORED':
+        suppression_reason = "Service restored; monitoring post-event stability"
+    else:
+        suppression_reason = "Normal service operating conditions"
+
+    customer_safe_assumptions = []
+    asset_id = getattr(snapshot, "current_asset_id", "")
+    for a in snapshot.restoration.assumptions:
+        safe_a = a
+        if asset_id:
+            safe_a = safe_a.replace(f"asset={asset_id}", "distribution equipment")
+            safe_a = safe_a.replace(asset_id, "distribution equipment")
+        customer_safe_assumptions.append(safe_a)
+
     return {
         "scenario_id": snapshot.scenario_id,
         "incident_id": snapshot.incident_id,
@@ -265,10 +286,30 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
             "lower_hours": snapshot.restoration.lower_hours,
             "expected_hours": snapshot.restoration.expected_hours,
             "upper_hours": snapshot.restoration.upper_hours,
-            "assumptions": snapshot.restoration.assumptions,
+            "assumptions": customer_safe_assumptions,
             "last_updated_utc": snapshot.restoration.last_updated_utc
         },
         "notifications": notifications_list,
         "public_evidence": customer_safe_evidence,
+        "alert_plan": {
+            "eligible": is_eligible,
+            "recipient_role": "Verified premise contact (simulated)",
+            "channels": ["SMS", "Mobile Push (Simulated)"],
+            "cadence_policy": "Event declaration, verified ETR updates, and restoration completion",
+            "escalation_policy": "Automatic escalation to emergency dispatch notifications if conditions escalate to confirmed outage or critical priority",
+            "suppression_reason": suppression_reason,
+            "basis": "Validated electrical distribution network dependency",
+            "channel": "SMS & Push Notification (Simulated)",
+            "cadence": "Dispatched at event declaration, critical ETR updates, and restoration completion",
+            "proactive_summary": (
+                "Eligible for automated updates during service anomalies or elevated storm risk."
+                if is_eligible
+                else (
+                    "Service restored; event standing down."
+                    if snapshot.status == 'RESTORED'
+                    else "Standby mode: normal grid operation."
+                )
+            )
+        },
         "disclosure": snapshot.disclosure
     }

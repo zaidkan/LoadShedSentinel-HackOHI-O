@@ -156,6 +156,27 @@ inferred. Legacy unitless pole/transformer/switch quantities mean device counts.
     operation = damage.get('operation', 'replace')
     if operation not in ('install', 'remove', 'replace'): raise ValueError('Unknown work operation')
     result['work_packages'].append(dict(labor_ref=record, quantity=float(quantity), quantity_unit=quantity_unit, operation=operation))
+    if record['code'].startswith('POL:') and operation == 'replace':
+        # Phases alone do not establish counts or voltage compatibility. The
+        # representative drawings are not an exact bill of materials for this
+        # pole. Keep the sourced pole component, but expose its incomplete scope.
+        result['structure_complete'] = False
+        result['mapping_basis'] += '; pole component only, not a complete structure replacement'
+        result['missing_inputs'].append(
+            'reviewed structure arrangement and crossarm/insulator/pin/grounding quantities; '
+            'phase count and pole height alone do not specify associated hardware')
+        result['omitted_hardware'] = []
+        for code, label, cells in [('ARM', 'crossarms', ['A3', 'B3']),
+                                   ('INS', 'insulators', ['A60', 'B60']),
+                                   ('PIN', 'pins', ['A65', 'B65']),
+                                   ('GND', 'grounding', ['A45', 'B45'])]:
+            hardware = next((r for r in catalog['records'] if r['code'] == code), None)
+            result['omitted_hardware'].append(dict(
+                code=code, category=label, quantity=None,
+                source=hardware['source'] if hardware else dict(
+                    sheet='Labor time material related', cells=cells),
+                reason='Omitted from labor total: construction-unit quantity and '
+                       'structure/voltage compatibility require review; no hardware count inferred.'))
     return result
 
 

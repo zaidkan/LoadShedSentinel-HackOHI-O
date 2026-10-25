@@ -38,10 +38,13 @@ def _no_duplicate_indirect(context):
 
 
 def schedule_tasks(tasks, context=None):
-    """Topological task-ID priority; each crew_id is an exclusive resource.
+    """Schedule feasible work by critical facility, then customer count, then ID.
 
 Dependencies and shared crews serialize work; distinct crews can run in parallel.
-This declared schedule is reproducible, not an optimal workforce assignment.
+Optional criticality is a facility name or list (hospital/fire/ambulance), and
+customer_count is a nonnegative integer. Missing metadata means routine/zero.
+Earliest feasible starts precede priority so an unavailable critical task cannot
+idle a crew that can do ready work. This is a declared heuristic, not an optimum.
 """
     context = context or {}; _no_duplicate_indirect(context)
     factors = _range(context.get('duration_factors', [.75, 1, 1.5]), 'duration factors')
@@ -58,28 +61,50 @@ This declared schedule is reproducible, not an optimal workforce assignment.
         if not isinstance(crew, str) or not crew: raise ValueError('Crew resource ID required')
         deps = task.get('dependencies', [])
         if not isinstance(deps, list) or any(not isinstance(d, str) for d in deps) or len(set(deps)) != len(deps): raise ValueError('Invalid dependencies')
-        by_id[key] = dict(crew_size=size, crew_id=crew, dependencies=list(deps), person_hours=_finite(task.get('person_hours'), 'person-hours'))
+        criticality = task.get('criticality', [])
+        if isinstance(criticality, str): criticality = [criticality]
+        if not isinstance(criticality, list) or any(not isinstance(c, str) for c in criticality):
+            raise ValueError('Criticality must be a facility name or list of facility names')
+        criticality = sorted({c.strip().lower() for c in criticality})
+        if any(c not in ('hospital', 'fire', 'ambulance', 'routine', 'none', 'unknown') for c in criticality):
+            raise ValueError('Unknown critical facility kind')
+        customers = task.get('customer_count', 0)
+        if isinstance(customers, bool) or not isinstance(customers, int) or customers < 0:
+            raise ValueError('Customer count must be a nonnegative integer')
+        by_id[key] = dict(crew_size=size, crew_id=crew, dependencies=list(deps), person_hours=_finite(task.get('person_hours'), 'person-hours'),
+                          criticality=criticality, customer_count=customers)
     if not by_id: raise ValueError('No repair tasks supplied')
     if any(d not in by_id for t in by_id.values() for d in t['dependencies']): raise ValueError('Unknown prerequisite task')
-    order = []; pending = set(by_id)
-    while pending:
-        ready = sorted(key for key in pending if set(by_id[key]['dependencies']) <= set(order))
-        if not ready: raise ValueError('Cyclic repair dependencies')
-        order.append(ready[0]); pending.remove(ready[0])
-    plans = {}; ends = []
+    plans = {}; ends = []; orders = []
     for scenario in range(3):
-        crew_free = {}; finish = {}
-        for key in order:
+        crew_free = {}; finish = {}; pending = set(by_id); order = []
+        while pending:
+            ready = [key for key in pending if all(d in finish for d in by_id[key]['dependencies'])]
+            if not ready: raise ValueError('Cyclic repair dependencies')
+            def start_time(key):
+                task = by_id[key]
+                return max([queue[scenario] + access[scenario], crew_free.get(task['crew_id'], 0)]
+                           + [finish[d] for d in task['dependencies']])
+            def priority(key):
+                task = by_id[key]
+                critical = bool(set(task['criticality']) & {'hospital', 'fire', 'ambulance'})
+                return (start_time(key), -int(critical), -task['customer_count'], key)
+            key = min(ready, key=priority)
             task = by_id[key]; crew = task['crew_id']
-            start = max([queue[scenario] + access[scenario], crew_free.get(crew, 0)] + [finish[d] for d in task['dependencies']])
+            start = start_time(key)
             end = start + task['person_hours'] / task['crew_size'] * factors[scenario]
             _finite(end, 'task finish'); finish[key] = end; crew_free[crew] = end
-            plans.setdefault(key, dict(id=key, crew_id=crew, dependencies=task['dependencies'], start_hours=[], end_hours=[]))
+            plans.setdefault(key, dict(id=key, crew_id=crew, dependencies=task['dependencies'],
+                                       criticality=task['criticality'], customer_count=task['customer_count'],
+                                       start_hours=[], end_hours=[]))
             plans[key]['start_hours'].append(start); plans[key]['end_hours'].append(end)
+            order.append(key); pending.remove(key)
+        orders.append(order)
         ends.append(max(finish.values()) + energization[scenario])
+    order = orders[1]  # Public task order describes the expected-duration scenario.
     return dict(task_order=order, task_schedule=[plans[key] for key in order], full_repair_hours=ends,
                 total_person_hours=sum(t['person_hours'] for t in by_id.values()),
-                assumptions=['Task-ID topological priority; each crew_id is exclusive; no staffing optimization.',
+                assumptions=['Earliest feasible start, then hospital/fire/ambulance priority, then descending customer_count, then task ID; each crew_id is exclusive. Missing priority metadata means routine/zero customers. No staffing optimization.',
                              f'Duration factors low/expected/high={factors}; queue={queue}; non-overlapping access={access}; energization={energization}.',
                              'Person-hours include the single indirect allowance; no additional travel/setup/safety time.'])
 
@@ -95,7 +120,8 @@ For multi-fault planning use context.tasks of {id,person_hours,crew_size,crew_id
     if not isinstance(timestamp, str) or not timestamp: raise ValueError('Explicit timestamp_utc required for deterministic output')
     _no_duplicate_indirect(context)
     result = dict(kind='unavailable', lower_hours=None, expected_hours=None, upper_hours=None,
-                  labor_work_hours=None, labor_work_unit=None, assumptions=[], last_updated_utc=timestamp)
+                  labor_work_hours=None, labor_work_unit=None, assumptions=[], last_updated_utc=timestamp,
+                  priority_comparison=None)
     try:
         tasks = context.get('tasks'); details = []
         if tasks is None:

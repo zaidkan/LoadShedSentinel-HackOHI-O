@@ -10,6 +10,17 @@ import {
   PreparednessGuidance,
 } from '../services/api';
 import { ShieldAlert, Battery, AlertTriangle, Clock, HeartPulse, CheckCircle2, Search, GitBranch } from 'lucide-react';
+import { humanize, numberText } from '../components/utility/presentation';
+
+const SERVICE_COPY = {
+  NORMAL: ['Service Operating Normally', 'Supply lines operating within normal load parameters.'],
+  AT_RISK: ['Service At Risk', 'Storm-related service risk identified; an outage is not confirmed.'],
+  OUTAGE: ['Service Disruption Active', 'Local protective equipment triggered. Utility dispatch investigating supply line.'],
+  UNDER_REVIEW: ['Incident Under Review', 'Incident under review by utility dispatch; field condition and ETR pending verification.'],
+  RESTORED: ['Service Restored', 'Utility dispatch reports service restored for this simulated incident.'],
+} as const;
+
+const planningHours = (value: number | null) => value === null || !Number.isFinite(value) ? 'Unavailable' : `${numberText(value)} hours`;
 
 export interface CustomerPageProps {
   snapshot: ScenarioSnapshot;
@@ -129,9 +140,10 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
             </p>
           </div>
           <div className="min-w-0 md:text-right">
-            <span className="text-xs text-slate-500 block mb-1">Premise Location Token</span>
+            <label htmlFor="premise-location-token" className="text-xs text-slate-500 block mb-1">Premise Location Token</label>
             <div className="flex items-center gap-1.5">
               <input
+                id="premise-location-token"
                 type="text"
                 value={premiseToken}
                 onChange={(e) => setPremiseToken(e.target.value)}
@@ -199,18 +211,16 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               snapshot?.status === 'RESTORED' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
               'bg-blue-500/20 text-blue-400 border border-blue-500/30'
             }`}>
-              {snapshot?.status || 'NORMAL'}
+              {snapshot?.status || 'UNKNOWN'}
             </span>
           </div>
 
           <div className="text-xl font-bold text-white mb-2">
-            {snapshot?.status === 'OUTAGE' ? 'Service Disruption Active' : 'Service Operating Normally'}
+            {snapshot ? SERVICE_COPY[snapshot.status][0] : 'Service Status Unavailable'}
           </div>
 
           <p className="text-sm text-slate-400 mb-4">
-            {snapshot?.status === 'OUTAGE'
-              ? 'Local protective equipment triggered. Utility dispatch investigating supply line.'
-              : 'Supply lines operating within normal load parameters.'}
+            {snapshot ? SERVICE_COPY[snapshot.status][1] : 'Unable to load the current service status.'}
           </p>
 
           {snapshot?.impact_source && (
@@ -228,11 +238,20 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               <div>
                 <div className="text-xs text-slate-400">Estimated Planning Range</div>
                 <div className="text-sm font-semibold text-slate-200">
-                  {snapshot.restoration_planning.expected_hours
-                    ? `~${snapshot.restoration_planning.expected_hours} hours (${snapshot.restoration_planning.lower_hours ?? 1}h - ${snapshot.restoration_planning.upper_hours ?? 4}h range)`
+                  {snapshot.restoration_planning.expected_hours !== null
+                    ? `~${planningHours(snapshot.restoration_planning.expected_hours)} (${planningHours(snapshot.restoration_planning.lower_hours)} – ${planningHours(snapshot.restoration_planning.upper_hours)} range)`
                     : 'Awaiting crew assessment'}
                 </div>
+                <p className="text-xs text-slate-400 mt-1">Basis: {humanize(snapshot.restoration_planning.kind)}. Planning duration, not a guaranteed restoration time.</p>
               </div>
+            </div>
+          )}
+          {snapshot?.restoration_planning && (
+            <div className="mt-4 text-sm text-slate-300">
+              <h3 className="font-semibold mb-2">Planning assumptions</h3>
+              {snapshot.restoration_planning.assumptions.length > 0
+                ? <ul className="list-disc pl-5 space-y-1">{snapshot.restoration_planning.assumptions.map((assumption, i) => <li key={i}>{assumption}</li>)}</ul>
+                : <p>No planning assumptions supplied.</p>}
             </div>
           )}
         </div>
@@ -247,6 +266,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           </div>
 
           <div className="text-xl font-bold text-white mb-2">Contributing Factors</div>
+          <p className="text-sm text-slate-300 mb-3">Confidence kind: {snapshot?.customer_risk.confidence_kind ? humanize(snapshot.customer_risk.confidence_kind).replace(/^./, char => char.toUpperCase()) : 'Unavailable'}</p>
           <ul className="space-y-1.5 text-sm text-slate-300">
             {snapshot?.customer_risk?.drivers?.map((d, i) => (
               <li key={i} className="flex items-center gap-2">
@@ -258,6 +278,27 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
         </div>
       </div>
 
+      <div role="note" className="text-sm text-slate-300 space-y-2">
+        <h2 className="font-semibold text-white">Source disclosure</h2>
+        <p>{snapshot?.disclosure || 'Source disclosure unavailable.'}</p>
+      </div>
+
+      <section className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4" aria-labelledby="customer-alert-plan-heading">
+        <h2 id="customer-alert-plan-heading" className="text-lg font-bold text-white">Alert Delivery &amp; Eligibility Plan</h2>
+        <p className="text-sm text-slate-300">Demo delivery only. No SMS or mobile push is sent, and contact verification is not performed.</p>
+        <dl className="space-y-3 text-sm">
+          <div><dt className="font-semibold text-white">Eligibility</dt><dd className="text-slate-300">{snapshot?.alert_plan ? snapshot.alert_plan.eligible ? 'Eligible for demo updates' : 'Not currently eligible for demo updates' : 'Eligibility not supplied'}</dd></div>
+          <div><dt className="font-semibold text-white">Selected premise recipient</dt><dd className="text-slate-300">{snapshot?.selected_premise_token || 'Unavailable'}</dd></div>
+          <div><dt className="font-semibold text-white">Recipient role (demo)</dt><dd className="text-slate-300">{snapshot?.alert_plan?.recipient_role ? humanize(snapshot.alert_plan.recipient_role) : 'Recipient role not supplied'}</dd></div>
+          <div><dt className="font-semibold text-white">Dispatch channel</dt><dd className="text-slate-300">{snapshot?.alert_plan?.channels?.length ? snapshot.alert_plan.channels.join(' / ') : 'Channel not supplied'}</dd></div>
+          <div><dt className="font-semibold text-white">Milestone cadence</dt><dd className="text-slate-300">{snapshot?.alert_plan?.cadence_policy || 'Milestone cadence not supplied'}</dd></div>
+          {snapshot?.alert_plan?.escalation_policy && (
+            <div><dt className="font-semibold text-white">Escalation policy</dt><dd className="text-slate-300">{snapshot.alert_plan.escalation_policy}</dd></div>
+          )}
+        </dl>
+        {snapshot?.alert_plan?.suppression_reason && <p className="text-sm text-amber-300">Suppression reason: {snapshot.alert_plan.suppression_reason}</p>}
+      </section>
+
       {/* Step 4: Household Needs Declaration */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg space-y-4">
         <div className="flex items-center gap-2">
@@ -268,10 +309,11 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           Declare special power dependencies. Guidance updates dynamically to prioritize life safety.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
             <input
               type="checkbox"
+              id="need-medical-device"
               checked={needs.life_critical_medical_device}
               onChange={(e) => setNeeds({ ...needs, life_critical_medical_device: e.target.checked })}
               className="rounded border-slate-700 text-rose-500 focus:ring-rose-500"
@@ -282,6 +324,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
             <input
               type="checkbox"
+              id="need-refrigerated-medication"
               checked={needs.refrigerated_medication}
               onChange={(e) => setNeeds({ ...needs, refrigerated_medication: e.target.checked })}
               className="rounded border-slate-700 text-amber-500 focus:ring-amber-500"
@@ -292,6 +335,18 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
             <input
               type="checkbox"
+              id="need-mobility-accessibility"
+              checked={needs.mobility_accessibility_needs}
+              onChange={(e) => setNeeds({ ...needs, mobility_accessibility_needs: e.target.checked })}
+              className="rounded border-slate-700 text-purple-500 focus:ring-purple-500"
+            />
+            <span className="text-sm text-slate-200">Mobility &amp; Accessibility Needs</span>
+          </label>
+
+          <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
+            <input
+              type="checkbox"
+              id="need-sump-pump"
               checked={needs.sump_pump}
               onChange={(e) => setNeeds({ ...needs, sump_pump: e.target.checked })}
               className="rounded border-slate-700 text-blue-500 focus:ring-blue-500"
@@ -335,8 +390,9 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Battery Nominal Capacity (Wh)</label>
+            <label htmlFor="battery-capacity-input" className="block text-xs font-semibold text-slate-400 mb-1">Battery Nominal Capacity (Wh)</label>
             <input
+              id="battery-capacity-input"
               type="number"
               value={needs.battery_capacity_wh}
               onChange={(e) => setNeeds({ ...needs, battery_capacity_wh: Number(e.target.value) })}
@@ -344,8 +400,9 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Continuous Critical Load (Watts)</label>
+            <label htmlFor="battery-load-input" className="block text-xs font-semibold text-slate-400 mb-1">Continuous Critical Load (Watts)</label>
             <input
+              id="battery-load-input"
               type="number"
               value={needs.essential_load_w}
               onChange={(e) => setNeeds({ ...needs, essential_load_w: Number(e.target.value) })}

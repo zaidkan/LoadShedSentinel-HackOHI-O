@@ -192,7 +192,11 @@ export const App: React.FC = () => {
             scenarioId={selectedScenarioId}
           />
         ) : (
-          <UtilityPage snapshot={snapshot} />
+          <UtilityPage
+            key={`${snapshot.incident_id}-${snapshot.current_asset_id}`}
+            snapshot={snapshot}
+            onSnapshotChange={next => setSnapshot(current => current === snapshot ? next : current)}
+          />
         )}
       </main>
     </div>
