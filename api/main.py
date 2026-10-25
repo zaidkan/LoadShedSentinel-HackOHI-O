@@ -240,6 +240,8 @@ def advance_scenario(req: AdvanceRequest):
         elif isinstance(req.access_hours, list):
             if not all(isinstance(x, (int, float)) and 0 <= x <= 720 for x in req.access_hours):
                 raise HTTPException(status_code=400, detail="access_hours elements must be between 0 and 720")
+            if req.access_hours != sorted(req.access_hours):
+                raise HTTPException(status_code=400, detail="access_hours list must be ordered low <= expected <= high")
         else:
             raise HTTPException(status_code=400, detail="access_hours must be a number or list of numbers")
 
@@ -257,9 +259,13 @@ def advance_scenario(req: AdvanceRequest):
             ctx['crew_size'] = req.crew_size
         if req.access_hours is not None:
             ctx['access_hours'] = req.access_hours
-        _current_context = ctx
 
-        updated_snap = generate_scenario(snap.scenario_id, ctx)
+        try:
+            updated_snap = generate_scenario(snap.scenario_id, ctx)
+        except (ValueError, TypeError) as exc:
+            raise HTTPException(status_code=400, detail=f"Invalid scenario planning inputs: {exc}") from exc
+
+        _current_context = ctx
         new_restoration = updated_snap.restoration
         new_planning_inputs = updated_snap.planning_inputs
 

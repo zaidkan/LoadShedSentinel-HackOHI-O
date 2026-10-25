@@ -122,6 +122,17 @@ def test_advance_atomic_rollback():
     assert curr_after["status"] == status_before
     assert curr_after["revision"] == rev_before
 
+    # Late failure atomicity: unordered access_hours rejected and does not poison context
+    res_unordered = client.post("/api/scenario/advance", json={
+        "status": "RESTORED",
+        "access_hours": [3, 1, 2]
+    })
+    assert res_unordered.status_code == 400
+    assert "ordered" in res_unordered.json()["detail"]
+    # Subsequent valid advance succeeds
+    res_valid = client.post("/api/scenario/advance", json={"crew_size": 6})
+    assert res_valid.status_code == 200
+
 
 def test_extra_fields_forbidden():
     # F07: Extra unsupported fields in requests return 422
