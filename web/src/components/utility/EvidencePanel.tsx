@@ -74,7 +74,11 @@ export function EvidencePanel({ snapshot }: { snapshot: ScenarioSnapshot }) {
           <ScoreBar hypothesis={h} max={max} />
           <p className="hyp-meta">
             <span className="mono">{h.code}</span>
-            <span>{h.supporting_evidence_ids.length} supporting · {h.contradicting_evidence_ids.length} contradicting · {h.missing_evidence.length} missing</span>
+            <span className="hyp-counts">
+              <span><strong>{h.supporting_evidence_ids.length}</strong> supporting</span>
+              <span><strong>{h.contradicting_evidence_ids.length}</strong> contradicting</span>
+              <span><strong>{h.missing_evidence.length}</strong> missing</span>
+            </span>
             {h.requires_field_confirmation ? <span className="state" data-state="open">Field confirmation required</span> : null}
           </p>
           <div id={panelId} className="hyp-details" hidden={!expanded}>

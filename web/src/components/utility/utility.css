@@ -203,7 +203,7 @@
   min-height: 40px;
   border: 1px solid var(--line-night);
   border-radius: var(--radius-pill);
-  background: rgb(244 241 255 / 0.04);
+  background: var(--wash-night);
   color: var(--on-night);
   font-size: var(--text-label);
   font-weight: 540;
@@ -228,8 +228,8 @@
 
 .icon-btn:hover:not(:disabled),
 .chip-btn:hover:not(:disabled) {
-  border-color: rgb(244 241 255 / 0.5);
-  background: rgb(244 241 255 / 0.1);
+  border-color: var(--edge-night-hover);
+  background: var(--wash-night-hover);
 }
 
 .chip-btn[aria-pressed="true"] {
@@ -281,12 +281,12 @@
 .panel--night {
   overflow: hidden;
   border-radius: var(--radius-xl);
-  background: linear-gradient(180deg, var(--night-1) 0%, #1d1848 100%);
+  background: linear-gradient(180deg, var(--night-1) 0%, var(--night-panel) 100%);
   color: var(--on-night);
 }
 
 .panel--night :focus-visible {
-  outline-color: #b9a5ff;
+  outline-color: var(--accent-night);
 }
 
 .panel-head {
@@ -311,7 +311,7 @@
   margin-inline: var(--space-3);
   overflow: hidden;
   border-radius: var(--radius-l);
-  background: radial-gradient(ellipse at 50% 85%, #2e2766 0%, #17133a 62%);
+  background: radial-gradient(ellipse at 50% 85%, var(--night-raise) 0%, var(--night-1) 62%);
 }
 
 .inspector-readout {
@@ -348,7 +348,7 @@
   justify-self: center;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
-  background: rgb(12 10 29 / 0.7);
+  background: var(--scrim);
   color: var(--on-night-muted);
   font-size: var(--text-micro);
 }
@@ -563,7 +563,15 @@
   inset: 0 auto 0 0;
   border-radius: inherit;
   background: color-mix(in srgb, var(--accent) 55%, var(--paper-3));
-  transition: width var(--dur-ui) var(--ease-out);
+  transform-origin: left center;
+}
+
+[data-motion="full"] .hyp-bar > span {
+  animation: hyp-fill var(--dur-ui) var(--ease-out) both;
+}
+
+@keyframes hyp-fill {
+  from { transform: scaleX(0); }
 }
 
 .hyp[data-leading] .hyp-bar > span {
@@ -595,6 +603,22 @@
 
 .hyp-meta .mono {
   color: var(--ink-2);
+}
+
+.hyp-counts {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+.hyp-counts > span + span {
+  margin-left: var(--space-2);
+  padding-left: var(--space-2);
+  border-left: 1px solid var(--line-strong);
+}
+
+.hyp-counts strong {
+  color: var(--ink-2);
+  font-weight: 620;
 }
 
 .hyp-meta .state {

@@ -5,9 +5,26 @@
   --night-1: #17133a;
   --night-2: #262058;
   --night-3: #3b3184;
+  --night-panel: #1d1848;
+  --night-raise: #2e2766;
   --dusk: #6a58c4;
   --dusk-haze: #a796e6;
   --horizon: #d9cff6;
+
+  --sky-1: #1a1542;
+  --sky-2: #372d84;
+  --sky-3: #6a59c0;
+  --sky-4: #8f7ed6;
+  --sky-5: #a596e0;
+  --sky-glow: rgb(214 201 255 / 0.6);
+  --sky-cloud: rgb(205 192 255 / 0.55);
+
+  --scrim-soft: rgb(12 10 29 / 0.55);
+  --scrim: rgb(12 10 29 / 0.78);
+  --scrim-strong: rgb(12 10 29 / 0.86);
+  --wash-night: rgb(244 241 255 / 0.04);
+  --wash-night-hover: rgb(244 241 255 / 0.1);
+  --edge-night-hover: rgb(244 241 255 / 0.5);
 
   --paper: #f3f1fa;
   --paper-2: #ebe8f6;
@@ -26,6 +43,8 @@
   --accent-strong: #4420d4;
   --accent-soft: #e7e0ff;
   --accent-ink: #ffffff;
+  --accent-night: #b9a5ff;
+  --accent-night-wash: rgb(138 92 255 / 0.28);
 
   --state-open: #9a5a00;
   --state-open-fill: #f0b04a;
@@ -79,6 +98,9 @@
 
   --shadow-card: 0 1px 2px rgb(21 18 46 / 0.05), 0 8px 24px -12px rgb(21 18 46 / 0.12);
   --shadow-float: 0 2px 6px rgb(21 18 46 / 0.08), 0 24px 48px -24px rgb(21 18 46 / 0.28);
+  --shadow-thumb: 0 1px 3px rgb(21 18 46 / 0.3);
+  --btn-night-fill: rgb(23 19 58 / 0.55);
+  --btn-night-fill-hover: rgb(59 49 132 / 0.75);
 
   --btn-stroke: linear-gradient(100deg, #2d257d 0%, #8a5cff 6%, #f3f1fa 32%, #f3f1fa 60%, #c9c3e6 84%, #8a5cff 100%);
   --btn-stroke-night: linear-gradient(100deg, #8a5cff 0%, rgb(244 241 255 / 0.85) 30%, rgb(244 241 255 / 0.2) 60%, #8a5cff 100%);

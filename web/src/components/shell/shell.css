@@ -45,7 +45,7 @@
 }
 
 .site-header[data-tone="night"] .wordmark-accent {
-  color: #b9a5ff;
+  color: var(--accent-night);
 }
 
 .site-header-inner {
@@ -137,8 +137,8 @@
 }
 
 .header-motion:disabled {
-  cursor: default;
-  opacity: 0.7;
+  color: color-mix(in srgb, var(--header-muted) 70%, transparent);
+  cursor: not-allowed;
 }
 
 .site-header-menu {
@@ -349,7 +349,7 @@
 }
 
 .site-footer-close .hook {
-  color: #b9a5ff;
+  color: var(--accent-night);
 }
 
 .site-footer-actions {
@@ -392,7 +392,7 @@
 }
 
 .site-footer-brand .wordmark-accent {
-  color: #b9a5ff;
+  color: var(--accent-night);
 }
 
 .site-footer ul {
@@ -420,7 +420,7 @@
 }
 
 .site-footer :focus-visible {
-  outline-color: #b9a5ff;
+  outline-color: var(--accent-night);
 }
 
 @media (max-width: 860px) {

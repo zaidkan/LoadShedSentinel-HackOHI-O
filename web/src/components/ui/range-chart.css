@@ -13,8 +13,8 @@
   --rc-ink: var(--on-night);
   --rc-muted: var(--on-night-muted);
   --rc-grid: var(--line-night);
-  --rc-band: rgb(138 92 255 / 0.28);
-  --rc-band-edge: #b9a5ff;
+  --rc-band: var(--accent-night-wash);
+  --rc-band-edge: var(--accent-night);
 }
 
 .range-chart-plot {
@@ -48,7 +48,6 @@
   border: 1px solid var(--rc-band-edge);
   border-radius: var(--radius-s);
   background: var(--rc-band);
-  transition: left var(--dur-ui) var(--ease-out), width var(--dur-ui) var(--ease-out);
 }
 
 .range-chart-band-label {
@@ -68,7 +67,6 @@
   width: 2px;
   margin-left: -1px;
   background: var(--rc-ink);
-  transition: left var(--dur-ui) var(--ease-out);
 }
 
 .range-chart-expected span {
@@ -101,7 +99,15 @@
   left: 0;
   border-radius: 0 var(--radius-s) var(--radius-s) 0;
   background: var(--rc-bar);
-  transition: width var(--dur-ui) var(--ease-out);
+  transform-origin: left center;
+}
+
+[data-motion="full"] .range-chart-bar {
+  animation: range-fill var(--dur-ui) var(--ease-out) both;
+}
+
+@keyframes range-fill {
+  from { transform: scaleX(0); }
 }
 
 .range-chart-bar[data-tone="soft"] {

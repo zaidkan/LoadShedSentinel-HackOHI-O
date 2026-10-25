@@ -157,7 +157,7 @@ samp,
   left: var(--gutter);
   top: 0.75rem;
   z-index: 100;
-  padding: 0.75rem 1rem;
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-s);
   background: var(--ink);
   color: var(--on-night);
@@ -292,23 +292,29 @@ samp,
 }
 
 .btn--night {
-  --btn-fill: rgb(23 19 58 / 0.55);
+  --btn-fill: var(--btn-night-fill);
   --btn-text: var(--on-night);
   background: linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box, var(--btn-stroke-night) border-box;
 }
 
 .btn--night:hover {
-  --btn-fill: rgb(59 49 132 / 0.75);
+  --btn-fill: var(--btn-night-fill-hover);
 }
 
 .btn--small {
   min-height: 40px;
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
   font-size: var(--text-small);
 }
 
 .btn:disabled {
-  opacity: 0.5;
+  --btn-fill: var(--paper-3);
+  --btn-text: var(--muted);
+  background: var(--btn-fill);
+  transform: none;
+}
+
+.btn:disabled svg {
   transform: none;
 }
 
@@ -345,7 +351,9 @@ samp,
 }
 
 .btn-quiet:disabled {
-  opacity: 0.45;
+  border-color: var(--line);
+  background: var(--paper-2);
+  color: var(--muted);
 }
 
 .text-link {
@@ -390,7 +398,7 @@ samp,
   border-radius: 10px;
   background: var(--card);
   color: var(--ink);
-  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition: border-color var(--dur-fast) var(--ease-out);
 }
 
 .input::placeholder {
@@ -459,7 +467,7 @@ textarea.input {
   border: 2px solid var(--card);
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 1px 4px rgb(21 18 46 / 0.3);
+  box-shadow: var(--shadow-thumb);
 }
 
 .range::-moz-range-thumb {
@@ -468,7 +476,7 @@ textarea.input {
   border: 2px solid var(--card);
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 1px 4px rgb(21 18 46 / 0.3);
+  box-shadow: var(--shadow-thumb);
 }
 
 .range:focus-visible {

@@ -20,8 +20,8 @@
   inset: 0;
   z-index: -3;
   background:
-    radial-gradient(70% 38% at 50% 80%, rgb(214 201 255 / 0.6), transparent 72%),
-    linear-gradient(180deg, #0c0a1d 0%, #1a1542 20%, #372d84 44%, #6a59c0 63%, #8f7ed6 76%, #a596e0 86%);
+    radial-gradient(70% 38% at 50% 80%, var(--sky-glow), transparent 72%),
+    linear-gradient(180deg, var(--night-0) 0%, var(--sky-1) 20%, var(--sky-2) 44%, var(--sky-3) 63%, var(--sky-4) 76%, var(--sky-5) 86%);
 }
 
 .hero-sky::after {
@@ -35,7 +35,7 @@
 .hero-cloud {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(closest-side, rgb(205 192 255 / 0.55), transparent);
+  background: radial-gradient(closest-side, var(--sky-cloud), transparent);
   filter: blur(28px);
 }
 
@@ -84,7 +84,7 @@
   position: absolute;
   inset: auto 0 0;
   height: 52%;
-  background: linear-gradient(to top, rgb(12 10 29 / 0.86), rgb(12 10 29 / 0.55) 45%, transparent);
+  background: linear-gradient(to top, var(--scrim-strong), var(--scrim-soft) 45%, transparent);
   pointer-events: none;
 }
 
@@ -103,7 +103,7 @@
   padding: 0.35rem 0.85rem 0.35rem 0.35rem;
   border: 1px solid var(--line-night);
   border-radius: var(--radius-pill);
-  background: rgb(12 10 29 / 0.5);
+  background: var(--scrim-soft);
   color: var(--on-night);
   font-size: var(--text-small);
   pointer-events: auto;
@@ -143,7 +143,7 @@
 
 .hero-title {
   font-size: var(--text-hero);
-  text-shadow: 0 2px 14px rgb(12 10 29 / 0.45);
+  text-shadow: 0 2px 14px var(--scrim-soft);
 }
 
 .hero-title .mask-line:first-child {
@@ -169,7 +169,7 @@
   line-height: 1.5;
   color: var(--on-night);
   max-width: 34ch;
-  text-shadow: 0 1px 10px rgb(12 10 29 / 0.6);
+  text-shadow: 0 1px 10px var(--scrim-soft);
   text-wrap: pretty;
 }
 
@@ -203,7 +203,7 @@
 }
 
 [data-motion="full"] .hero-scroll svg {
-  animation: scroll-nudge 2.4s var(--ease-in-out) infinite;
+  animation: scroll-nudge 2.4s var(--ease-in-out) 1.2s 3;
 }
 
 @keyframes scroll-nudge {
@@ -243,7 +243,7 @@
   z-index: 2;
   background: var(--paper);
   border-radius: 28px 28px 0 0;
-  box-shadow: 0 -24px 48px -24px rgb(12 10 29 / 0.5);
+  box-shadow: 0 -24px 48px -24px var(--scrim-soft);
 }
 
 .landing-sheet > section {
@@ -678,7 +678,7 @@
 }
 
 .view-panel--operator :focus-visible {
-  outline-color: #b9a5ff;
+  outline-color: var(--accent-night);
 }
 
 .view-panel--customer {
