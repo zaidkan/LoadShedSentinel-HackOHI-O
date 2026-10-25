@@ -12,12 +12,12 @@ export const PIN_INSULATOR_PROFILE: Array<[number, number]> = [
 ];
 
 /**
- * Conductor run either side of the pole (metres along Z). Spans fade out before they reach
- * close-up cameras or cross hero copy; the fade stays opaque around the pole.
+ * Conductor run either side of the pole (metres along Z). Street-side spans run toward the
+ * camera and would cross hero copy, so they stay short; both fades stay opaque at the pole.
  */
-const SPAN = { far: -11, near: 4.5 } as const;
+const SPAN = { far: -11, near: 2.6 } as const;
 const spanU = (z: number) => (z - SPAN.far) / (SPAN.near - SPAN.far);
-const SPAN_FADE = { in: Number(spanU(-5).toFixed(2)), out: Number(spanU(0.8).toFixed(2)) };
+const SPAN_FADE = { in: Number(spanU(-5).toFixed(2)), out: Number(spanU(0.45).toFixed(2)) };
 
 export function Pole({ highlight }: PartProps) {
   const ref = useRef<Group>(null);
