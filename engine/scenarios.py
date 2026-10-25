@@ -147,13 +147,14 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
             facilities = source_impact['critical_facility_impact'].get('critical_facilities', [])
             fac_count = source_impact['critical_facility_impact'].get('facility_count', 0)
 
-        hosp_facilities = [f for f in facilities if f.get('facility_type') == 'hospital']
+        hosp_facilities = [f for f in facilities if str(f.get('kind', '')).upper() == 'HOSPITAL'
+                           or f.get('facility_type') == 'hospital']
         if hosp_facilities:
-            # Sourced comparison with shared crew and identical zero prerequisites (dependencies=[])
-            # Hospital branch prioritized restores healthcare first; unprioritized FIFO restores largest branch first
+            # A sourced hospital association enables this illustrative workload
+            # comparison; the routine alternative serves the larger group first.
             hosp_tasks = [
                 dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
-                     criticality=['hospital'], customer_count=len(hosp_facilities), dependencies=[]),
+                     criticality=['hospital'], customer_count=0, dependencies=[]),
                 dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
                      criticality=['routine'], customer_count=len(footprint), dependencies=[])
             ]
@@ -163,7 +164,7 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
                 dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
                      criticality=['routine'], customer_count=len(footprint), dependencies=[]),
                 dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
-                     criticality=['routine'], customer_count=len(hosp_facilities), dependencies=[])
+                     criticality=['routine'], customer_count=0, dependencies=[])
             ]
             unp_plan = schedule_tasks(unp_tasks, planning)
 
@@ -181,6 +182,11 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
                 },
                 'critical_facility_count': fac_count,
                 'rationale': (
+                    'Illustrative comparison: hospital_service=3 and feeder_branch=6 person-hours, '
+                    'independent tasks sharing one crew; these are not workbook repair workloads. '
+                    'Facility counts are association counts, not customer counts; hospital customer '
+                    'count is unknown (priority input 0). The routine branch uses the selected '
+                    'sample footprint size as a declared comparison input, not a disjoint service area. '
                     f'With {crew_size}-worker crew, prioritizing hospital restores critical healthcare at '
                     f'{round(hosp_plan["task_schedule"][0]["end_hours"][1], 2)}h vs '
                     f'{round(unp_plan["task_schedule"][1]["end_hours"][1], 2)}h unprioritized, '

@@ -2,6 +2,8 @@
 import copy
 import unittest
 
+import pytest
+
 class ScenarioTests(unittest.TestCase):
     def generate(self, scenario, context=None):
         from engine.scenarios import generate_scenario
@@ -154,3 +156,48 @@ class ScenarioTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+@pytest.mark.parametrize('asset,hospital_count', [('ASSET-4D3811483AD1FB8F', 1),
+                                                ('ASSET-253FD0B7C3F209A9', 4)])
+def test_canonical_hospital_associations_enable_priority_comparison(asset, hospital_count):
+    from engine.aep_impact import AEPImpact
+    from engine.scenarios import generate_scenario
+    context = AEPImpact.load().scenario_context('confirmed_replacement', asset)
+    records = context['source_impact']['critical_facility_impact']['critical_facilities']
+    assert sum(record['kind'] == 'HOSPITAL' for record in records) == hospital_count
+    comparison = generate_scenario('confirmed_replacement', context).restoration.priority_comparison
+    assert comparison['enabled'] is True
+    assert comparison['hospital_first']['sequence'][0] == 'hospital_service'
+    assert comparison['hospital_first']['hospital_finish_hours'] == 1
+    assert comparison['unprioritized']['hospital_finish_hours'] == 3
+    assert comparison['hospital_first']['total_finish_hours'] == comparison['unprioritized']['total_finish_hours'] == 3
+    assert 'illustrative' in comparison['rationale'].lower()
+    assert 'not customer counts' in comparison['rationale'].lower()
+
+
+def test_all_nonhospital_transformer_assets_keep_priority_comparison_disabled():
+    from engine.aep_impact import AEPImpact
+    from engine.scenarios import generate_scenario
+    source = AEPImpact.load()
+    checked = 0
+    for asset in source.selectable_assets():
+        if asset['kind'] != 'TRANSFORMER':
+            continue
+        context = source.scenario_context('confirmed_replacement', asset['asset_token'])
+        facilities = context['source_impact']['critical_facility_impact']['critical_facilities']
+        if any(record['kind'] == 'HOSPITAL' for record in facilities):
+            continue
+        comparison = generate_scenario('confirmed_replacement', context).restoration.priority_comparison
+        assert comparison['enabled'] is False
+        checked += 1
+    assert checked == 4
+
+
+def test_legacy_hospital_facility_type_remains_supported():
+    from engine.aep_impact import AEPImpact
+    from engine.scenarios import generate_scenario
+    context = AEPImpact.load().scenario_context('confirmed_replacement')
+    context['source_impact']['critical_facility_impact'] = {
+        'facility_count': 1, 'critical_facilities': [{'facility_type': 'hospital'}]}
+    assert generate_scenario('confirmed_replacement', context).restoration.priority_comparison['enabled'] is True
