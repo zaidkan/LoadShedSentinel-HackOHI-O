@@ -68,15 +68,21 @@ export interface PreparednessGuidance {
   detail: string;
 }
 
+let memorySessionId: string | null = null;
+
 export function getSessionId(): string {
-  let sid = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('loadshed_session_id') : null;
-  if (!sid) {
-    sid = 'sess_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('loadshed_session_id', sid);
-    }
-  }
-  return sid;
+  if (memorySessionId) return memorySessionId;
+  // Storage can be absent in SSR/tests, or throw under browser privacy policy.
+  // Preserve one module-local identity across all requests in either case.
+  try {
+    const stored = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('loadshed_session_id') : null;
+    if (typeof stored === 'string' && stored.trim()) memorySessionId = stored;
+  } catch { /* Keep the in-memory fallback when storage access is denied. */ }
+  if (!memorySessionId) memorySessionId = 'sess_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
+  try {
+    if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('loadshed_session_id', memorySessionId);
+  } catch { /* The stable in-memory ID still isolates this client instance. */ }
+  return memorySessionId;
 }
 
 function sessionHeaders(extraHeaders: Record<string, string> = {}): Record<string, string> {

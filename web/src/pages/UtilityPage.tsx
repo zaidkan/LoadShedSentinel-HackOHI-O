@@ -6,6 +6,9 @@ import { FeederMap } from '../components/map/FeederMap';
 import { TelemetryHUD } from '../components/utility/TelemetryHUD';
 import { EvidencePanel } from '../components/utility/EvidencePanel';
 import { PlanningPanels } from '../components/utility/PlanningPanels';
+import { SectionRestorationControls } from '../components/utility/SectionRestorationControls';
+import { sectionRestorationAction } from '../services/sectionRestoration';
+import type { SectionAction } from '../services/sectionRestoration';
 import { UtilityIcon } from '../components/utility/UtilityIcon';
 import { PROVENANCE, humanize, utcText } from '../components/utility/presentation';
 import '../components/utility/utility.css';
@@ -26,6 +29,11 @@ export function UtilityPage({ snapshot, onSnapshotChange }: UtilityPageProps) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
   const [retry, setRetry] = useState(0);
+
+  async function handleSectionAction(action: SectionAction) {
+    const next = await sectionRestorationAction(action, snapshot);
+    onSnapshotChange(next);
+  }
 
   useEffect(() => {
     setInputs(planningInputs(snapshot));
@@ -84,6 +92,7 @@ export function UtilityPage({ snapshot, onSnapshotChange }: UtilityPageProps) {
         error={error}
         onRetry={() => setRetry(value => value + 1)}
       />
+      <SectionRestorationControls snapshot={snapshot} onSectionAction={handleSectionAction} />
       <section className="utility-context-strip" aria-label="Incident scope and source legend">
         <details><summary>{snapshot.affected_premise_tokens.length} listed premises · selected {snapshot.selected_premise_token}</summary><ul className="utility-premise-list">{snapshot.affected_premise_tokens.map(token => <li key={token}><code>{token}</code></li>)}</ul><p>Supply path unavailable in this snapshot.</p></details>
         <details><summary>Data provenance legend</summary><dl className="utility-provenance-legend">{Object.entries(PROVENANCE).map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{key === 'modeled_sensor' ? 'Modeled node input; not a field observation.' : key === 'scenario' ? 'Input supplied by the demonstration scenario.' : key === 'aep_challenge' ? 'Supplied challenge record; field quality is identified separately.' : key === 'external_research' ? 'External reference; not an operational feed.' : 'Authorized enterprise source; see each record’s quality.'}</dd></div>)}</dl></details>

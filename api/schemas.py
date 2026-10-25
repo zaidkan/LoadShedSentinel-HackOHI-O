@@ -86,6 +86,7 @@ class NotificationItem(BaseModel):
     text: str
     delivery_mode: Literal['demo'] = 'demo'
     sent_at_utc: str
+    premise_token: Optional[str] = None
 
 class ScenarioSnapshot(BaseModel):
     scenario_id: str
@@ -107,3 +108,4 @@ class ScenarioSnapshot(BaseModel):
     customer_risk: CustomerRisk
     notifications: List[NotificationItem] = Field(default_factory=list)
     disclosure: str
+    section_restoration: Optional[Dict[str, Any]] = None

@@ -2,6 +2,18 @@
 
 **Distribution Transformer Digital Twin & AI Customer Outage Concierge**
 
+### Current rubric completion and demo
+
+See the [current AEP Guide and rubric crosswalk](docs/latest_guide_closure.md) for
+verified features, source limits and test results. Start in **Prevention & Evidence**
+to replay developing condition trends and inspect the assumed response comparison.
+In **Utility Console**, select the confirmed replacement scenario, keep three crew
+members and zero access delay, and inspect the sourced critical-first comparison.
+Then start **Step restoration**, isolate the section, authorize the unaffected
+group, complete repair and authorize the repaired group: the modeled outage count
+falls from 16 to 8 to zero. Use the household inspection buttons to compare customer
+views during partial restoration. Every release is a simulated approval.
+
 ### Preventive monitoring and response evidence
 
 The **Prevention & Evidence** view runs before a fault is declared. It compares
@@ -71,7 +83,7 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
 | **1. Local Protection Fault** | `INC-2026-0881` | OPEN (blown drop) | Cutout fuse blown on transient surge; equipment condition unconfirmed | Line Crew (2 lineworkers), bucket truck, replacement fuse link |
 | **2. Upstream Feeder Trip** | `INC-2026-0894` | CLOSED (switch latched) | Upstream recloser lockout; does not infer local transformer replacement | Upstream Substation/Feeder Crew; avoids false local replacement |
 | **3. Confirmed Replacement** | `INC-2026-0902` | OPEN (blown) | Declared field confirmation; physical replacement required | Line Crew (3 lineworkers), 25 kVA transformer replacement (workbook rate: 8.97 person-hours) |
-| **4. Insufficient Evidence** | `INC-2026-0917` | UNKNOWN | Ambiguous telemetry; abstains from premature ETR commitment | Trouble Shooter patrol dispatched for physical inspection before commitment |
+| **4. Insufficient Evidence** | `INC-2026-0917` | UNKNOWN | Ambiguous telemetry; abstains from premature ETR commitment | Proposed trouble-shooter inspection; no actual dispatch |
 
 ---
 

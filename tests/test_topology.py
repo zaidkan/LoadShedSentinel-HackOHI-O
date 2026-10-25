@@ -204,7 +204,11 @@ class TopologyTests(unittest.TestCase):
     def test_persistence_rejects_path_corruption_and_keeps_private_mode(self):
         path = self.root / "private.json"
         write_json(path, self.graph, private=True)
-        self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+        # POSIX permission bits do not establish Windows owner-only ACLs. Keep
+        # persistence/corruption checks on every platform and assert 0600 only
+        # where those bits have the intended meaning; do not certify an ACL.
+        if os.name != "nt":
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
         self.assertEqual(Topology.load(path).affected_premises("eo_isolating_eqpt_inst:0200")["affected_count"], 3)
         self.graph["paths"]["PRIVATE-PREMISE-0001"]["asset_ids"].append("NONEXISTENT")
         with self.assertRaises(ValueError):

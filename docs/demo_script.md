@@ -1,16 +1,16 @@
 # LoadShed Sentinel — four-speaker recording script
 
-**Locked edit:** 00:00–03:00, exactly 180 seconds. **Spoken budget:** 397 words. Person 1 speaks for the data team, Person 2 for the twin and labor engine, Person 3 for the utility interface, and Person 4 for the customer concierge and orchestration. Read only the four quoted narration blocks. Labels, formulas, screen cues and variation notes are not spoken.
+**Locked edit:** 00:00–03:00, exactly 180 seconds. **Spoken budget:** 395 words. Person 1 speaks for the data team, Person 2 for the twin and labor engine, Person 3 for the utility interface, and Person 4 for the customer concierge and orchestration. Read only the four quoted narration blocks. Labels, formulas, screen cues and variation notes are not spoken.
 
-Source reviewed: `0ed0ac3fab903c1ab904117adabbfe0c59f4a70a`. This document verifies the planned timecodes and word count; it does not certify a recorded performance or exported video duration.
+Source reviewed: latest integration based on `bb4482d` plus `8c58d30` and the priority/section-restoration fixes recorded in [the current crosswalk](latest_guide_closure.md). The planned timecodes and spoken word count do not certify a recorded performance or exported video duration.
 
 | Speaker | Slot | Duration | Narration | Delivery window | Silent handoff / hold |
 |---|---|---:|---:|---|---|
 | Person 1 — Data & Topology | 00:00–00:40 | 40 s | 89 words | 00:00–00:38 | 00:38–00:40 |
-| Person 2 — Twin & Labor Engine | 00:40–01:25 | 45 s | 95 words | 00:40–01:23 | 01:23–01:25 |
+| Person 2 — Twin & Labor Engine | 00:40–01:25 | 45 s | 93 words | 00:40–01:23 | 01:23–01:25 |
 | Person 3 — Utility Interface & Controls | 01:25–02:15 | 50 s | 110 words | 01:25–02:13 | 02:13–02:15 |
 | Person 4 — Customer Concierge & Orchestration | 02:15–03:00 | 45 s | 103 words | 02:15–02:58 | 02:58–03:00 |
-| **Total** | **00:00–03:00** | **180 s** | **397 words** | **172 s voice** | **8 s holds** |
+| **Total** | **00:00–03:00** | **180 s** | **395 words** | **172 s voice** | **8 s holds** |
 
 Aim for about 138 spoken words per minute during the delivery windows. Record each voice separately; edit screen recordings beneath it. The opening title appears during Person 1's first sentence, and the closing frame occupies Person 4's final two seconds. No additional intro, credits or voiceover after 03:00.
 
@@ -41,13 +41,13 @@ The website directly provides interactive controls for crew/access sensitivity, 
 
 **Spoken narration**
 
-> Here is our three dimensional distribution transformer twin. The cutout shows open, closed or unknown without implying live switching authority. Heat and acoustic signals are modeled evidence for assessment, not proof of a field diagnosis. For one declared twenty five kilovolt ampere transformer replacement, workbook cells C twenty one and D twenty one provide installation and removal hours. Apply four point five once: about eight point nine seven person hours. The engine schedules ready tasks by criticality, then customer count, while respecting dependencies and shared crews. That is a transparent priority rule, not automatic dispatch.
+> Before an outage, preventive screening compares temperature with load and weather, checks persistent sound and vibration changes, and recommends condition review. These are modeled histories and demonstration thresholds, not calibrated failure predictions. Our three dimensional twin shows equipment context. For one declared twenty five kilovolt ampere replacement, workbook cells C twenty one and D twenty one supply installation and removal hours. Apply four point five once: about eight point nine seven person hours. With one shared crew, critical first finishes hospital associated work earlier but delays other customers. The comparison exposes that tradeoff.
 
 **Screen cues, not spoken**
 
-- **00:40–00:55:** Select `confirmed_replacement`; show the distribution transformer, **Inspect cutout**, a brief orbit and the explicit modeled/simulated confirmation labels. Use a short separately captured UNKNOWN-state insert during the unknown phrase; return to replacement before the labor sequence.
+- **00:40–00:55:** In **Prevention & Evidence**, compare the healthy and developing-trend replays. Show persistent changes, ambient/load context and condition-review recommendation. Keep modeled histories and demonstration thresholds readable; then show the 3D twin.
 - **00:55–01:12:** Expand the restoration assumptions and crew/materials recommendation. Overlay the sourced calculation, labelled “declared 25-kVA category average”: **(C21 + D21) × 4.5 = 8.973957 ≈ 8.97 person-hours**, sheet `Labor time material related!`. Show **8.973957 ÷ 3 = 2.991319 labor-only hours**. Apply the multiplier once; do not equate person-hours with elapsed hours.
-- **01:12–01:23:** Highlight the interactive **Critical Facility Priority Sequencing** panel in the restoration planning card: hospital healthcare load restored at hour 1.0 vs 3.0 unprioritized with 3-worker shared crew. Keep the dispatcher authorization disclaimer visible.
+- **01:12–01:23:** With three workers and zero access delay, show the separate two-job comparison: hospital-associated work finishes at **2.99 versus 5.98 hours**, total work finishes at **5.98 hours** under both policies. Show the increased ordinary customer-minutes and assumed facility association. Work completion still requires modeled release authorization.
 - **01:23–01:25:** Hold the supplied work package and pass the same replacement scenario to Person 3.
 
 [UI Variation Note] Crop around the asset and assumptions rather than fixed pixels. The requested **45-degree cutout** is a recording discrepancy at this revision: `web/src/three/visual-state.ts` uses `OPEN.angle = -2.05` radians, about 117.5 degrees of hinge rotation, not 45 degrees. The narration deliberately says open/closed/unknown. Use a “45-degree” caption only after the UI owner changes and verifies that visual; do not alter source code as part of this script task. Preserve workbook cells, units, multiplier and declared-rating disclosure if panel copy changes.
@@ -56,14 +56,14 @@ The website directly provides interactive controls for crew/access sensitivity, 
 
 **Spoken narration**
 
-> In the Utility Console, we choose a simulated incident and anonymous equipment. The feeder map shows directional dependency arrows and equipment symbols; it does not show live energization. We can inspect the cutout, orbit the twin, or switch to its two dimensional fallback. Evidence, hypotheses, crew capabilities and sensor battery status stay beside the asset. Now watch the restoration panel. Crew size ranges from two to eight lineworkers; additional access delay ranges from zero to twenty four hours. Changing either recalculates the shared restoration planning range. Six workers and two access hours give about three point five expected hours for this replacement. Assumptions remain visible, and no crew is dispatched.
+> In the Utility Console, we choose a simulated incident and anonymous equipment. The feeder map shows supplied dependencies, not live energization. Crew size and access delay change the shared planning range. Six workers and two access hours give about three point five expected hours for this replacement. Now reset to three workers and start the section example. Sixteen homes are out. Isolation alone restores nobody. Authorizing the unaffected section restores eight while repair continues. Completing repair still needs a separate release before the remaining eight restore. These are simulated approvals, not physical switching. The response comparison also shows zero or negative savings when assumed dispatch improvements cannot overcome other delays.
 
 **Screen cues, not spoken**
 
 - **01:25–01:38:** Show the scenario/equipment selectors and **Feeder circuit** SVG map. Select an equipment glyph to expose its details. Keep the arrow legend “upstream → downstream,” current-asset outline and unconfirmed equipment states visible.
-- **01:38–01:50:** Briefly demonstrate orbit/zoom, Reset view, Low detail and the 2D diagram, then return to the twin. Cut to evidence/hypotheses and their missing-evidence/source labels; include the solar, sensor battery and communications readouts. A short recorded insert can cover these controls without forcing one hurried continuous take.
-- **01:50–02:07:** On the confirmed replacement, show the crew slider's **2–8** bounds and access slider's **0–24 h** bounds. Start at **3 workers / 0 h → 2.99 h expected**; change to **6 / 0 → 1.50 h**; then **6 / 2 → 3.50 h**. Pause until each request completes and the revision/range changes. Keep lower/expected/upper visible; these are conditional planning durations, not a utility commitment.
-- **02:07–02:13:** Expand range assumptions and briefly show the incident scope/provenance legend. Open Customer Concierge without resetting the incident; its planning range must match the six-worker/two-hour result.
+- **01:38–01:50:** Show crew/access bounds and **6 workers / 2 h access → 3.50 h expected**. Reset to **3 / 0**, then start the modeled section demo and isolate. Keep the simulation label visible.
+- **01:50–02:07:** Capture **16 out → authorize unaffected → 8 out → complete repair → still 8 out → authorize repaired → 0 out**. Use an insert captured at the partial state to show the unaffected household RESTORED while the faulted household remains OUTAGE.
+- **02:07–02:13:** Briefly show the editable response comparison and a zero-benefit case in **Prevention & Evidence**. Then return to Customer Concierge for the final speaker. Do not narrate a measured 8–10-hour saving.
 - **02:13–02:15:** Hold the matching customer range for Person 4.
 
 [UI Variation Note] Bind shots to the controls' purpose, not their exact position or wording. Rounded expected hours may display fewer decimals. If a verified minor change alters the numeric example, replace the sentence beginning “Six workers” with “The updated expected duration appears in both views,” recount the script and retain the 50-second slot. If an update fails, use the visible retry/reset behavior and record a successful take; do not hide a stale range behind an overlay.

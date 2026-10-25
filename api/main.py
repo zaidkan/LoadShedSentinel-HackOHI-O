@@ -5,6 +5,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from typing import Dict, Any, Optional, List, Union, Set
+from typing import Literal
 from fastapi import FastAPI, HTTPException, Query, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -50,6 +51,7 @@ class SessionState:
     fsm: NotificationFSM = field(default_factory=NotificationFSM)
     completed_task_ids: Set[str] = field(default_factory=set)
     authorized_premise_tokens: Set[str] = field(default_factory=set)
+    section_demo: Optional[dict] = None
     last_accessed: float = field(default_factory=time.time)
 
 # In-memory runtime state keyed by session
@@ -230,6 +232,7 @@ def select_scenario(req: SelectScenarioRequest, x_session_id: Optional[str] = He
     session.fsm = NotificationFSM()
     session.completed_task_ids.clear()
     session.authorized_premise_tokens.clear()
+    session.section_demo = None
 
     restoration_summary = ""
     if session.snapshot.restoration.kind == 'scenario_planning' and session.snapshot.restoration.expected_hours is not None:
@@ -281,6 +284,11 @@ def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(N
     """Advances scenario state and evaluates customer notification triggers."""
     session = get_session(x_session_id)
     snap = session.snapshot
+
+    if session.section_demo is not None and any((req.status, req.cutout_status, req.action,
+            req.completed_task_ids is not None, req.authorized_premises is not None,
+            req.record_demo_authorization)):
+        raise HTTPException(status_code=400, detail="Use the explicit section-restoration actions while the section demonstration is active")
     
     # 1. Validation phase (reject before mutating anything)
     if req.incident_id and req.incident_id != snap.incident_id:
@@ -430,7 +438,84 @@ def reset_scenario(x_session_id: Optional[str] = Header(None, alias="X-Session-I
     session.fsm = NotificationFSM()
     session.completed_task_ids.clear()
     session.authorized_premise_tokens.clear()
+    session.section_demo = None
     return session.snapshot
+
+
+class SectionActionRequest(BaseModel):
+    model_config = {"extra": "forbid"}
+    action: Literal["start", "isolate_section", "authorize_unaffected", "complete_repair", "authorize_repaired",
+                    "select_unaffected_premise", "select_faulted_premise"]
+    incident_id: str
+    expected_revision: int
+
+
+@app.post("/api/restoration/section-action", response_model=ScenarioSnapshot)
+def section_restoration_action(req: SectionActionRequest,
+        x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
+    """Replay source-derived partial restoration; never operate physical equipment."""
+    from engine.step_restoration import build_section_demo, apply_section_action
+
+    session = get_session(x_session_id)
+    previous = session.snapshot
+    if req.incident_id != previous.incident_id or req.expected_revision != previous.revision:
+        raise HTTPException(status_code=409, detail="The incident changed; refresh before applying this section action")
+    candidate = previous.model_copy(deep=True)
+    context = session.context
+    try:
+        if req.action == "start":
+            source = get_aep_impact()
+            demo = build_section_demo(source, previous.current_asset_id)
+            context = source.scenario_context("confirmed_replacement", previous.current_asset_id)
+            context["incident_id"] = "INC-DEMO-SECTIONS-" + previous.current_asset_id[-8:] + "-" + uuid.uuid4().hex[:8]
+            if previous.planning_inputs is not None:
+                context.update(previous.planning_inputs.model_dump())
+            candidate = generate_scenario("confirmed_replacement", context)
+            candidate.notifications = []
+        elif session.section_demo is None:
+            raise ValueError("Start a section demonstration before applying its actions")
+        elif req.action in ("select_unaffected_premise", "select_faulted_premise"):
+            demo = dict(session.section_demo)
+            group = demo["unaffected_premise_tokens"] if req.action == "select_unaffected_premise" else demo["isolated_premise_tokens"]
+            if not group:
+                raise ValueError("This demonstration has no premise in the requested group")
+            candidate.selected_premise_token = group[0]
+        else:
+            demo = apply_section_action(session.section_demo, req.action)
+    except (ValueError, KeyError, TypeError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # The full feeder footprint is explained by the explicitly modeled upstream
+    # trip; the fault itself remains on the selected, source-derived transformer.
+    candidate.section_restoration = {**demo, "repair_complete": demo["completed_repair"]}
+    candidate.affected_premise_tokens = list(demo["still_out_premise_tokens"])
+    candidate.status = "OUTAGE" if demo["still_out_premise_tokens"] else "RESTORED"
+    candidate.cutout_status = "CLOSED" if candidate.status == "RESTORED" else "OPEN"
+    candidate.revision = previous.revision + 1
+    candidate.disclosure += (
+        " Section demonstration: a simulated upstream trip initially interrupts the 16-premise sample. "
+        "Explicit modeled isolation and re-energization release unaffected customers before the fault repair. "
+        "No physical switch operation, observed outage or verified facility connection is implied."
+    ) if req.action == "start" else ""
+    if candidate.impact_source is not None:
+        candidate.impact_source = {**candidate.impact_source,
+            "affected_count_in_sample": len(demo["still_out_premise_tokens"]),
+            "section_demo_scope": len(demo["all_premise_tokens"]),
+            "includes_modeled_upstream_trip": True}
+    effective_status = "RESTORED" if candidate.selected_premise_token in demo["restored_premise_tokens"] else "OUTAGE"
+    # Work with a fresh FSM copy, committing it only after validation succeeds.
+    from copy import deepcopy
+    fsm = NotificationFSM() if req.action == "start" else deepcopy(session.fsm)
+    alerts = fsm.evaluate_triggers(candidate.selected_premise_token, candidate.incident_id,
+        effective_status, candidate.customer_risk, "", candidate.timestamp_utc)
+    candidate.notifications.extend(alert.model_copy(update={"premise_token": candidate.selected_premise_token})
+        for alert in alerts if not any(old.type == alert.type and old.text == alert.text
+            and old.premise_token == candidate.selected_premise_token for old in candidate.notifications))
+    session.snapshot = candidate
+    session.section_demo = demo
+    session.context = context
+    session.fsm = fsm
+    return candidate
 
 @app.get("/api/topology/lookup")
 def lookup_premise_topology(premise_id: str = Query(..., description="Anonymized public premise token")):

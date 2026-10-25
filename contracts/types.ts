@@ -135,4 +135,20 @@ export interface ScenarioSnapshot {
     sent_at_utc: string;
   }>;
   disclosure: string;
+  section_restoration?: {
+    phase: string;
+    fault_asset_token: string;
+    isolating_asset_token: string;
+    all_premise_tokens: string[];
+    isolated_premise_tokens: string[];
+    unaffected_premise_tokens: string[];
+    restored_premise_tokens: string[];
+    still_out_premise_tokens: string[];
+    isolation_confirmed: boolean;
+    completed_repair: boolean;
+    repair_complete?: boolean;
+    authorized_unaffected: boolean;
+    authorized_repaired: boolean;
+    assumptions: string[];
+  } | null;
 }

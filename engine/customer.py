@@ -247,19 +247,26 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
         else snapshot.customer_risk.dict()
     )
     
-    notifications_list = [
-        (n.model_dump() if hasattr(n, "model_dump") else n.dict())
-        for n in snapshot.notifications
-    ]
+    notifications_list = []
+    for notification in snapshot.notifications:
+        if notification.premise_token not in (None, snapshot.selected_premise_token):
+            continue
+        public_notification = notification.model_dump()
+        public_notification.pop('premise_token', None)
+        notifications_list.append(public_notification)
     
+    section = snapshot.section_restoration
+    effective_status = snapshot.status
+    if section is not None:
+        effective_status = "RESTORED" if snapshot.selected_premise_token in section['restored_premise_tokens'] else "OUTAGE"
     risk_band = getattr(snapshot.customer_risk, "band", "UNKNOWN")
     is_eligible = (
-        snapshot.status in ('OUTAGE', 'AT_RISK', 'UNDER_REVIEW')
-        or (snapshot.status == 'NORMAL' and risk_band in ('HIGH', 'MODERATE'))
+        effective_status in ('OUTAGE', 'AT_RISK', 'UNDER_REVIEW')
+        or (effective_status == 'NORMAL' and risk_band in ('HIGH', 'MODERATE'))
     )
     if is_eligible:
         suppression_reason = None
-    elif snapshot.status == 'RESTORED':
+    elif effective_status == 'RESTORED':
         suppression_reason = "Service restored; monitoring post-event stability"
     else:
         suppression_reason = "Normal service operating conditions"
@@ -279,15 +286,23 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
         "revision": snapshot.revision,
         "selected_premise_token": snapshot.selected_premise_token,
         "timestamp_utc": snapshot.timestamp_utc,
-        "status": snapshot.status,
+        "status": effective_status,
+        "section_restoration": None if section is None else {
+            "phase": section['phase'], "simulation_only": True,
+            "scope_premises": len(section['all_premise_tokens']),
+            "restored_count": len(section['restored_premise_tokens']),
+            "remaining_count": len(section['still_out_premise_tokens']),
+            "selected_premise_status": effective_status,
+        },
         "impact_source": snapshot.impact_source,
         "customer_risk": risk_dict,
         "restoration_planning": {
-            "kind": snapshot.restoration.kind,
-            "lower_hours": snapshot.restoration.lower_hours,
-            "expected_hours": snapshot.restoration.expected_hours,
-            "upper_hours": snapshot.restoration.upper_hours,
-            "assumptions": customer_safe_assumptions,
+            "kind": 'unavailable' if section and effective_status == 'RESTORED' else snapshot.restoration.kind,
+            "lower_hours": None if section and effective_status == 'RESTORED' else snapshot.restoration.lower_hours,
+            "expected_hours": None if section and effective_status == 'RESTORED' else snapshot.restoration.expected_hours,
+            "upper_hours": None if section and effective_status == 'RESTORED' else snapshot.restoration.upper_hours,
+            "assumptions": (["This premise has explicit modeled re-energization. Remaining repair work concerns an isolated section."]
+                if section and effective_status == 'RESTORED' else customer_safe_assumptions),
             "last_updated_utc": snapshot.restoration.last_updated_utc
         },
         "notifications": notifications_list,
@@ -307,7 +322,7 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
                 if is_eligible
                 else (
                     "Service restored; event standing down."
-                    if snapshot.status == 'RESTORED'
+                    if effective_status == 'RESTORED'
                     else "Standby mode: normal grid operation."
                 )
             )

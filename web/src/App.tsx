@@ -21,6 +21,14 @@ export const App: React.FC = () => {
     initApp();
   }, []);
 
+  // Accepted modeled section actions can change the canonical scenario. Keep
+  // selectors aligned with the published snapshot rather than an old UI intent.
+  useEffect(() => {
+    if (!snapshot) return;
+    setSelectedScenarioId(snapshot.scenario_id);
+    setActiveAssetToken(snapshot.impact_source?.fault_asset_token || '');
+  }, [snapshot?.scenario_id, snapshot?.current_asset_id]);
+
   async function initApp() {
     setLoading(true);
     setConnectionError(false);

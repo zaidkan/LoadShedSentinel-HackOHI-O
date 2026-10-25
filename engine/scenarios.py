@@ -140,62 +140,91 @@ GIS attribute. Other scenarios have no selected repair workload or duration.
             f'Single indirect allowance source={catalog["basis_evidence"]}; '
             'no separate travel, safety or setup allowance is added.')
 
-        # F02: Multi-section priority scheduling comparison
-        fac_count = 0
-        facilities = []
-        if source_impact and isinstance(source_impact.get('critical_facility_impact'), dict):
-            facilities = source_impact['critical_facility_impact'].get('critical_facilities', [])
-            fac_count = source_impact['critical_facility_impact'].get('facility_count', 0)
-
-        hosp_facilities = [f for f in facilities if f.get('facility_type') == 'hospital']
-        if hosp_facilities:
-            # Sourced comparison with shared crew and identical zero prerequisites (dependencies=[])
-            # Hospital branch prioritized restores healthcare first; unprioritized FIFO restores largest branch first
-            hosp_tasks = [
-                dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
-                     criticality=['hospital'], customer_count=len(hosp_facilities), dependencies=[]),
-                dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
-                     criticality=['routine'], customer_count=len(footprint), dependencies=[])
-            ]
-            hosp_plan = schedule_tasks(hosp_tasks, planning)
-
-            unp_tasks = [
-                dict(id='feeder_branch', person_hours=6.0, crew_size=crew_size, crew_id='crew-1',
-                     criticality=['routine'], customer_count=len(footprint), dependencies=[]),
-                dict(id='hospital_service', person_hours=3.0, crew_size=crew_size, crew_id='crew-1',
-                     criticality=['routine'], customer_count=len(hosp_facilities), dependencies=[])
-            ]
-            unp_plan = schedule_tasks(unp_tasks, planning)
-
-            restoration['priority_comparison'] = {
-                'enabled': True,
-                'hospital_first': {
-                    'sequence': hosp_plan['task_order'],
-                    'hospital_finish_hours': round(hosp_plan['task_schedule'][0]['end_hours'][1], 2),
-                    'total_finish_hours': round(hosp_plan['full_repair_hours'][1], 2),
-                },
-                'unprioritized': {
-                    'sequence': unp_plan['task_order'],
-                    'hospital_finish_hours': round(unp_plan['task_schedule'][1]['end_hours'][1], 2),
-                    'total_finish_hours': round(unp_plan['full_repair_hours'][1], 2),
-                },
-                'critical_facility_count': fac_count,
-                'rationale': (
-                    f'With {crew_size}-worker crew, prioritizing hospital restores critical healthcare at '
-                    f'{round(hosp_plan["task_schedule"][0]["end_hours"][1], 2)}h vs '
-                    f'{round(unp_plan["task_schedule"][1]["end_hours"][1], 2)}h unprioritized, '
-                    f'maintaining identical {round(hosp_plan["full_repair_hours"][1], 2)}h total completion.'
-                )
-            }
-            restoration['assumptions'].append(restoration['priority_comparison']['rationale'])
-        else:
-            restoration['priority_comparison'] = {
-                'enabled': False,
-                'hospital_first': None,
-                'unprioritized': None,
-                'critical_facility_count': fac_count,
-                'rationale': 'No hospital facilities associated with this distribution asset footprint.'
-            }
+        # A separate two-concurrent-repair scenario compares actual disjoint
+        # transformer groups. Both jobs use the same declared 25-kVA reference;
+        # this does not add a second fault to the selected single-incident state.
+        comparison = dict(enabled=False, hospital_first=None, unprioritized=None,
+                          critical_facility_count=0, groups=[],
+                          rationale='No disjoint hospital-associated and routine source groups are available for this comparison.')
+        try:
+            from engine.aep_impact import AEPImpact
+            comparison_source = AEPImpact.load()
+            groups = []
+            for token, node in sorted(comparison_source.assets.items()):
+                if node.get('kind') != 'TRANSFORMER':
+                    continue
+                premises = sorted(set(comparison_source.affected(token)))
+                if not premises:
+                    continue
+                facilities = comparison_source.affected_critical_facilities(token)['critical_facilities']
+                hospitals = {f['facility_token'] for f in facilities
+                             if str(f.get('kind', f.get('facility_type', ''))).upper() == 'HOSPITAL'}
+                groups.append(dict(asset_token=token, premise_tokens=premises,
+                                   customer_count=len(premises), hospital_facility_tokens=sorted(hospitals),
+                                   critical_facility_count=len(hospitals)))
+            candidates = [g for g in groups if g['hospital_facility_tokens']]
+            candidates.sort(key=lambda g: (g['asset_token'] != asset, g['asset_token']))
+            chosen = None
+            for hospital_group in candidates:
+                ordinary = [g for g in groups if not g['hospital_facility_tokens']
+                            and not set(g['premise_tokens']) & set(hospital_group['premise_tokens'])]
+                if ordinary:
+                    ordinary.sort(key=lambda g: (-g['customer_count'], g['asset_token']))
+                    chosen = hospital_group, ordinary[0]
+                    break
+            if chosen and restoration['labor_work_hours'] is not None:
+                hospital_group, ordinary_group = chosen
+                hospital_group = {**hospital_group, 'task_id': 'hospital_service'}
+                ordinary_group = {**ordinary_group, 'task_id': 'feeder_branch'}
+                group_by_task = {g['task_id']: g for g in (hospital_group, ordinary_group)}
+                job_hours = restoration['labor_work_hours']
+                tasks = [dict(id=g['task_id'], person_hours=job_hours, crew_size=crew_size, crew_id='crew-1',
+                              criticality=['hospital'] if g is hospital_group else ['routine'],
+                              customer_count=g['customer_count'], dependencies=[])
+                         for g in (hospital_group, ordinary_group)]
+                hospital_plan = schedule_tasks(tasks, planning)
+                baseline_plan = schedule_tasks([{**task, 'criticality': ['routine']} for task in tasks], planning)
+                gate = planning.get('energization_hours', 0)
+                expected_gate = gate[1] if isinstance(gate, (list, tuple)) else gate
+                def summarize(plan):
+                    by_id = {task['id']: task for task in plan['task_schedule']}
+                    customer_hours = sum(group_by_task[key]['customer_count'] * (task['end_hours'][1] + expected_gate)
+                                         for key, task in by_id.items())
+                    return dict(sequence=plan['task_order'],
+                                hospital_finish_hours=by_id['hospital_service']['end_hours'][1],
+                                hospital_release_planning_hours=by_id['hospital_service']['end_hours'][1] + expected_gate,
+                                total_finish_hours=plan['full_repair_hours'][1],
+                                customer_hours=customer_hours, customer_interruption_minutes=customer_hours * 60,
+                                task_schedule=plan['task_schedule'])
+                prioritized = summarize(hospital_plan); baseline = summarize(baseline_plan)
+                gain = baseline['hospital_finish_hours'] - prioritized['hospital_finish_hours']
+                cmi_change = prioritized['customer_interruption_minutes'] - baseline['customer_interruption_minutes']
+                comparison.update(
+                    enabled=True, hospital_first=prioritized, unprioritized=baseline,
+                    critical_facility_count=hospital_group['critical_facility_count'],
+                    groups=[hospital_group, ordinary_group], hospital_hours_saved=gain,
+                    cmi_change_prioritized_minus_baseline=cmi_change,
+                    total_customer_count=hospital_group['customer_count'] + ordinary_group['customer_count'],
+                    person_hours_per_job=job_hours, total_person_hours=2 * job_hours,
+                    scope='separate_two_concurrent_transformer_repair_scenario',
+                    workbook_refs=[dict(package['labor_ref']['source'])] if package else [],
+                    assumptions=[
+                        'This separate planning comparison declares one concurrent transformer replacement in each of two disjoint, supplied premise groups; it does not confirm another fault or change the selected incident.',
+                        'Both jobs use the same sourced install+remove rate for an explicitly declared 25-kVA transformer, multiplied by 4.5 once. Actual GIS transformer ratings are not inferred from this declared reference.',
+                        'One shared qualified crew handles one job at a time. Baseline orders by customer count without criticality; hospital-first applies the documented criticality heuristic. Identical orders produce zero benefit.',
+                        'Hospital associations are assumed spatial context, not verified electrical service. Repair finish is conditional work completion, not an authorized physical facility restoration.',
+                        'Customer-hours/CMI use unique, disjoint premise counts and conditional task completion plus the same declared energization gate from a shared time origin. Actual release still needs authorization. Positive CMI change means more ordinary customer interruption under critical-first priority.',
+                    ],
+                    rationale=(f'Declared two-repair comparison: hospital-associated branch work finishes at '
+                               f'{prioritized["hospital_finish_hours"]:.2f}h versus {baseline["hospital_finish_hours"]:.2f}h '
+                               f'under customer-count-first ordering. Modeled gain={gain:.2f}h; CMI change={cmi_change:.1f} customer-minutes. '
+                               'These are assumed facility associations and conditional repair times, not service confirmations.'))
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            comparison['rationale'] = 'Source-based comparison unavailable: ' + str(exc)
+        restoration['priority_comparison'] = comparison
+        if comparison['enabled']:
+            restoration['assumptions'].extend(comparison['assumptions'])
+            restoration['assumptions'].append(comparison['rationale'])
     else:
         restoration = estimate_restoration(None, None, planning)
         restoration['assumptions'].insert(0,

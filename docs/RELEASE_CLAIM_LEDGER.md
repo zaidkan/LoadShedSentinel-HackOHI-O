@@ -1,5 +1,7 @@
 # LoadShed Sentinel — Truthful Release Claim Ledger
 
+**Historical audit:** The entries below describe commit `e5f5abb`, including its file paths and limitations. For the latest preventive, priority, session and section-restoration behavior and current verification, use the [current Guide/rubric closure](latest_guide_closure.md). Do not present this historical snapshot as a current release audit.
+
 **Document Purpose:** Authoritative crosswalk of all public, documentation, presentation, and marketing claims against verified code, data, and test evidence.  
 **Reference Commit SHA:** `e5f5abb3c3b9a240b2d1c2a412e171db926538ab`  
 **Audit Date:** October 25, 2026  

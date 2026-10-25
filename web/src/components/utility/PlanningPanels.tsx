@@ -52,11 +52,11 @@ export function PlanningPanels({ snapshot, inputs, onInputsChange, pending, erro
             <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
               <div>
                 <span className="text-slate-400 block">Hospital-first:</span>
-                <span className="text-emerald-400">{restoration.priority_comparison.hospital_first.hospital_finish_hours}h hospital</span> · {restoration.priority_comparison.hospital_first.total_finish_hours}h total
+                <span className="text-emerald-400">{numberText(restoration.priority_comparison.hospital_first.hospital_finish_hours, 2)}h hospital</span> · {numberText(restoration.priority_comparison.hospital_first.total_finish_hours, 2)}h total
               </div>
               <div>
                 <span className="text-slate-400 block">Unprioritized:</span>
-                <span className="text-amber-400">{restoration.priority_comparison.unprioritized.hospital_finish_hours}h hospital</span> · {restoration.priority_comparison.unprioritized.total_finish_hours}h total
+                <span className="text-amber-400">{numberText(restoration.priority_comparison.unprioritized.hospital_finish_hours, 2)}h hospital</span> · {numberText(restoration.priority_comparison.unprioritized.total_finish_hours, 2)}h total
               </div>
             </div>
             <p className="text-[10px] text-slate-400 pt-1">Dispatcher authorization required prior to circuit switching.</p>
