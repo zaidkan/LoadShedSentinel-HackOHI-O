@@ -17,6 +17,7 @@ export function SiteFooter({ disclosure, compact = false }: { disclosure?: strin
         <nav aria-label="Footer">
           <ul>
             <li><Link to="/">Overview</Link></li>
+            <li><Link to="/prevention">Prevention</Link></li>
             <li><Link to="/customer">Customer view</Link></li>
             <li><Link to="/operator">Operator console</Link></li>
             <li><a href="https://github.com/hackohio/aep_challenge_hack26" target="_blank" rel="noreferrer">AEP challenge data<span className="sr-only"> (opens in a new tab)</span></a></li>

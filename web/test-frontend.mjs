@@ -229,6 +229,18 @@ await regression('Explicit hash navigation still opens each page and home', () =
   app.anchor('#/operator'); assert.equal(app.route, '/operator');
 });
 
+await regression('All four destinations preserve Prevention deep links, anchors and history', () => {
+  for (const url of ['/prevention', '/#/prevention', '/#prevention', '/operator#/prevention']) {
+    const app = routeHarness(url); assert.equal(app.route, '/prevention');
+    app.anchor('#prevention-priorities'); assert.equal(app.route, '/prevention');
+    app.navigate('/customer', { hash: 'household-plan' }); assert.equal(app.route, '/customer');
+    app.back(); assert.equal(app.route, '/prevention');
+    app.forward(); assert.equal(app.route, '/customer');
+    app.navigate('/operator'); assert.equal(app.route, '/operator');
+    app.navigate('/'); assert.equal(app.route, '/');
+  }
+});
+
 await regression('Feeder SVG classes match transparent hit regions and status rules', async () => {
   const { FeederMap } = require(resolve(root, 'dist-test/components/map/FeederMap.cjs'));
   const css = require('postcss').parse(await readFile(resolve(root, 'src/components/map/feeder-map.css'), 'utf8'));
@@ -273,3 +285,6 @@ await import('./test-performance.mjs');
 
 // Actual assembly bounds, camera controls and marker geometry.
 await import('./test-framing.mjs');
+
+// Four-view design-system extension and honest Prevention states.
+await import('./test-lrp154.mjs');

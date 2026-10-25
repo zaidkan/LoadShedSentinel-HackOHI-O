@@ -1,25 +1,27 @@
 import { useEffect, useRef, useState, type AnchorHTMLAttributes, type MouseEvent } from 'react';
 
-export type RoutePath = '/' | '/operator' | '/customer';
+export type RoutePath = '/' | '/prevention' | '/operator' | '/customer';
 
 const NAVIGATE_EVENT = 'sentinel:navigate';
 
-function normalize(pathname: string, previous: RoutePath = '/'): RoutePath {
+function normalize(pathname: string, previous?: RoutePath): RoutePath {
   if (typeof window !== 'undefined') {
     const hash = window.location.hash;
+    if (hash.startsWith('#/prevention') || hash === '#prevention') return '/prevention';
     if (hash.startsWith('#/operator') || hash === '#operator') return '/operator';
     if (hash.startsWith('#/customer') || hash === '#customer') return '/customer';
   }
+  // A section link belongs to the active/history audience, even when a hash
+  // route was opened over a different pathname. Initial deep links use the path.
+  if (window.location.hash && !window.location.hash.startsWith('#/') && previous) return previous;
   const trimmed = pathname.replace(/\/+$/, '') || '/';
-  if (trimmed === '/operator' || trimmed === '/customer') return trimmed;
-  // A native section anchor replaces the hash route, so retain its audience.
-  if (window.location.hash && !window.location.hash.startsWith('#/')) return previous;
+  if (trimmed === '/prevention' || trimmed === '/operator' || trimmed === '/customer') return trimmed;
   return '/';
 }
 
-function locationRoute(previous: RoutePath = '/'): RoutePath {
+function locationRoute(previous?: RoutePath): RoutePath {
   const saved = window.history.state?.sentinelRoute;
-  return normalize(window.location.pathname, saved === '/operator' || saved === '/customer' || saved === '/' ? saved : previous);
+  return normalize(window.location.pathname, saved === '/prevention' || saved === '/operator' || saved === '/customer' || saved === '/' ? saved : previous);
 }
 
 export function navigate(to: RoutePath, options: { hash?: string } = {}) {

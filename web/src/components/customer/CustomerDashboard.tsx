@@ -1,4 +1,5 @@
-import { AlertTriangle, ArrowRight, Battery, Bell, CheckCircle2, Clock, HeartPulse, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Battery, Bell, CheckCircle2, Clock, HeartPulse } from 'lucide-react';
+import { ViewHeading } from '../utility/ViewHeading';
 import type { BatteryCalcResult, CustomerSnapshotView, PreparednessGuidance } from '../../services/api';
 
 export const INITIAL_NEEDS = {
@@ -56,12 +57,8 @@ export function CustomerDashboard(props: Props) {
     && Number.isFinite(needs.essential_load_w) && needs.essential_load_w > 0;
   const usableFraction = Number.isFinite(needs.battery_usable_pct) && needs.battery_usable_pct > 0 && needs.battery_usable_pct <= 1;
 
-  return <main className="customer-dashboard" aria-label="Customer outage and household plan">
-    <header className="customer-heading">
-      <div><h1><ShieldAlert aria-hidden="true" /> Your power. Your household plan.</h1>
-        <p>Understand your service status and plan around the power you need.</p></div>
-      <a className="customer-link" href="#household-plan">Update household needs <ArrowRight aria-hidden="true" /></a>
-    </header>
+  return <section className="customer-dashboard" aria-labelledby="customer-page-heading">
+    <ViewHeading id="customer-page-heading" title={<><em>Your power.</em><br />Your household plan.</>} description="Understand your service status and plan around the power you need." action={<a className="btn btn--accent" href="#household-plan">Update household needs <ArrowRight aria-hidden="true" /></a>} />
 
     <div className="customer-demo-notice" role="note"><strong>Simulated Demonstration Preview</strong>
       <span>All service updates and alerts below are a demonstration. No live outage monitoring, text messages, emergency calls, or dispatch.</span></div>
@@ -181,5 +178,5 @@ export function CustomerDashboard(props: Props) {
       <div aria-live="polite">{props.supply && <p>{props.supply.mapped ? `A connection is mapped through ${props.supply.equipmentCount} equipment records. Live power status is not verified.` : 'This home reference is not mapped in the available network sample. Its live service status is unknown.'}</p>}</div>
       {props.traceError && <p className="customer-error" role="alert">Connection lookup failed. Check your connection and try the lookup again.</p>}
     </details>
-  </main>;
+  </section>;
 }

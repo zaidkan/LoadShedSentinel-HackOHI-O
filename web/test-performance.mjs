@@ -57,7 +57,7 @@ async function load(file, { globals = {}, react = React, stubIncident = false, s
   const result = await build({ entryPoints: [resolve(root, file)], write: false, bundle: true, platform: 'node', format: 'cjs',
     loader: { '.css': 'empty' }, external: ['react', 'react/jsx-runtime', 'react-dom/client'], plugins: [{ name: 'test-surfaces', setup(build) {
       if (stubRoutes) {
-        build.onResolve({ filter: /pages\/(LandingPage|UtilityPage|CustomerPage|SentinelPreviewPage)$/ }, args => ({ path: args.path.split('/').at(-1), namespace: 'route-test' }));
+        build.onResolve({ filter: /pages\/(LandingPage|UtilityPage|CustomerPage|PreventionPage|SentinelPreviewPage)$/ }, args => ({ path: args.path.split('/').at(-1), namespace: 'route-test' }));
         build.onResolve({ filter: /components\/shell\/AppFrame$/ }, () => ({ path: 'frame', namespace: 'route-test' }));
         build.onResolve({ filter: /app\/motion$/ }, () => ({ path: 'motion', namespace: 'route-test' }));
         build.onLoad({ filter: /.*/, namespace: 'route-test' }, args => ({ contents: args.path === 'frame'
@@ -172,7 +172,7 @@ await check('a rejected lazy scene renders the 2D diagram, disables 3D controls,
   app.unmount(); await flush();
 });
 
-await check('all four hash routes render through the real lazy App/Root and history listeners', async () => {
+await check('all five hash routes render through the real lazy App/Root and history listeners', async () => {
   const window = { ...events(), location: { hash: '#/operator', pathname: '/' }, scrollTo: noop,
     history: { state: null, replaceState(state) { this.state = state; } } };
   const document = { getElementById: () => ({}), title: '' };
@@ -186,6 +186,8 @@ await check('all four hash routes render through the real lazy App/Root and hist
   assert.ok(nodes(app.container).some(node => node.props?.role === 'status'));
   releasePages(); await flush(); assert.match(text(app.container), /UtilityPage/);
   assert.equal(document.title, 'Operator console · LoadShed Sentinel');
+  window.location.hash = '#/prevention'; window.emit('hashchange'); await flush(); assert.match(text(app.container), /PreventionPage/);
+  assert.equal(document.title, 'Prevention · LoadShed Sentinel');
   window.location.hash = '#/customer'; window.emit('hashchange'); await flush(); assert.match(text(app.container), /CustomerPage/);
   window.location.hash = '#/sentinel'; window.emit('hashchange'); await flush(); assert.match(text(app.container), /SentinelPreviewPage/);
   assert.doesNotMatch(text(app.container), /CustomerPage|UtilityPage/);

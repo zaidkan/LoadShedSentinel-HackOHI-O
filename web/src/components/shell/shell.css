@@ -192,7 +192,8 @@
   color: var(--ink-2);
 }
 
-@media (max-width: 860px) {
+/* Four primary destinations need room beside the wordmark and console action. */
+@media (max-width: 1080px) {
   .site-header-inner {
     grid-template-columns: 1fr auto;
   }
@@ -423,7 +424,8 @@
   outline-color: var(--accent-night);
 }
 
-@media (max-width: 860px) {
+/* Four primary destinations need room beside the wordmark and console action. */
+@media (max-width: 1080px) {
   .site-footer-grid {
     grid-template-columns: 1fr;
   }

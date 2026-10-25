@@ -91,18 +91,17 @@ export function UtilityPage({ snapshot, onSnapshotChange, onSelectScenario }: Ut
     <a href="#utility-evidence-heading" className="utility-skip-link">Skip model and review incident evidence</a>
     <div className="utility-content">
       <DecisionSummary snapshot={snapshot} />
-      <CounterfactualCompareCard snapshot={snapshot} onSelectScenario={onSelectScenario} />
-      <nav className="utility-review-nav" aria-label="Incident review steps"><a href="#utility-telemetry-heading">Modeled telemetry</a><a href="#utility-evidence-heading">Diagnosis & uncertainty</a><a href="#utility-work-heading">Review-only work package</a><a href="#utility-feeder-heading">Feeder context</a><a href="#utility-supply-heading">Supply path</a></nav>
+      <nav className="utility-review-nav" aria-label="Incident review steps"><a href="#utility-evidence-heading">Diagnosis & uncertainty</a><a href="#utility-telemetry-heading">Modeled telemetry</a><a href="#utility-work-heading">Review-only work package</a><a href="#utility-feeder-heading">Feeder context</a><a href="#utility-supply-heading">Supply path</a></nav>
+      <section className="utility-review-section" aria-labelledby="utility-evidence-heading">
+        <div className="utility-section-heading"><h2 id="utility-evidence-heading">Diagnosis & uncertainty</h2><p>Working hypotheses explain the evidence. Field confirmation remains a separate step.</p></div>
+        <EvidencePanel snapshot={snapshot} />
+      </section>
       <section className="utility-review-section" aria-labelledby="utility-telemetry-heading">
         <div className="utility-section-heading"><h2 id="utility-telemetry-heading">Modeled telemetry</h2><p>Inspect the equipment and simulated inputs before reviewing a cause.</p></div>
         <div className="utility-main-grid">
           <AssetViewport key={snapshot.current_asset_id} status={snapshot.cutout_status} assetId={snapshot.current_asset_id} solar={snapshot.solar} />
           <TelemetryHUD snapshot={snapshot} />
         </div>
-      </section>
-      <section className="utility-review-section" aria-labelledby="utility-evidence-heading">
-        <div className="utility-section-heading"><h2 id="utility-evidence-heading">Diagnosis & uncertainty</h2><p>Working hypotheses explain the evidence. Field confirmation remains a separate step.</p></div>
-        <EvidencePanel snapshot={snapshot} />
       </section>
       <section className="utility-review-section" aria-labelledby="utility-work-heading">
         <div className="utility-section-heading"><h2 id="utility-work-heading">Review-only work package</h2><p>Review capabilities, labor and access assumptions. Nothing here authorizes work.</p></div>
@@ -127,6 +126,7 @@ export function UtilityPage({ snapshot, onSnapshotChange, onSelectScenario }: Ut
           <details><summary>Source disclosure & provenance</summary><p className="utility-muted">{snapshot.disclosure}</p><dl className="utility-provenance-legend">{Object.entries(PROVENANCE).map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{key === 'modeled_sensor' ? 'Modeled Simulation; not a field observation or live supervisory control and data acquisition (SCADA) feed.' : key === 'scenario' ? 'Input supplied by the demonstration scenario.' : key === 'aep_challenge' ? 'Supplied challenge record; field quality is identified separately.' : key === 'external_research' ? 'External reference; not an operational feed.' : 'Authorized enterprise source; see each record’s quality.'}</dd></div>)}</dl></details>
         </div>
       </section>
+      <details className="utility-comparison"><summary>Compare demonstration scenarios</summary><CounterfactualCompareCard snapshot={snapshot} onSelectScenario={onSelectScenario} /></details>
       <SourceLegend snapshot={snapshot} />
       <footer className="utility-footer"><span>Demonstration · operator review required · no live dispatch</span><span>{snapshot.incident_id} / revision {snapshot.revision}</span></footer>
     </div>

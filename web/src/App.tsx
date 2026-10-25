@@ -3,6 +3,7 @@ import { IncidentProvider, useIncident } from './app/incident';
 import { MotionProvider } from './app/motion';
 import { useRoute, type RoutePath } from './app/router';
 import { AppFrame } from './components/shell/AppFrame';
+const PreventionPage = lazy(() => import('./pages/PreventionPage').then(module => ({ default: module.PreventionPage })));
 const CustomerPage = lazy(() => import('./pages/CustomerPage').then(module => ({ default: module.CustomerPage })));
 const LandingPage = lazy(() => import('./pages/LandingPage').then(module => ({ default: module.LandingPage })));
 const UtilityPage = lazy(() => import('./pages/UtilityPage').then(module => ({ default: module.UtilityPage })));
@@ -10,6 +11,7 @@ import './components/shell/shell.css';
 
 const TITLES: Record<RoutePath, string> = {
   '/': 'LoadShed Sentinel',
+  '/prevention': 'Prevention · LoadShed Sentinel',
   '/operator': 'Operator console · LoadShed Sentinel',
   '/customer': 'Outage concierge · LoadShed Sentinel',
 };
@@ -20,10 +22,14 @@ function Routes() {
 
   useEffect(() => {
     document.title = TITLES[route];
-    if (!window.location.hash || window.location.hash === '#/operator' || window.location.hash === '#/customer') {
+    if (!window.location.hash || window.location.hash === '#/prevention' || window.location.hash === '#/operator' || window.location.hash === '#/customer') {
       window.scrollTo(0, 0);
     }
   }, [route]);
+
+  if (route === '/prevention') {
+    return <AppFrame route={route} audience="operator">{snapshot => <PreventionPage snapshot={snapshot} />}</AppFrame>;
+  }
 
   if (route === '/operator') {
     return (

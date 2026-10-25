@@ -1,4 +1,5 @@
 import type { ScenarioSnapshot } from '../../../../contracts/types';
+import { ViewHeading } from './ViewHeading';
 import { humanize, utcText } from './presentation';
 
 const INCIDENT_TITLES: Record<string, string> = {
@@ -22,9 +23,10 @@ export function DecisionSummary({ snapshot }: { snapshot: ScenarioSnapshot }) {
   const target = standingDown ? '#utility-feeder-heading' : assessment ? '#utility-evidence-heading' : '#utility-work-heading';
 
   return <header className="utility-decision-brief">
+    <ViewHeading id="utility-page-heading" title={<><em>Operator</em><br />incident review</>} description="Review the evidence, establish what needs attention, and check the proposed restoration work. Every action remains subject to operator approval." />
     <div className="utility-incident-heading">
       <div>
-        <h1 id="utility-page-heading">{INCIDENT_TITLES[snapshot.scenario_id] ?? humanize(snapshot.scenario_id)}</h1>
+        <h2>{INCIDENT_TITLES[snapshot.scenario_id] ?? humanize(snapshot.scenario_id)}</h2>
         <p><span>{snapshot.incident_id}</span><span>Revision {snapshot.revision}</span><time dateTime={snapshot.timestamp_utc}>{utcText(snapshot.timestamp_utc)}</time></p>
       </div>
       <div className="utility-status-summary"><span className={`utility-badge utility-incident-${snapshot.status.toLowerCase()}`}>{humanize(snapshot.status)}</span><span>Simulated incident</span></div>

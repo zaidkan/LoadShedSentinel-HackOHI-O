@@ -6,6 +6,7 @@ import './shell.css';
 
 const NAV: Array<{ to: RoutePath; label: string }> = [
   { to: '/', label: 'Overview' },
+  { to: '/prevention', label: 'Prevention' },
   { to: '/customer', label: 'Customer' },
   { to: '/operator', label: 'Operator' },
 ];
