@@ -61,6 +61,7 @@ repository completion alone does not establish submission.
 All six HackOHI/O judging criteria are rigorously crosswalked to verifiable CLI commands, code files, and test results:
 
 - 📊 **[Judge Evidence Crosswalk](docs/judge_evidence.md)**: Tabular matrix proving Innovation, Curiosity, Communication, Breadth & Complexity, Impact, and Growth Mindset.
+- 🌅 **[Overnight to Morning Handoff](docs/HANDOFF_2026-10-25_0850_EDT.md)**: Verified overnight integration, test matrices, browser acceptance receipts, and submission status.
 - 🎬 **[3-Minute Video Demo Script](docs/demo_script.md)**: Timed presentation narrative following the data journey from storm radar to customer app.
 - 🗄️ **[Data Inventory Catalog](docs/data_inventory.md)**: Complete catalog of all 12 GIS layers, ARCOS damage records, and 117k customer topology paths.
 - 🔍 **[Data Provenance Ledger](docs/source_ledger.md)**: Strict boundary mapping distinguishing challenge data, modeled sensors, and scenario assumptions.
