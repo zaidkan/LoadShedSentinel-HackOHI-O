@@ -2,7 +2,7 @@ import { Component, useEffect, useMemo, useRef, useState, type ErrorInfo, type M
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { MathUtils, Vector3, type Group, type Object3D, type Points } from 'three';
+import { CanvasTexture, MathUtils, Vector3, type Group, type Object3D, type Points } from 'three';
 import type { CutoutStatus } from '../../../contracts/types';
 import { activeSentinelModel } from './registry';
 import type { CameraCommand, SentinelHotspot, SentinelModelDefinition, SentinelPartId, SentinelVariant } from './types';
@@ -187,6 +187,30 @@ function Motes({ count, reducedMotion }: { count: number; reducedMotion: boolean
   </points>;
 }
 
+/** A baked radial falloff; cheaper than a rendered shadow pass and steady on demand frameloops. */
+function ContactShadow({ radius }: { radius: number }) {
+  const texture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 128;
+    const context = canvas.getContext('2d');
+    if (context) {
+      const falloff = context.createRadialGradient(64, 64, 0, 64, 64, 64);
+      falloff.addColorStop(0, 'rgba(8, 6, 26, 0.62)');
+      falloff.addColorStop(0.3, 'rgba(8, 6, 26, 0.34)');
+      falloff.addColorStop(0.7, 'rgba(8, 6, 26, 0.08)');
+      falloff.addColorStop(1, 'rgba(8, 6, 26, 0)');
+      context.fillStyle = falloff;
+      context.fillRect(0, 0, 128, 128);
+    }
+    return new CanvasTexture(canvas);
+  }, []);
+  useEffect(() => () => texture.dispose(), [texture]);
+  return <mesh position={[0, -0.07, 0]} rotation={[-Math.PI / 2, 0, 0]} raycast={() => null} renderOrder={-1}>
+    <planeGeometry args={[radius * 2, radius * 2]} />
+    <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} />
+  </mesh>;
+}
+
 function Hotspots({ model, hotspots, activePart, onHover, onSelect, compact }: {
   model: SentinelModelDefinition; hotspots: SentinelHotspot[]; activePart: SentinelPartId | null;
   onHover?: (part: SentinelPartId | null) => void; onSelect?: (part: SentinelPartId) => void; compact: boolean;
@@ -232,11 +256,10 @@ export function SentinelStage({
     frameloop={paused ? 'never' : animate ? 'always' : 'demand'}
     dpr={detail === 'low' ? 1 : hero ? [1, 1.75] : [1, 1.5]}
     camera={{ position: [...pose.position], fov: pose.fov, near: 0.1, far: 80 }}
-    gl={{ antialias: detail !== 'low', alpha: hero, powerPreference: hero ? 'default' : 'low-power' }}
+    gl={{ antialias: detail !== 'low', alpha: true, powerPreference: hero ? 'default' : 'low-power' }}
     aria-label={label}
     role="img"
   >
-    {hero ? null : <color attach="background" args={['#17133a']} />}
     {hero ? <>
       <ambientLight intensity={0.85} color="#c4b8f4" />
       <hemisphereLight args={['#d2c6ff', '#241d52', 1.7]} />
@@ -259,9 +282,7 @@ export function SentinelStage({
       </group>
       {hotspots.length ? <Hotspots model={model} hotspots={hotspots} activePart={activePart} onHover={onPartHover} onSelect={onPartSelect} compact={!hero} /> : null}
     </HeroMotion>
-    {hero ? <Motes count={detail === 'low' ? 90 : 220} reducedMotion={reducedMotion} /> : <mesh position={[0, -0.08, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <circleGeometry args={[2.2, detail === 'low' ? 16 : 48]} /><meshStandardMaterial color="#2a2360" roughness={1} />
-    </mesh>}
+    {hero ? <Motes count={detail === 'low' ? 90 : 220} reducedMotion={reducedMotion} /> : <ContactShadow radius={2.4} />}
     {hero ? <HeroRig model={model} reducedMotion={reducedMotion} /> : <InspectorRig model={model} command={command} reducedMotion={reducedMotion} />}
     <ContextGuard onContextLost={onContextLost} />
   </Canvas>;
