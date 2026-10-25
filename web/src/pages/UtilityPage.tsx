@@ -6,8 +6,8 @@ import { FeederMap } from '../components/map/FeederMap';
 import { TelemetryHUD } from '../components/utility/TelemetryHUD';
 import { EvidencePanel } from '../components/utility/EvidencePanel';
 import { PlanningPanels } from '../components/utility/PlanningPanels';
-import { UtilityIcon } from '../components/utility/UtilityIcon';
-import { PROVENANCE, humanize, utcText } from '../components/utility/presentation';
+import { DecisionSummary } from '../components/utility/DecisionSummary';
+import { PROVENANCE } from '../components/utility/presentation';
 import '../components/utility/utility.css';
 
 export interface UtilityPageProps {
@@ -30,6 +30,7 @@ export function UtilityPage({ snapshot, onSnapshotChange }: UtilityPageProps) {
   useEffect(() => {
     setInputs(planningInputs(snapshot));
     setError('');
+    setPending(false);
   }, [snapshot]);
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export function UtilityPage({ snapshot, onSnapshotChange }: UtilityPageProps) {
           throw new Error('The API did not apply the planning inputs.');
         }
         // Preserve accepted inputs when the API omits their optional echo.
-        onSnapshotChange({ ...next, planning_inputs: next.planning_inputs ?? inputs });
+        if (active) onSnapshotChange({ ...next, planning_inputs: next.planning_inputs ?? inputs });
       } catch {
         if (active) setError('Planning update failed. The range still uses the previous assumptions. Retry the update or reset the scenario to reload it.');
       } finally {
@@ -62,21 +63,23 @@ export function UtilityPage({ snapshot, onSnapshotChange }: UtilityPageProps) {
 
   return <section className="utility-console min-h-screen w-full" aria-labelledby="utility-page-heading">
     <a href="#utility-evidence-heading" className="utility-skip-link">Skip model and review incident evidence</a>
-    <header className="utility-topbar">
-      <div className="utility-brand"><span className="utility-brand-symbol"><UtilityIcon kind="pole" /></span><span>LoadShed <strong>Sentinel</strong></span><span className="utility-console-label">Utility console</span></div>
-      <span className="utility-badge utility-badge-neutral">HackOHI/O 2026 · demonstration</span>
-    </header>
     <div className="utility-content">
-      <div className="utility-incident-heading">
-        <div><h1 id="utility-page-heading">Asset {snapshot.current_asset_id}</h1><p>{snapshot.incident_id} <span aria-hidden="true">/</span> {humanize(snapshot.scenario_id)}</p></div>
-        <div className="utility-revision"><div><span className={`utility-badge utility-incident-${snapshot.status.toLowerCase()}`}>{humanize(snapshot.status)}</span><span className="utility-badge utility-badge-neutral">Revision {snapshot.revision}</span></div><time dateTime={snapshot.timestamp_utc}>{utcText(snapshot.timestamp_utc)}</time></div>
-      </div>
-      <div className="utility-disclosure" role="note"><span className="utility-disclosure-label">Source disclosure</span><p>{snapshot.disclosure}</p></div>
-      <div className="utility-main-grid grid">
-        <div className="utility-asset-column"><AssetViewport key={snapshot.current_asset_id} status={snapshot.cutout_status} assetId={snapshot.current_asset_id} solar={snapshot.solar} /><FeederMap snapshot={snapshot} /><TelemetryHUD snapshot={snapshot} /></div>
+      <DecisionSummary snapshot={snapshot} />
+      <nav className="utility-review-nav" aria-label="Incident review steps"><a href="#utility-telemetry-heading">Modeled telemetry</a><a href="#utility-evidence-heading">Diagnosis & uncertainty</a><a href="#utility-work-heading">Review-only work package</a><a href="#utility-feeder-heading">Feeder context</a></nav>
+      <section className="utility-review-section" aria-labelledby="utility-telemetry-heading">
+        <div className="utility-section-heading"><h2 id="utility-telemetry-heading">Modeled telemetry</h2><p>Inspect the equipment and simulated inputs before reviewing a cause.</p></div>
+        <div className="utility-main-grid">
+          <AssetViewport key={snapshot.current_asset_id} status={snapshot.cutout_status} assetId={snapshot.current_asset_id} solar={snapshot.solar} />
+          <TelemetryHUD snapshot={snapshot} />
+        </div>
+      </section>
+      <section className="utility-review-section" aria-labelledby="utility-evidence-heading">
+        <div className="utility-section-heading"><h2 id="utility-evidence-heading">Diagnosis & uncertainty</h2><p>Working hypotheses explain the evidence. Field confirmation remains a separate step.</p></div>
         <EvidencePanel snapshot={snapshot} />
-      </div>
-      <PlanningPanels
+      </section>
+      <section className="utility-review-section" aria-labelledby="utility-work-heading">
+        <div className="utility-section-heading"><h2 id="utility-work-heading">Review-only work package</h2><p>Review capabilities, labor and access assumptions. Nothing here authorizes work.</p></div>
+        <PlanningPanels
         snapshot={snapshot}
         inputs={inputs}
         onInputsChange={setInputs}
@@ -84,11 +87,16 @@ export function UtilityPage({ snapshot, onSnapshotChange }: UtilityPageProps) {
         error={error}
         onRetry={() => setRetry(value => value + 1)}
       />
-      <section className="utility-context-strip" aria-label="Incident scope and source legend">
-        <details><summary>{snapshot.affected_premise_tokens.length} listed premises · selected {snapshot.selected_premise_token}</summary><ul className="utility-premise-list">{snapshot.affected_premise_tokens.map(token => <li key={token}><code>{token}</code></li>)}</ul><p>Supply path unavailable in this snapshot.</p></details>
-        <details><summary>Data provenance legend</summary><dl className="utility-provenance-legend">{Object.entries(PROVENANCE).map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{key === 'modeled_sensor' ? 'Modeled node input; not a field observation.' : key === 'scenario' ? 'Input supplied by the demonstration scenario.' : key === 'aep_challenge' ? 'Supplied challenge record; field quality is identified separately.' : key === 'external_research' ? 'External reference; not an operational feed.' : 'Authorized enterprise source; see each record’s quality.'}</dd></div>)}</dl></details>
       </section>
-      <footer className="utility-footer"><span>Incident data shown as supplied · no local diagnoses or dispatch</span><span>{snapshot.incident_id} / revision {snapshot.revision}</span></footer>
+      <section className="utility-review-section" aria-labelledby="utility-feeder-heading">
+        <div className="utility-section-heading"><h2 id="utility-feeder-heading">Feeder context</h2><p>Locate the asset in supplied dependencies. Arrows do not indicate live energization.</p></div>
+        <FeederMap snapshot={snapshot} />
+        <div className="utility-context-strip">
+          <details><summary>{snapshot.status === 'UNDER_REVIEW' ? 'Affected premises unknown' : `${snapshot.affected_premise_tokens.length} listed sample premises`} · selected {snapshot.selected_premise_token}</summary>{snapshot.affected_premise_tokens.length ? <ul className="utility-premise-list">{snapshot.affected_premise_tokens.map(token => <li key={token}><code>{token}</code></li>)}</ul> : <p className="utility-muted">No affected premises asserted in this snapshot.</p>}<p className="utility-muted">Only the selected challenge subnet is represented. Physical substation connectivity remains unknown beyond the supplied circuit-breaker paths.</p></details>
+          <details><summary>Source disclosure & provenance</summary><p className="utility-muted">{snapshot.disclosure}</p><dl className="utility-provenance-legend">{Object.entries(PROVENANCE).map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{key === 'modeled_sensor' ? 'Modeled Simulation; not a field observation or live supervisory control and data acquisition (SCADA) feed.' : key === 'scenario' ? 'Input supplied by the demonstration scenario.' : key === 'aep_challenge' ? 'Supplied challenge record; field quality is identified separately.' : key === 'external_research' ? 'External reference; not an operational feed.' : 'Authorized enterprise source; see each record’s quality.'}</dd></div>)}</dl></details>
+        </div>
+      </section>
+      <footer className="utility-footer"><span>Demonstration · operator review required · no live dispatch</span><span>{snapshot.incident_id} / revision {snapshot.revision}</span></footer>
     </div>
   </section>;
 }

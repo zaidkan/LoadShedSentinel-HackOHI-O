@@ -151,11 +151,11 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
   const active = parsed?.nodes.find(node => node.token === (hovered || inspected)) || current || parsed?.nodes[0];
   const inspect = (token: string) => { setInspected(token); setHovered(null); };
   return <section className="utility-feeder utility-panel" aria-labelledby={`${uid}-heading`}>
-    <div className="utility-panel-heading"><div><h2 id={`${uid}-heading`}>Feeder circuit</h2><p>Equipment locations and upstream supply relationships</p></div><span className="utility-badge utility-badge-neutral">Topology</span></div>
+    <div className="utility-panel-heading"><div><h3 id={`${uid}-heading`}>Feeder circuit map</h3><p>Selected sample · supplied upstream relationships</p></div><span className="utility-badge utility-badge-neutral">Topology only</span></div>
     <div className="utility-feeder-body" ref={host}>
-      {loadFailed ? <div className="utility-feeder-empty" role="status"><p>Network topology could not be loaded.</p>{topology === undefined ? <button type="button" onClick={() => setAttempt(value => value + 1)}>Retry topology</button> : <p>Supply a valid GeoJSON FeatureCollection.</p>}</div>
-        : !parsed ? <p className="utility-feeder-empty" role="status">Loading network topology…</p>
-        : !parsed.nodes.length && !parsed.links.length ? <p className="utility-feeder-empty" role="status">No equipment geometry supplied. Topology status: {parsed.status}.</p>
+      {loadFailed ? <div className="utility-feeder-empty" role="alert"><p>Feeder context could not be loaded. The incident assessment above remains available.</p>{topology === undefined ? <button type="button" onClick={() => setAttempt(value => value + 1)}>Retry topology</button> : <p>Supply a valid GeoJSON FeatureCollection.</p>}</div>
+        : !parsed ? <div className="utility-feeder-empty" role="status"><p>Loading feeder context…</p><p>Fetching sanitized equipment locations and dependencies.</p></div>
+        : !parsed.nodes.length && !parsed.links.length ? <div className="utility-feeder-empty" role="status"><p>No equipment geometry supplied.</p><p>Use the incident evidence above; this map cannot locate the asset. Topology status: {parsed.status}.</p></div>
         : <>
           <svg viewBox={`0 0 ${width} 300`} className="utility-feeder-svg" role="group" aria-labelledby={`${uid}-title ${uid}-description`}>
             <title id={`${uid}-title`}>Feeder network topology</title><desc id={`${uid}-description`}>Arrows show supplied upstream to downstream relationships, not measured power flow. Focus or select equipment to inspect it. Only the current asset has a supplied cutout state.</desc>
@@ -196,10 +196,12 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
     {parsed ? <div className="utility-feeder-notes">
       <p className="utility-feeder-legend"><span>Arrow: upstream → downstream</span><span>Outline: current asset</span><span>Other equipment: state not supplied</span></p>
       {!current ? <p role="status">Current asset {snapshot.current_asset_id} is not located in this topology slice.</p> : null}
-      {parsed.missing.length ? <p>Missing equipment geometry: {parsed.missing.join(', ')}.</p> : null}
-      {parsed.omitted ? <p>{parsed.omitted} unsupported or invalid features omitted.</p> : null}
-      <p>{parsed.policy} Links show topology, not surveyed conductors or live energized status.</p>
-      <p>Source: {parsed.provenance.replace(/_/g, ' ')} · Topology status: {parsed.status}</p>
+      <details><summary>Geometry coverage & source</summary>
+        {parsed.missing.length ? <p>Missing equipment geometry: {parsed.missing.join(', ')}.</p> : null}
+        {parsed.omitted ? <p>{parsed.omitted} unsupported or invalid features omitted.</p> : null}
+        <p>{parsed.policy} Links show topology, not surveyed conductors or live energized status.</p>
+        <p>Source: {parsed.provenance.replace(/_/g, ' ')} · Topology status: {parsed.status}</p>
+      </details>
     </div> : null}
   </section>;
 }
