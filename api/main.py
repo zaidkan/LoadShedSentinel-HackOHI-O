@@ -91,22 +91,24 @@ def health_check():
         "aep_impact_sample_loaded": _aep_impact_instance is not None,
     }
 
+SCENARIO_CATALOG = [
+    ("local_protection", "Local Transformer Protection (Simulated)",
+     "Simulated local protective-device operation, dependency footprint from AEP source paths.", "OPEN", "OUTAGE"),
+    ("upstream_feeder", "Upstream Breaker Interruption (Simulated)",
+     "Simulated breaker opening; all dependencies in the selected AEP subnet are traced.", "CLOSED", "OUTAGE"),
+    ("confirmed_replacement", "Transformer Replacement (Simulated)",
+     "Simulated field confirmation and review-only transformer work package.", "OPEN", "OUTAGE"),
+    ("insufficient_evidence", "Contradictory Telemetry (Abstention)",
+     "Evidence is insufficient; do not claim an outage or a known affected count.", "UNKNOWN", "UNDER_REVIEW"),
+]
+SCENARIO_TITLES = {scenario_id: title for scenario_id, title, *_ in SCENARIO_CATALOG}
+
 @app.get("/api/scenarios")
 def list_scenarios():
     """Scenario catalog with counts computed from the shipped AEP source paths."""
     source = get_aep_impact()
-    descriptions = [
-        ("local_protection", "Local Transformer Protection (Simulated)",
-         "Simulated local protective-device operation, dependency footprint from AEP source paths.", "OPEN", "OUTAGE"),
-        ("upstream_feeder", "Upstream Breaker Interruption (Simulated)",
-         "Simulated breaker opening; all dependencies in the selected AEP subnet are traced.", "CLOSED", "OUTAGE"),
-        ("confirmed_replacement", "Transformer Replacement (Simulated)",
-         "Simulated field confirmation and review-only transformer work package.", "OPEN", "OUTAGE"),
-        ("insufficient_evidence", "Contradictory Telemetry (Abstention)",
-         "Evidence is insufficient; do not claim an outage or a known affected count.", "UNKNOWN", "UNDER_REVIEW"),
-    ]
     result = []
-    for scenario_id, title, description, cutout_status, status in descriptions:
+    for scenario_id, title, description, cutout_status, status in SCENARIO_CATALOG:
         dependency_count = source.scenario_context(scenario_id)["source_impact"]["affected_count_in_sample"]
         result.append({
             "id": scenario_id, "title": title, "description": description,
@@ -163,7 +165,7 @@ def select_scenario(req: SelectScenarioRequest):
         incident_id=_current_snapshot.incident_id,
         status=_current_snapshot.status,
         risk=_current_snapshot.customer_risk,
-        restoration_summary=f"Incident {req.scenario_id} declared in grid simulation",
+        restoration_summary=f"{SCENARIO_TITLES.get(req.scenario_id, req.scenario_id)} declared in the grid simulation",
         timestamp_utc=_current_snapshot.timestamp_utc
     )
     _current_snapshot.notifications.extend(new_alerts)

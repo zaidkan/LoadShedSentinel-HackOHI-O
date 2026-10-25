@@ -1,7 +1,7 @@
 from __future__ import annotations
 import math
 from typing import List, Dict, Optional, Literal, Set
-from datetime import datetime
+from datetime import datetime, timezone
 from api.schemas import (
     CustomerRisk,
     NotificationItem,
@@ -132,11 +132,21 @@ def generate_preparedness_guidance(needs: HouseholdNeeds) -> List[Dict[str, str]
         guidance.append({
             "category": "COMMUNICATIONS",
             "priority": "MEDIUM",
-            "action": "Fully charge phones, tablets, and portable power banks before storm landfall.",
+            "action": "Keep phones and power banks charged while you have power.",
             "detail": "Switch devices to low-power mode and reserve battery for emergency communications."
         })
         
     return guidance
+
+def readable_utc(timestamp: str) -> str:
+    try:
+        parsed = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+    except (AttributeError, TypeError, ValueError):
+        return timestamp
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    parsed = parsed.astimezone(timezone.utc)
+    return f"{parsed:%b} {parsed.day}, {parsed.year}, {parsed:%H:%M} UTC"
 
 class NotificationFSM:
     """
@@ -181,7 +191,7 @@ class NotificationFSM:
                 notifications.append(NotificationItem(
                     type="OUTAGE_CONFIRMED",
                     text=(
-                        f"Power loss has been reported for your supply area as of {timestamp_utc}. "
+                        f"Power loss has been reported for your supply area as of {readable_utc(timestamp_utc)}. "
                         "The suspected cause is under assessment by utility dispatch. "
                         "Review your declared emergency plan and safety preparation steps."
                     ),
@@ -214,7 +224,7 @@ class NotificationFSM:
                 notifications.append(NotificationItem(
                     type="RESTORATION_COMPLETE",
                     text=(
-                        f"An authorized status update indicates service has been restored for your supply area as of {timestamp_utc}. "
+                        f"An authorized status update indicates service has been restored for your supply area as of {readable_utc(timestamp_utc)}. "
                         "If your location is still without power, report it through the official AEP utility channel."
                     ),
                     delivery_mode="demo",
