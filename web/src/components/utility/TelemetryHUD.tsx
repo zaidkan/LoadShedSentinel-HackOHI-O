@@ -51,8 +51,9 @@ export function TelemetryHUD({ snapshot }: { snapshot: ScenarioSnapshot }) {
       <h3 className="instrument-label">Solar and link</h3>
       <p className="instrument-reading">{numberText(solar.solar_w)}<small> W</small></p>
       <span className="instrument-sub">
-        <span>{sentenceCase(solar.connectivity)} · {numberText(solar.buffered_events, 0)} buffered events</span>
-        <span>Modeled runtime {solar.modeled_runtime_days === null ? 'unavailable' : `${numberText(solar.modeled_runtime_days)} days`}</span>
+        <span className="tag" data-source="modeled_sensor">Modeled sensor</span>
+        <span>Link {solar.connectivity.toLowerCase()} · {numberText(solar.buffered_events, 0)} buffered events</span>
+        <span>Runtime {solar.modeled_runtime_days === null ? 'unavailable' : `${numberText(solar.modeled_runtime_days)} days`}</span>
       </span>
     </div>
   </section>;
