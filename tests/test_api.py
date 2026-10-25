@@ -398,3 +398,27 @@ def test_session_cache_is_capped_and_evicts_the_least_recently_used_session(monk
     for _ in range(5):
         client.post('/api/session/new')
         assert len(api._sessions) == 50
+
+
+def test_counterfactual_comparator_scenarios_contract():
+    """Verify Counterfactual Comparator contract: local protection vs upstream feeder."""
+    headers = {"X-Session-ID": "test-comparator-session"}
+    
+    # 1. Hypothesis A: Local Protection Operation
+    res_local = client.post("/api/scenario/select", headers=headers, json={"scenario_id": "local_protection"})
+    assert res_local.status_code == 200
+    snap_local = res_local.json()
+    assert snap_local["scenario_id"] == "local_protection"
+    assert snap_local["cutout_status"] == "OPEN"
+    assert len(snap_local["affected_premise_tokens"]) == 3
+    assert snap_local["impact_source"]["fault_asset_kind"] == "TRANSFORMER"
+    
+    # 2. Hypothesis B: Upstream Feeder Lockout
+    res_upstream = client.post("/api/scenario/select", headers=headers, json={"scenario_id": "upstream_feeder"})
+    assert res_upstream.status_code == 200
+    snap_upstream = res_upstream.json()
+    assert snap_upstream["scenario_id"] == "upstream_feeder"
+    assert snap_upstream["cutout_status"] == "CLOSED"
+    assert len(snap_upstream["affected_premise_tokens"]) == 16
+    assert snap_upstream["impact_source"]["fault_asset_kind"] == "CIRCUIT_BREAKER"
+

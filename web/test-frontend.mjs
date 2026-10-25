@@ -17,6 +17,7 @@ await build({
     resolve(root, 'src/components/utility/PlanningPanels.tsx'),
     resolve(root, 'src/components/utility/TelemetryHUD.tsx'),
     resolve(root, 'src/components/utility/EvidencePanel.tsx'),
+    resolve(root, 'src/components/utility/CounterfactualCompareCard.tsx'),
     resolve(root, 'src/pages/CustomerPage.tsx'),
     resolve(root, 'src/services/api.ts'),
   ],
@@ -31,6 +32,7 @@ await build({
 const { PlanningPanels } = require(resolve(root, 'dist-test/components/utility/PlanningPanels.cjs'));
 const { TelemetryHUD } = require(resolve(root, 'dist-test/components/utility/TelemetryHUD.cjs'));
 const { EvidencePanel } = require(resolve(root, 'dist-test/components/utility/EvidencePanel.cjs'));
+const { CounterfactualCompareCard } = require(resolve(root, 'dist-test/components/utility/CounterfactualCompareCard.cjs'));
 const { CustomerPage } = require(resolve(root, 'dist-test/pages/CustomerPage.cjs'));
 const api = require(resolve(root, 'dist-test/services/api.cjs'));
 
@@ -124,6 +126,22 @@ console.log('--- Test 4: advanceScenario parameter serialization ---');
   console.log('✔ advanceScenario serialized action and blocker parameters passed');
 }
 
+console.log('--- Test 5: CounterfactualCompareCard rendering & hypotheses ---');
+{
+  const cardHtml = renderToStaticMarkup(React.createElement(CounterfactualCompareCard, {
+    snapshot: { ...fixture, scenario_id: 'local_protection' },
+  }));
+  assert.match(cardHtml, /Counterfactual Incident Comparator/);
+  assert.match(cardHtml, /Local Cutout Blown/);
+  assert.match(cardHtml, /Upstream Feeder Lockout/);
+  assert.match(cardHtml, /OPEN \(-117\.5° Drop\)/);
+  assert.match(cardHtml, /CLOSED \(Latched 0°\)/);
+  assert.match(cardHtml, /3 Sample Premises/);
+  assert.match(cardHtml, /16 Sample Premises/);
+  assert.match(cardHtml, /8\.974 labor person-hours/);
+  assert.match(cardHtml, /\$12,000/);
+  console.log('✔ CounterfactualCompareCard render & hypotheses verified');
+}
 
 // Customer household-generation races and loaded dashboard states.
 await import('./test-customer.mjs');

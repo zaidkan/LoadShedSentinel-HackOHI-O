@@ -66,10 +66,12 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
 
       <div className="counterfactual-grid">
         {/* Hypothesis A */}
-        <div className={`counterfactual-col ${isLocal ? 'counterfactual-active' : ''}`}>
+        <div className={`counterfactual-col ${isLocal ? 'active' : ''}`}>
           <div className="counterfactual-col-header">
-            <span className="hypothesis-tag">Hypothesis A</span>
-            <h4>Local Cutout Blown</h4>
+            <div className="flex items-center gap-2">
+              <span className="hypothesis-tag">Hypothesis A</span>
+              <h4>Local Cutout Blown</h4>
+            </div>
             {isLocal && <span className="active-pill">Active Scenario</span>}
           </div>
           <dl className="counterfactual-metrics">
@@ -93,10 +95,12 @@ export const CounterfactualCompareCard: React.FC<CounterfactualCompareCardProps>
         </div>
 
         {/* Hypothesis B */}
-        <div className={`counterfactual-col ${isUpstream ? 'counterfactual-active' : ''}`}>
+        <div className={`counterfactual-col ${isUpstream ? 'active' : ''}`}>
           <div className="counterfactual-col-header">
-            <span className="hypothesis-tag">Hypothesis B</span>
-            <h4>Upstream Feeder Lockout</h4>
+            <div className="flex items-center gap-2">
+              <span className="hypothesis-tag">Hypothesis B</span>
+              <h4>Upstream Feeder Lockout</h4>
+            </div>
             {isUpstream && <span className="active-pill">Active Scenario</span>}
           </div>
           <dl className="counterfactual-metrics">
