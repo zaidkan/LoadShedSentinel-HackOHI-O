@@ -124,4 +124,7 @@ console.log('--- Test 4: advanceScenario parameter serialization ---');
   console.log('✔ advanceScenario serialized action and blocker parameters passed');
 }
 
-console.log('\nAll frontend integration tests passed successfully (4/4)!');
+
+// Customer household-generation races and loaded dashboard states.
+await import('./test-customer.mjs');
+console.log('All frontend integration and customer dashboard checks passed.');
