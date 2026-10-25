@@ -1,15 +1,17 @@
 import { useEffect, useState, type RefObject } from 'react';
 
-export function useReducedMotion() {
-  const [reduced, setReduced] = useState(() => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+export function useMediaQuery(media: string) {
+  const [matches, setMatches] = useState(() => typeof window !== 'undefined' && Boolean(window.matchMedia?.(media).matches));
   useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReduced(query.matches);
+    const query = window.matchMedia(media);
+    const update = () => setMatches(query.matches);
     update(); query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
-  }, []);
-  return reduced;
+  }, [media]);
+  return matches;
 }
+
+export const useReducedMotion = () => useMediaQuery('(prefers-reduced-motion: reduce)');
 
 /** Pauses rendering while the scene is scrolled out of view or the tab is hidden. */
 export function useInView(ref: RefObject<Element>, rootMargin = '120px') {

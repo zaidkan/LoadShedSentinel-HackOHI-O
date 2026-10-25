@@ -18,8 +18,8 @@ export interface SentinelHeroProps {
 }
 
 function autoOffset(width: number, height: number): SubjectOffset {
-  if (width >= 900 && width / Math.max(height, 1) > 1.15) return { x: 0.3, y: 0.02 };
-  return { x: 0, y: 0.16 };
+  if (width >= 900 && width / Math.max(height, 1) > 1.15) return { x: 0.3, y: 0.08 };
+  return { x: 0, y: 0.34 };
 }
 
 /**

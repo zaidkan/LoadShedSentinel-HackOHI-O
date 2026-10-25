@@ -11,6 +11,14 @@ export const PIN_INSULATOR_PROFILE: Array<[number, number]> = [
   [0.03, 0.114], [0.036, 0.121], [0.038, 0.13], [0.03, 0.134], [0.03, 0.14], [0.034, 0.144], [0.026, 0.15], [0, 0.151],
 ];
 
+/**
+ * Conductor run either side of the pole (metres along Z). Spans fade out before they reach
+ * close-up cameras or cross hero copy; the fade stays opaque around the pole.
+ */
+const SPAN = { far: -11, near: 4.5 } as const;
+const spanU = (z: number) => (z - SPAN.far) / (SPAN.near - SPAN.far);
+const SPAN_FADE = { in: Number(spanU(-5).toFixed(2)), out: Number(spanU(0.8).toFixed(2)) };
+
 export function Pole({ highlight }: PartProps) {
   const ref = useRef<Group>(null);
   const kit = useKit(highlight);
@@ -45,7 +53,7 @@ export function Crossarm({ highlight }: PartProps) {
   const armTop = CROSSARM.y + CROSSARM.height / 2;
   const braceFoot: Vec3 = [0, CROSSARM.y - 0.56, poleRadiusAt(CROSSARM.y - 0.56) + 0.006];
   const conductorY = CROSSARM_CONDUCTOR_Y - 0.012;
-  const conductorMaterial = useMemo(() => kit.custom('conductorFade', () => new MeshStandardMaterial({ color: '#aeb4b8', metalness: 0.9, roughness: 0.42, alphaMap: fadeTexture(0.3, 0.72), transparent: true })), [kit]);
+  const conductorMaterial = useMemo(() => kit.custom('conductorFade', () => new MeshStandardMaterial({ color: '#aeb4b8', metalness: 0.9, roughness: 0.42, alphaMap: fadeTexture(SPAN_FADE.in, SPAN_FADE.out), transparent: true }), { thin: true }), [kit]);
   const topPinBase: Vec3 = POLE_TOP_PIN;
   const conductors: Vec3[] = [[-CROSSARM.pinX, conductorY, z], [CROSSARM.pinX, conductorY, z], [topPinBase[0], topPinBase[1] + PIN_INSULATOR_HEIGHT - 0.012, topPinBase[2]]];
   return <group ref={ref} name="crossarm-assembly">
@@ -67,7 +75,7 @@ export function Crossarm({ highlight }: PartProps) {
       <Lathe profile={PIN_INSULATOR_PROFILE} material={kit.porcelain} position={topPinBase} segments={36} />
     </group>
     {conductors.map((origin, i) => <group key={i}>
-      <Cable points={spanPoints(origin, -15, 9, 0.9)} radius={0.0095} material={conductorMaterial} tubular={detail === 'high' ? 140 : 48} radial={8} />
+      <Cable points={spanPoints(origin, SPAN.far, SPAN.near, 0.9)} radius={detail === 'high' ? 0.0068 : 0.0095} material={conductorMaterial} tubular={detail === 'high' ? 140 : 48} radial={8} />
       <mesh position={origin} material={kit.conductor}><torusGeometry args={[0.014, 0.0028, 6, 14]} /></mesh>
     </group>)}
   </group>;

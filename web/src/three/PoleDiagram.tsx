@@ -21,7 +21,7 @@ export function PoleDiagram({ status }: { status: CutoutStatus }) {
       <path d="M254 251V185" stroke="#986e51" strokeWidth="9" /><path d="M254 201V190" stroke={visual.color} strokeWidth="10" />
     </g>}
     <g stroke="#6c8295" fill="none"><path d="M251 210H167V184H100M405 250H448V231H541M287 333H199V353H100M356 381H445V393H541" /></g>
-    <g fill="#c5d2df" fontSize="13" fontFamily="system-ui, sans-serif"><text x="100" y="174">Cutout · {visual.label.toLowerCase()}</text><text x="448" y="222">Transformer</text><text x="100" y="373">Sensor pod</text><text x="446" y="416">Solar panel</text></g>
+    <g fill="#c5d2df" fontSize="13" fontFamily="system-ui, sans-serif"><text x="100" y="174">Cutout · {visual.label.toLowerCase()}</text><text x="448" y="222">Transformer</text><text x="100" y="373">Sentinel node</text><text x="446" y="416">Solar panel</text></g>
     <text x="320" y="450" textAnchor="middle" fill="#9eafbf" fontSize="12" fontFamily="system-ui, sans-serif">Illustrative 2D equipment diagram · no surveyed geometry</text>
   </svg>;
 }

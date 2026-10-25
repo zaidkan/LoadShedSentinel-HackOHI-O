@@ -4,12 +4,16 @@ import { CUTOUT_VISUAL } from './visual-state';
 import { PoleDiagram } from './PoleDiagram';
 import { UtilityIcon } from '../components/utility/UtilityIcon';
 import { numberText } from '../components/utility/presentation';
-import { webglAvailable } from './sentinel/hooks';
+import { useMediaQuery, webglAvailable } from './sentinel/hooks';
 import { FOCUS_ORDER, SENTINEL_PARTS, focusLabel, type SentinelFocus, type SentinelPartId } from './sentinel/catalog';
 import type { SentinelSceneHandle, SentinelUnavailableReason } from './sentinel/SentinelScene';
+import type { SubjectOffset } from './sentinel/CameraDirector';
 import type { Detail } from './sentinel/primitives';
 
 const SentinelScene = lazy(() => import('./sentinel/SentinelScene'));
+
+/** Keeps a focused part clear of the inspect card: beside it on wide panels, above it on narrow ones. */
+const CARD_CLEARANCE: Record<'wide' | 'compact', SubjectOffset> = { wide: { x: -0.22, y: 0 }, compact: { x: 0, y: 0.24 } };
 
 let webglSupport: boolean | undefined;
 const supportsWebgl = () => (webglSupport ??= webglAvailable());
@@ -58,6 +62,7 @@ export function AssetViewport(props: AssetViewportProps) {
   const [webgl] = useState(supportsWebgl);
   const [unavailable, setUnavailable] = useState<SentinelUnavailableReason | null>(null);
   const [focus, setFocus] = useState<SentinelFocus>('overview');
+  const compact = useMediaQuery('(max-width: 720px)');
   const scene = useRef<SentinelSceneHandle>(null);
   const graphicsUnavailable = !webgl || unavailable !== null;
   const useDiagram = diagram || graphicsUnavailable;
@@ -83,6 +88,7 @@ export function AssetViewport(props: AssetViewportProps) {
           cutoutStatus={status}
           link={solar?.connectivity}
           detail={detail}
+          subjectOffset={active ? CARD_CLEARANCE[compact ? 'compact' : 'wide'] : undefined}
           label={`Orbitable illustrative model for ${assetId}; cutout ${status.toLowerCase()}; focus ${focusLabel(focus).toLowerCase()}`}
           onUnavailable={setUnavailable}
         />

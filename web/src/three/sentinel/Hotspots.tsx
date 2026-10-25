@@ -36,6 +36,7 @@ function Hotspot({ id, active, muted, ready, onSelect, variant }: { id: Sentinel
       data-active={active}
       data-muted={muted}
       data-ready={ready}
+      data-side={staging.label}
       onClick={event => { event.stopPropagation(); onSelect(id); }}
     >
       <span className="sentinel-hotspot-dot"><span /></span>

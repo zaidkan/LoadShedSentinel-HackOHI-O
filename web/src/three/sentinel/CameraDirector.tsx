@@ -14,7 +14,7 @@ export interface Director {
   zoom(direction: -1 | 1): void;
 }
 
-/** Where the subject should sit in normalised view space (-1…1); hero layouts push it right of copy. */
+/** Where the subject should sit in normalised view space (-1…1, +x right, +y up); hero layouts push it clear of copy. */
 export interface SubjectOffset { x: number; y: number }
 
 const SMOOTH = { interaction: 0.32, transition: 0.8, intro: 1.7, recompose: 1.6 } as const;
@@ -32,7 +32,8 @@ export function framePose(shot: CameraShot, fov: number, aspect: number, offset:
   const position = new Vector3().setFromSphericalCoords(distance, shot.polar, shot.azimuth).add(new Vector3(...shot.target));
   return {
     position, target: new Vector3(...shot.target), distance,
-    focal: new Vector2(-offset.x * distance * Math.tan(hHalf), -offset.y * distance * Math.tan(vHalf)),
+    // camera-controls applies focal offset Y inverted (+Y moves the camera down).
+    focal: new Vector2(-offset.x * distance * Math.tan(hHalf), offset.y * distance * Math.tan(vHalf)),
   };
 }
 
@@ -163,8 +164,9 @@ export function CameraDirector({ mode, focus, reducedMotion, intro, interactive,
   useEffect(() => {
     const previous = lastFrame.current;
     lastFrame.current = { width: size.width, height: size.height, offsetKey };
-    if (previous.width === size.width && previous.height === size.height && previous.offsetKey === offsetKey) return;
-    if (!live.current.userControlled && live.current.introDone) director.goTo(live.current.focus, { instant: true });
+    const resized = previous.width !== size.width || previous.height !== size.height;
+    if (!resized && previous.offsetKey === offsetKey) return;
+    if (!live.current.userControlled && live.current.introDone) director.goTo(live.current.focus, resized ? { instant: true } : undefined);
   }, [director, offsetKey, size.height, size.width]);
 
   useFrame((state, delta) => {

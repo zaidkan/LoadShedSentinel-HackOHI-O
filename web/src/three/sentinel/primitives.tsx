@@ -83,10 +83,10 @@ export function Cable({ points, radius, material, tubular = 64, radial = 8, name
 }
 
 /** Points for an overhead span sagging away from a support at `origin`, along Z. */
-export function spanPoints(origin: Vec3, near: number, far: number, sag: number, span = 40, steps = 24): Vec3[] {
+export function spanPoints(origin: Vec3, fromZ: number, toZ: number, sag: number, span = 40, steps = 24): Vec3[] {
   const points: Vec3[] = [];
   for (let i = 0; i <= steps; i += 1) {
-    const z = near + ((far - near) * i) / steps;
+    const z = fromZ + ((toZ - fromZ) * i) / steps;
     const t = Math.abs(z) / span;
     points.push([origin[0], origin[1] - 4 * sag * t * (1 - t), origin[2] + z]);
   }

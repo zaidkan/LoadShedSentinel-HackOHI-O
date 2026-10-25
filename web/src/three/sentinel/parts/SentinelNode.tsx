@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { AdditiveBlending, Color, MathUtils, MeshStandardMaterial, SpriteMaterial, type Group, type Sprite } from 'three';
+import { AdditiveBlending, Color, MathUtils, MeshBasicMaterial, MeshStandardMaterial, type Group, type Mesh } from 'three';
 import type { SolarNode } from '../../../../../contracts/types';
 import { SENTINEL, SENTINEL_POSITION, SOLAR, SOLAR_MOUNT_Y, TANK_SENSOR, TRANSFORMER, TRANSFORMER_POSITION, onPole, poleRadiusAt, sentinelLocalToWorld, solarLocalToWorld, tankPoint, type Vec3 } from '../layout';
 import { radialTexture } from '../textures';
@@ -32,13 +32,13 @@ export interface SentinelNodeProps extends PartProps {
 
 export function SentinelNode({ highlight, link, igniteDelay = 0, breathe = false, reducedMotion }: SentinelNodeProps) {
   const ref = useRef<Group>(null);
-  const glow = useRef<Sprite>(null);
+  const glow = useRef<Mesh>(null);
   const kit = useKit(highlight);
   const { seg, detail } = useSegments();
   useShadowFlags(ref);
 
   const light = useMemo(() => kit.custom('lightBar', () => new MeshStandardMaterial({ color: '#0c1418', emissive: new Color(LIGHT.PRESENTATION.color), emissiveIntensity: 0, roughness: 0.25 })), [kit]);
-  const glowMaterial = useMemo(() => new SpriteMaterial({ map: radialTexture(), color: LIGHT.PRESENTATION.color, blending: AdditiveBlending, transparent: true, depthWrite: false, opacity: 0, toneMapped: false }), []);
+  const glowMaterial = useMemo(() => new MeshBasicMaterial({ map: radialTexture(), color: LIGHT.PRESENTATION.color, blending: AdditiveBlending, transparent: true, depthWrite: false, opacity: 0, toneMapped: false }), []);
   useEffect(() => () => glowMaterial.dispose(), [glowMaterial]);
   const targetColor = useMemo(() => new Color(), []);
   const clock = useRef({ start: -1 });
@@ -94,7 +94,7 @@ export function SentinelNode({ highlight, link, igniteDelay = 0, breathe = false
 
       <RBox name="front-glass" size={[0.212, 0.212, 0.01]} radius={0.01} segments={3} material={kit.glass} position={[0, 0.064, FRONT]} />
       <mesh name="status-light-bar" position={[0, 0.146, FRONT + 0.0052]} material={light}><boxGeometry args={[0.12, 0.0055, 0.002]} /></mesh>
-      <sprite ref={glow} position={[0, 0.146, FRONT + 0.012]} scale={[0.22, 0.05, 1]} material={glowMaterial} />
+      <mesh ref={glow} position={[0, 0.146, FRONT + 0.0058]} material={glowMaterial} userData={{ noShadow: true }}><planeGeometry args={[0.19, 0.05]} /></mesh>
 
       <group name="acoustic-port" position={[0, 0.066, FRONT + 0.0052]}>
         <mesh material={kit.graphite}><circleGeometry args={[0.031, seg(32, 12)]} /></mesh>

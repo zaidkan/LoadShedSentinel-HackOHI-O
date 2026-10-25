@@ -25,8 +25,8 @@ export interface SentinelAssemblyProps {
 
 type HighlightKey = SentinelPartId | 'structure';
 const EMPHASIS = {
-  hero: { focusRim: 0.34, hoverRim: 0.22, dim: 0.62 },
-  inspection: { focusRim: 0.42, hoverRim: 0.26, dim: 0.8 },
+  hero: { focusRim: 0.24, hoverRim: 0.18, dim: 0.62 },
+  inspection: { focusRim: 0.3, hoverRim: 0.22, dim: 0.8 },
 } as const;
 const accent = new Color(ACCENT);
 const caution = new Color(CUTOUT_VISUAL.OPEN.color);
