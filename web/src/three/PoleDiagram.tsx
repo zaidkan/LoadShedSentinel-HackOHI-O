@@ -2,7 +2,7 @@ import type { CutoutStatus } from '../../../contracts/types';
 import { CUTOUT_VISUAL } from './visual-state';
 import './pole-diagram.css';
 
-export function PoleDiagram({ status }: { status: CutoutStatus }) {
+export function PoleDiagram({ status, labels = true }: { status: CutoutStatus; labels?: boolean }) {
   const visual = CUTOUT_VISUAL[status];
   return <svg viewBox="0 0 640 470" role="img" aria-label={`Illustrative equipment diagram. Cutout ${visual.label.toLowerCase()}. ${status === 'UNKNOWN' ? 'Physical fuse position is not shown.' : ''}`} className="utility-pole-diagram">
     <g fill="none" stroke="#6c8295" strokeWidth="1"><path d="M105 415H535M138 90H510M138 108H510" /><path strokeDasharray="4 5" d="M312 50V420" /></g>
@@ -21,8 +21,10 @@ export function PoleDiagram({ status }: { status: CutoutStatus }) {
     {status === 'UNKNOWN' ? <g><circle cx="254" cy="215" r="19" fill="#233344" stroke={visual.color} strokeDasharray="4 4" /><text x="254" y="222" textAnchor="middle" fill={visual.color} fontSize="22">?</text></g> : <g transform={`rotate(${-(visual.angle ?? 0) * 180 / Math.PI} 254 251)`} data-cutout-angle={visual.angle}>
       <path d="M254 251V185" stroke="#986e51" strokeWidth="9" /><path d="M254 201V190" stroke={visual.color} strokeWidth="10" />
     </g>}
-    <g stroke="#6c8295" fill="none"><path d="M251 210H167V184H100M405 250H448V231H541M287 333H199V353H100M356 381H445V393H541" /></g>
-    <g fill="#c5d2df" fontSize="13" fontFamily="system-ui, sans-serif"><text x="100" y="174">Cutout · {visual.label.toLowerCase()}</text><text x="448" y="222">Transformer</text><text x="100" y="373">Sensor pod</text><text x="446" y="416">Solar panel</text></g>
-    <text x="320" y="450" textAnchor="middle" fill="#9eafbf" fontSize="12" fontFamily="system-ui, sans-serif">Illustrative 2D equipment diagram · no surveyed geometry</text>
+    {labels ? <>
+      <g stroke="#6c8295" fill="none"><path d="M251 210H167V184H100M405 250H448V231H541M287 333H199V353H100M356 381H445V393H541" /></g>
+      <g fill="#c5d2df" fontSize="13" fontFamily="system-ui, sans-serif"><text x="100" y="174">Cutout · {visual.label.toLowerCase()}</text><text x="448" y="222">Transformer</text><text x="100" y="373">Sensor pod</text><text x="446" y="416">Solar panel</text></g>
+      <text x="320" y="450" textAnchor="middle" fill="#9eafbf" fontSize="12" fontFamily="system-ui, sans-serif">Illustrative 2D equipment diagram · no surveyed geometry</text>
+    </> : null}
   </svg>;
 }

@@ -188,7 +188,7 @@ function IncidentRow({ scenario, active, onOpen }: { scenario: ScenarioMeta; act
   const cutout = (['OPEN', 'CLOSED', 'UNKNOWN'] as const).find(value => value === scenario.cutout_status) ?? 'UNKNOWN';
   const dependents = scenario.status === 'UNDER_REVIEW' ? 'Not asserted' : `${scenario.expected_affected} ${scenario.expected_affected === 1 ? 'premise' : 'premises'}`;
   return <li className="incident-row" data-active={active}>
-    <div className="incident-thumb" aria-hidden="true"><PoleDiagram status={cutout} /></div>
+    <div className="incident-thumb" aria-hidden="true"><PoleDiagram status={cutout} labels={false} /></div>
     <div className="incident-main">
       <h3 className="display display-m">{scenarioName(scenario.title)}</h3>
       <p>{scenario.description}</p>
