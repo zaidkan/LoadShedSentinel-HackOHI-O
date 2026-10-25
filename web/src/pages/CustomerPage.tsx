@@ -22,6 +22,33 @@ const SERVICE_COPY = {
 
 const planningHours = (value: number | null) => value === null || !Number.isFinite(value) ? 'Unavailable' : `${numberText(value)} hours`;
 
+const NEEDS_STORAGE_KEY = 'loadshed_household_needs';
+const INITIAL_NEEDS = {
+  food_refrigeration: true,
+  refrigerated_medication: false,
+  life_critical_medical_device: false,
+  medical_device_notes: '',
+  mobility_accessibility_needs: false,
+  communications_charging: true,
+  sump_pump: false,
+  backup_battery_available: true,
+  battery_capacity_wh: 1000,
+  battery_usable_pct: 0.85,
+  essential_load_w: 120,
+};
+
+function loadStoredNeeds() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem(NEEDS_STORAGE_KEY);
+      if (stored) return { ...INITIAL_NEEDS, ...JSON.parse(stored) };
+    }
+  } catch (e) {
+    // fallback
+  }
+  return INITIAL_NEEDS;
+}
+
 export interface CustomerPageProps {
   snapshot: ScenarioSnapshot;
   scenarioId?: string;
@@ -34,23 +61,24 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
   const [topologyTrace, setTopologyTrace] = useState<any | null>(null);
   const [traceLoading, setTraceLoading] = useState(false);
 
-  // Household Needs State
-  const [needs, setNeeds] = useState({
-    food_refrigeration: true,
-    refrigerated_medication: false,
-    life_critical_medical_device: false,
-    medical_device_notes: '',
-    mobility_accessibility_needs: false,
-    communications_charging: true,
-    sump_pump: false,
-    backup_battery_available: true,
-    battery_capacity_wh: 1000,
-    battery_usable_pct: 0.85,
-    essential_load_w: 120,
-  });
-
+  // Household Needs State with persistent local storage
+  const [needs, setNeeds] = useState<typeof INITIAL_NEEDS>(loadStoredNeeds);
   const [batteryCalc, setBatteryCalc] = useState<BatteryCalcResult | null>(null);
   const [guidance, setGuidance] = useState<PreparednessGuidance[]>([]);
+  const [batteryError, setBatteryError] = useState<string | null>(null);
+  const [guidanceError, setGuidanceError] = useState<string | null>(null);
+
+  const updateNeeds = (patch: Partial<typeof INITIAL_NEEDS>) => {
+    setNeeds((prev: typeof INITIAL_NEEDS) => {
+      const next = { ...prev, ...patch };
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(NEEDS_STORAGE_KEY, JSON.stringify(next));
+        }
+      } catch (e) {}
+      return next;
+    });
+  };
 
   useEffect(() => {
     loadSnapshot();
@@ -77,6 +105,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
 
   async function runBatteryCalculation() {
     if (needs.battery_capacity_wh > 0 && needs.essential_load_w > 0) {
+      setBatteryError(null);
       try {
         const res = await calculateBatteryRuntime({
           capacity_wh: needs.battery_capacity_wh,
@@ -86,20 +115,24 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
           reserve_margin_pct: 0.15,
         });
         setBatteryCalc(res);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Battery calc error', err);
+        setBatteryError(err?.message || 'Unable to compute battery runtime estimate.');
       }
     } else {
       setBatteryCalc(null);
+      setBatteryError(null);
     }
   }
 
   async function loadPreparedness() {
+    setGuidanceError(null);
     try {
       const res = await fetchPreparednessGuidance(needs);
       setGuidance(res);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Guidance error', err);
+      setGuidanceError(err?.message || 'Unable to generate preparedness guidance.');
     }
   }
 
@@ -315,7 +348,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               type="checkbox"
               id="need-medical-device"
               checked={needs.life_critical_medical_device}
-              onChange={(e) => setNeeds({ ...needs, life_critical_medical_device: e.target.checked })}
+              onChange={(e) => updateNeeds({ life_critical_medical_device: e.target.checked })}
               className="rounded border-slate-700 text-rose-500 focus:ring-rose-500"
             />
             <span className="text-sm text-slate-200">Life-Critical Medical Device</span>
@@ -326,7 +359,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               type="checkbox"
               id="need-refrigerated-medication"
               checked={needs.refrigerated_medication}
-              onChange={(e) => setNeeds({ ...needs, refrigerated_medication: e.target.checked })}
+              onChange={(e) => updateNeeds({ refrigerated_medication: e.target.checked })}
               className="rounded border-slate-700 text-amber-500 focus:ring-amber-500"
             />
             <span className="text-sm text-slate-200">Refrigerated Medicine (Insulin)</span>
@@ -337,7 +370,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               type="checkbox"
               id="need-mobility-accessibility"
               checked={needs.mobility_accessibility_needs}
-              onChange={(e) => setNeeds({ ...needs, mobility_accessibility_needs: e.target.checked })}
+              onChange={(e) => updateNeeds({ mobility_accessibility_needs: e.target.checked })}
               className="rounded border-slate-700 text-purple-500 focus:ring-purple-500"
             />
             <span className="text-sm text-slate-200">Mobility &amp; Accessibility Needs</span>
@@ -348,12 +381,24 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               type="checkbox"
               id="need-sump-pump"
               checked={needs.sump_pump}
-              onChange={(e) => setNeeds({ ...needs, sump_pump: e.target.checked })}
+              onChange={(e) => updateNeeds({ sump_pump: e.target.checked })}
               className="rounded border-slate-700 text-blue-500 focus:ring-blue-500"
             />
             <span className="text-sm text-slate-200">Basement Sump Pump</span>
           </label>
         </div>
+
+        {guidanceError && (
+          <div className="mt-4 p-3 rounded-lg bg-amber-950/30 border border-amber-800/60 text-amber-200 text-sm flex items-center justify-between">
+            <span>{guidanceError}</span>
+            <button
+              onClick={loadPreparedness}
+              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-semibold transition"
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {/* Tailored Advice Cards */}
         {guidance.length > 0 && (
@@ -395,7 +440,7 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               id="battery-capacity-input"
               type="number"
               value={needs.battery_capacity_wh}
-              onChange={(e) => setNeeds({ ...needs, battery_capacity_wh: Number(e.target.value) })}
+              onChange={(e) => updateNeeds({ battery_capacity_wh: Number(e.target.value) })}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
             />
           </div>
@@ -405,11 +450,23 @@ export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSn
               id="battery-load-input"
               type="number"
               value={needs.essential_load_w}
-              onChange={(e) => setNeeds({ ...needs, essential_load_w: Number(e.target.value) })}
+              onChange={(e) => updateNeeds({ essential_load_w: Number(e.target.value) })}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
             />
           </div>
         </div>
+
+        {batteryError && (
+          <div className="p-3 rounded-lg bg-amber-950/30 border border-amber-800/60 text-amber-200 text-sm flex items-center justify-between">
+            <span>{batteryError}</span>
+            <button
+              onClick={runBatteryCalculation}
+              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-semibold transition"
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {batteryCalc && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/80 rounded-xl p-4 border border-slate-800/80 text-center">

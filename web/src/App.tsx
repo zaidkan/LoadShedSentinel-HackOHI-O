@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CustomerPage } from './pages/CustomerPage';
 import { UtilityPage } from './pages/UtilityPage';
 import { fetchCurrentScenario, fetchScenarios, selectScenario, resetScenario, fetchAEPAssets, ScenarioMeta, AEPSourceAsset } from './services/api';
@@ -14,6 +14,7 @@ export const App: React.FC = () => {
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('local_protection');
   const [loading, setLoading] = useState(true);
   const [connectionError, setConnectionError] = useState(false);
+  const mutationSeq = useRef(0);
 
   useEffect(() => {
     initApp();
@@ -22,12 +23,14 @@ export const App: React.FC = () => {
   async function initApp() {
     setLoading(true);
     setConnectionError(false);
+    const seq = ++mutationSeq.current;
     try {
       const [scList, curr, assets] = await Promise.all([
         fetchScenarios().catch(() => []),
         fetchCurrentScenario(),
         fetchAEPAssets().catch(() => []),
       ]);
+      if (seq !== mutationSeq.current) return;
       setScenarios(scList);
       setAepAssets(assets);
       setSnapshot(curr);
@@ -36,42 +39,58 @@ export const App: React.FC = () => {
         setSelectedScenarioId(curr.scenario_id);
       }
     } catch (e) {
-      console.error('Failed to initialize app:', e);
-      setConnectionError(true);
+      if (seq === mutationSeq.current) {
+        console.error('Failed to initialize app:', e);
+        setConnectionError(true);
+      }
     } finally {
-      setLoading(false);
+      if (seq === mutationSeq.current) {
+        setLoading(false);
+      }
     }
   }
 
   async function handleSelectScenario(scenarioId: string) {
+    const seq = ++mutationSeq.current;
     try {
       const next = await selectScenario(scenarioId);
-      setSnapshot(next);
+      if (seq !== mutationSeq.current) return;
       setSelectedScenarioId(scenarioId);
       setActiveAssetToken(next.impact_source?.fault_asset_token || '');
+      setSnapshot(next);
     } catch (e) {
-      console.error('Failed to select scenario:', e);
+      if (seq === mutationSeq.current) {
+        console.error('Failed to select scenario:', e);
+      }
     }
   }
 
   async function handleSelectAsset(assetToken: string) {
+    const seq = ++mutationSeq.current;
     try {
       const next = await selectScenario(selectedScenarioId, assetToken);
-      setSnapshot(next);
+      if (seq !== mutationSeq.current) return;
       setActiveAssetToken(next.impact_source?.fault_asset_token || '');
+      setSnapshot(next);
     } catch (e) {
-      console.error('Failed to select AEP asset:', e);
+      if (seq === mutationSeq.current) {
+        console.error('Failed to select AEP asset:', e);
+      }
     }
   }
 
   async function handleReset() {
+    const seq = ++mutationSeq.current;
     try {
       const reset = await resetScenario();
-      setSnapshot(reset);
+      if (seq !== mutationSeq.current) return;
       if (reset?.scenario_id) setSelectedScenarioId(reset.scenario_id);
       setActiveAssetToken(reset?.impact_source?.fault_asset_token || '');
+      setSnapshot(reset);
     } catch (e) {
-      console.error('Failed to reset scenario:', e);
+      if (seq === mutationSeq.current) {
+        console.error('Failed to reset scenario:', e);
+      }
     }
   }
 

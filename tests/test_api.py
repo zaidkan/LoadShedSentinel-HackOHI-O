@@ -201,3 +201,53 @@ def test_scenario_selection_notification_dedup():
     outage_alerts = [n for n in snap["notifications"] if n["type"] == "OUTAGE_CONFIRMED"]
     assert len(outage_alerts) == 1
 
+
+def test_session_isolation():
+    # P1-03: Multiple sessions maintain isolated states
+    s1 = client.post("/api/session/new").json()["session_id"]
+    s2 = client.post("/api/session/new").json()["session_id"]
+    assert s1 != s2
+
+    # Select different scenarios in each session
+    client.post("/api/scenario/select", json={"scenario_id": "confirmed_replacement"}, headers={"X-Session-ID": s1})
+    client.post("/api/scenario/select", json={"scenario_id": "upstream_feeder"}, headers={"X-Session-ID": s2})
+
+    snap1 = client.get("/api/scenario/current", headers={"X-Session-ID": s1}).json()
+    snap2 = client.get("/api/scenario/current", headers={"X-Session-ID": s2}).json()
+
+    assert snap1["scenario_id"] == "confirmed_replacement"
+    assert snap2["scenario_id"] == "upstream_feeder"
+
+
+def test_restoration_authorization_gating():
+    # P0-01: Direct RESTORED status without clearing blockers or operator authorization must be rejected
+    sid = client.post("/api/session/new").json()["session_id"]
+    client.post("/api/scenario/select", json={"scenario_id": "local_protection"}, headers={"X-Session-ID": sid})
+
+    # Direct advance to RESTORED without authorization fails with 400
+    res_direct = client.post("/api/scenario/advance", json={"status": "RESTORED"}, headers={"X-Session-ID": sid})
+    assert res_direct.status_code == 400
+    assert "Restoration blocked" in res_direct.json()["detail"]
+
+    # Advance with explicit simulated operator authorization succeeds
+    res_auth = client.post("/api/scenario/advance", json={
+        "status": "RESTORED",
+        "action": "record_demo_authorization"
+    }, headers={"X-Session-ID": sid})
+    assert res_auth.status_code == 200
+    snap = res_auth.json()
+    assert snap["status"] == "RESTORED"
+    assert snap["cutout_status"] == "CLOSED"
+
+
+def test_customer_view_revision_and_escalation_preview():
+    # R-01 & R-06: Customer snapshot exposes authoritative revision and simulation preview escalation
+    client.post("/api/scenario/reset")
+    snap_before = client.get("/api/scenario/current").json()
+    cust_view = client.get("/api/customer/snapshot").json()
+
+    assert cust_view["revision"] == snap_before["revision"]
+    assert "Simulated demonstration preview" in cust_view["alert_plan"]["escalation_policy"]
+    assert "not connected to live 911" in cust_view["alert_plan"]["escalation_policy"]
+
+

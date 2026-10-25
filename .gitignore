@@ -1,6 +1,7 @@
 # Node / Frontend
 node_modules/
 dist/
+dist-test/
 .vite/
 npm-debug.log*
 yarn-debug.log*

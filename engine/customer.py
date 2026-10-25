@@ -276,6 +276,7 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
     return {
         "scenario_id": snapshot.scenario_id,
         "incident_id": snapshot.incident_id,
+        "revision": snapshot.revision,
         "selected_premise_token": snapshot.selected_premise_token,
         "timestamp_utc": snapshot.timestamp_utc,
         "status": snapshot.status,
@@ -296,7 +297,7 @@ def project_customer_view(snapshot: ScenarioSnapshot) -> Dict:
             "recipient_role": "Verified premise contact (simulated)",
             "channels": ["SMS", "Mobile Push (Simulated)"],
             "cadence_policy": "Event declaration, verified ETR updates, and restoration completion",
-            "escalation_policy": "Automatic escalation to emergency dispatch notifications if conditions escalate to confirmed outage or critical priority",
+            "escalation_policy": "Simulated demonstration preview: would escalate notification cadence if conditions escalate to confirmed outage or critical priority; not connected to live 911 or dispatchers.",
             "suppression_reason": suppression_reason,
             "basis": "Validated electrical distribution network dependency",
             "channel": "SMS & Push Notification (Simulated)",

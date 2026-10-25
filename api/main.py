@@ -1,8 +1,11 @@
 from __future__ import annotations
 import json
 import os
-from typing import Dict, Any, Optional, List, Union
-from fastapi import FastAPI, HTTPException, Query
+import time
+import uuid
+from dataclasses import dataclass, field
+from typing import Dict, Any, Optional, List, Union, Set
+from fastapi import FastAPI, HTTPException, Query, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -15,6 +18,7 @@ from engine.customer import (
     NotificationFSM
 )
 from engine.scenarios import generate_scenario, SCENARIO_IDS
+from engine.restoration import evaluate_restoration
 from engine.topology import Topology
 from engine.aep_impact import AEPImpact, UnknownAEPAsset
 
@@ -37,13 +41,33 @@ FIXTURE_PATH = os.path.join(BASE_DIR, "..", "fixtures", "scenario_fixture.json")
 TOPOLOGY_PATH = os.path.join(BASE_DIR, "..", "data", "processed", "private", "topology.json")
 GEOJSON_PATH = os.path.join(BASE_DIR, "..", "data", "processed", "network.geojson")
 
-# In-memory runtime state
-_current_snapshot: ScenarioSnapshot = None
-_current_context: Optional[dict] = None
-_fsm = NotificationFSM()
+# Session state dataclass
+@dataclass
+class SessionState:
+    session_id: str
+    snapshot: ScenarioSnapshot
+    context: Optional[dict] = None
+    fsm: NotificationFSM = field(default_factory=NotificationFSM)
+    completed_task_ids: Set[str] = field(default_factory=set)
+    authorized_premise_tokens: Set[str] = field(default_factory=set)
+    last_accessed: float = field(default_factory=time.time)
+
+# In-memory runtime state keyed by session
+_sessions: Dict[str, SessionState] = {}
 _topology_instance: Optional[Topology] = None
 _aep_impact_instance: Optional[AEPImpact] = None
 
+SCENARIO_BLOCKERS: Dict[str, List[str]] = {
+    "local_protection": ["inspect_equipment", "verify_clearance", "reclose_cutout"],
+    "upstream_feeder": ["isolate_fault", "verify_feeder_clearance", "reclose_breaker"],
+    "confirmed_replacement": ["replace_transformer", "verify_clearance", "reclose_cutout"],
+    "insufficient_evidence": ["investigate_telemetry", "verify_clearance", "reclose_cutout"],
+}
+
+def get_premise_blockers(snapshot: ScenarioSnapshot) -> Dict[str, List[str]]:
+    blockers = SCENARIO_BLOCKERS.get(snapshot.scenario_id, ["repair_work", "verify_clearance", "reclose_cutout"])
+    premises = snapshot.affected_premise_tokens or ([snapshot.selected_premise_token] if snapshot.selected_premise_token else ["P-DEMO-001"])
+    return {p: list(blockers) for p in premises}
 
 def get_aep_impact() -> AEPImpact:
     """Validated, anonymized slice derived from the official AEP source archives.
@@ -78,11 +102,28 @@ def _load_initial_snapshot() -> ScenarioSnapshot:
             return ScenarioSnapshot(**data)
         raise HTTPException(status_code=503, detail=f"AEP source data unavailable: {exc}") from exc
 
-def get_snapshot() -> ScenarioSnapshot:
-    global _current_snapshot
-    if _current_snapshot is None:
-        _current_snapshot = _load_initial_snapshot()
-    return _current_snapshot
+def get_session(session_id: Optional[str] = None) -> SessionState:
+    global _sessions
+    sid = session_id.strip() if session_id and session_id.strip() else "default"
+    now = time.time()
+    # Prune stale sessions older than 2 hours (keep default)
+    if len(_sessions) > 50:
+        stale = [k for k, s in _sessions.items() if k != "default" and (now - s.last_accessed) > 7200]
+        for k in stale:
+            _sessions.pop(k, None)
+    if sid not in _sessions:
+        _sessions[sid] = SessionState(
+            session_id=sid,
+            snapshot=_load_initial_snapshot(),
+            context=None,
+            fsm=NotificationFSM()
+        )
+    session = _sessions[sid]
+    session.last_accessed = now
+    return session
+
+def get_snapshot(session_id: Optional[str] = None) -> ScenarioSnapshot:
+    return get_session(session_id).snapshot
 
 @app.get("/api/health")
 def health_check():
@@ -142,6 +183,19 @@ def aep_source_status():
     }
 
 
+@app.post("/api/session/new")
+def new_session():
+    """Initializes an isolated demonstration session state."""
+    sid = str(uuid.uuid4())
+    session = get_session(sid)
+    return {
+        "session_id": sid,
+        "status": "created",
+        "scenario_id": session.snapshot.scenario_id,
+        "revision": session.snapshot.revision
+    }
+
+
 class SelectScenarioRequest(BaseModel):
     model_config = {"extra": "forbid"}
     scenario_id: str
@@ -152,9 +206,9 @@ class SelectScenarioRequest(BaseModel):
 
 
 @app.post("/api/scenario/select")
-def select_scenario(req: SelectScenarioRequest):
+def select_scenario(req: SelectScenarioRequest, x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
     """Simulate a fault on selected AEP equipment, calculating dependent premises."""
-    global _current_snapshot, _current_context, _fsm
+    session = get_session(x_session_id)
     if req.scenario_id not in SCENARIO_IDS:
         raise HTTPException(status_code=400, detail="Unknown scenario")
     try:
@@ -170,37 +224,40 @@ def select_scenario(req: SelectScenarioRequest):
         snapshot = generate_scenario(req.scenario_id, context)
     except (UnknownAEPAsset, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    _current_context = context
-    _current_snapshot = snapshot
-    _fsm = NotificationFSM()
+
+    session.context = context
+    session.snapshot = snapshot
+    session.fsm = NotificationFSM()
+    session.completed_task_ids.clear()
+    session.authorized_premise_tokens.clear()
 
     restoration_summary = ""
-    if _current_snapshot.restoration.kind == 'scenario_planning' and _current_snapshot.restoration.expected_hours is not None:
-        restoration_summary = f"Expected duration {_current_snapshot.restoration.expected_hours:.1f} hours"
+    if session.snapshot.restoration.kind == 'scenario_planning' and session.snapshot.restoration.expected_hours is not None:
+        restoration_summary = f"Expected duration {session.snapshot.restoration.expected_hours:.1f} hours"
 
-    new_alerts = _fsm.evaluate_triggers(
-        premise_token=_current_snapshot.selected_premise_token,
-        incident_id=_current_snapshot.incident_id,
-        status=_current_snapshot.status,
-        risk=_current_snapshot.customer_risk,
+    new_alerts = session.fsm.evaluate_triggers(
+        premise_token=session.snapshot.selected_premise_token,
+        incident_id=session.snapshot.incident_id,
+        status=session.snapshot.status,
+        risk=session.snapshot.customer_risk,
         restoration_summary=restoration_summary,
-        timestamp_utc=_current_snapshot.timestamp_utc
+        timestamp_utc=session.snapshot.timestamp_utc
     )
     for alert in new_alerts:
-        if not any(n.type == alert.type and n.text == alert.text for n in _current_snapshot.notifications):
-            _current_snapshot.notifications.append(alert)
-    return _current_snapshot
+        if not any(n.type == alert.type and n.text == alert.text for n in session.snapshot.notifications):
+            session.snapshot.notifications.append(alert)
+    return session.snapshot
 
 
 @app.get("/api/scenario/current", response_model=ScenarioSnapshot)
-def get_current_scenario():
+def get_current_scenario(x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
     """Returns the full authoritative operator ScenarioSnapshot."""
-    return get_snapshot()
+    return get_snapshot(x_session_id)
 
 @app.get("/api/customer/snapshot")
-def get_customer_snapshot():
+def get_customer_snapshot(x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
     """Returns privacy-sanitized customer concierge view."""
-    return project_customer_view(get_snapshot())
+    return project_customer_view(get_snapshot(x_session_id))
 
 VALID_STATUSES = {"NORMAL", "AT_RISK", "OUTAGE", "UNDER_REVIEW", "RESTORED"}
 VALID_CUTOUTS = {"OPEN", "CLOSED", "UNKNOWN"}
@@ -214,12 +271,16 @@ class AdvanceRequest(BaseModel):
     restoration_summary: Optional[str] = None
     crew_size: Optional[int] = None
     access_hours: Optional[Union[float, List[float]]] = None
+    action: Optional[str] = None
+    completed_task_ids: Optional[List[str]] = None
+    authorized_premises: Optional[List[str]] = None
+    record_demo_authorization: Optional[bool] = None
 
 @app.post("/api/scenario/advance")
-def advance_scenario(req: AdvanceRequest):
+def advance_scenario(req: AdvanceRequest, x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
     """Advances scenario state and evaluates customer notification triggers."""
-    global _current_snapshot, _current_context, _fsm
-    snap = get_snapshot()
+    session = get_session(x_session_id)
+    snap = session.snapshot
     
     # 1. Validation phase (reject before mutating anything)
     if req.incident_id and req.incident_id != snap.incident_id:
@@ -246,11 +307,72 @@ def advance_scenario(req: AdvanceRequest):
         else:
             raise HTTPException(status_code=400, detail="access_hours must be a number or list of numbers")
 
+    premise_blockers = get_premise_blockers(snap)
+    all_known_blockers = {b for blist in premise_blockers.values() for b in blist}
+
+    # Handle explicit blocker completion / authorization events
+    if req.action == "record_demo_authorization" or req.record_demo_authorization:
+        if req.completed_task_ids:
+            for cid in req.completed_task_ids:
+                if cid not in all_known_blockers:
+                    raise HTTPException(status_code=400, detail=f"Unknown blocking task: {cid}")
+            session.completed_task_ids.update(req.completed_task_ids)
+        else:
+            session.completed_task_ids.update(all_known_blockers)
+
+        if req.authorized_premises:
+            for p in req.authorized_premises:
+                if p not in premise_blockers:
+                    raise HTTPException(status_code=400, detail=f"Unknown premise token for authorization: {p}")
+            session.authorized_premise_tokens.update(req.authorized_premises)
+        else:
+            session.authorized_premise_tokens.update(premise_blockers.keys())
+    else:
+        if req.completed_task_ids is not None:
+            for cid in req.completed_task_ids:
+                if cid not in all_known_blockers:
+                    raise HTTPException(status_code=400, detail=f"Unknown blocking task: {cid}")
+            session.completed_task_ids.update(req.completed_task_ids)
+
+        if req.authorized_premises is not None:
+            for p in req.authorized_premises:
+                if p not in premise_blockers:
+                    raise HTTPException(status_code=400, detail=f"Unknown premise token for authorization: {p}")
+            session.authorized_premise_tokens.update(req.authorized_premises)
+
+    # P0-01: Restoration authorization gating via evaluate_restoration
+    if req.status == "RESTORED":
+        try:
+            eval_results = evaluate_restoration(
+                premise_blockers,
+                session.completed_task_ids,
+                session.authorized_premise_tokens
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=f"Restoration evaluation failed: {exc}") from exc
+
+        unrestored = [r for r in eval_results if not r.get("modeled_restored")]
+        if unrestored:
+            sample = unrestored[0]
+            rem_blockers = sample.get("remaining_blockers", [])
+            prem = sample["premise_token"]
+            if rem_blockers:
+                detail_msg = (
+                    f"Restoration blocked for premise {prem}: modeled repair blockers remain uncleared ({rem_blockers}). "
+                    "All blockers must be cleared before service restoration."
+                )
+            else:
+                detail_msg = (
+                    f"Restoration blocked for premise {prem}: lacking explicit operator simulated authorization. "
+                    "Provide explicit authorization via action='record_demo_authorization' or authorized_premises."
+                )
+            raise HTTPException(status_code=400, detail=detail_msg)
+
     # 2. Context & restoration recalculation
     new_restoration = snap.restoration
     new_planning_inputs = snap.planning_inputs
     if req.crew_size is not None or req.access_hours is not None:
-        ctx = dict(_current_context or {})
+        ctx = dict(session.context or {})
         if not ctx:
             try:
                 ctx = get_aep_impact().scenario_context(snap.scenario_id)
@@ -266,13 +388,15 @@ def advance_scenario(req: AdvanceRequest):
         except (ValueError, TypeError) as exc:
             raise HTTPException(status_code=400, detail=f"Invalid scenario planning inputs: {exc}") from exc
 
-        _current_context = ctx
+        session.context = ctx
         new_restoration = updated_snap.restoration
         new_planning_inputs = updated_snap.planning_inputs
 
     # 3. Apply state changes atomically
     if req.status:
         snap.status = req.status
+        if req.status == "RESTORED" and not req.cutout_status:
+            snap.cutout_status = "CLOSED"
     if req.cutout_status:
         snap.cutout_status = req.cutout_status
     snap.restoration = new_restoration
@@ -284,7 +408,7 @@ def advance_scenario(req: AdvanceRequest):
     if not rest_sum and snap.restoration.kind == 'scenario_planning' and snap.restoration.expected_hours is not None:
         rest_sum = f"Expected duration {snap.restoration.expected_hours:.1f} hours"
 
-    new_alerts = _fsm.evaluate_triggers(
+    new_alerts = session.fsm.evaluate_triggers(
         premise_token=snap.selected_premise_token,
         incident_id=snap.incident_id,
         status=snap.status,
@@ -298,13 +422,15 @@ def advance_scenario(req: AdvanceRequest):
     return snap
 
 @app.post("/api/scenario/reset")
-def reset_scenario():
+def reset_scenario(x_session_id: Optional[str] = Header(None, alias="X-Session-ID")):
     """Resets scenario to base fixture state."""
-    global _current_snapshot, _current_context, _fsm
-    _current_snapshot = _load_initial_snapshot()
-    _current_context = None
-    _fsm = NotificationFSM()
-    return _current_snapshot
+    session = get_session(x_session_id)
+    session.snapshot = _load_initial_snapshot()
+    session.context = None
+    session.fsm = NotificationFSM()
+    session.completed_task_ids.clear()
+    session.authorized_premise_tokens.clear()
+    return session.snapshot
 
 @app.get("/api/topology/lookup")
 def lookup_premise_topology(premise_id: str = Query(..., description="Anonymized public premise token")):

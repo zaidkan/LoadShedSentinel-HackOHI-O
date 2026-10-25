@@ -3,6 +3,7 @@ import { ScenarioSnapshot } from '../../../contracts/types';
 export interface CustomerSnapshotView {
   scenario_id: string;
   incident_id: string;
+  revision: number;
   selected_premise_token: string;
   timestamp_utc: string;
   status: 'NORMAL' | 'AT_RISK' | 'OUTAGE' | 'UNDER_REVIEW' | 'RESTORED';
@@ -67,14 +68,36 @@ export interface PreparednessGuidance {
   detail: string;
 }
 
+export function getSessionId(): string {
+  let sid = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('loadshed_session_id') : null;
+  if (!sid) {
+    sid = 'sess_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('loadshed_session_id', sid);
+    }
+  }
+  return sid;
+}
+
+function sessionHeaders(extraHeaders: Record<string, string> = {}): Record<string, string> {
+  return {
+    'X-Session-ID': getSessionId(),
+    ...extraHeaders,
+  };
+}
+
 export async function fetchCurrentScenario(): Promise<ScenarioSnapshot> {
-  const res = await fetch('/api/scenario/current');
+  const res = await fetch('/api/scenario/current', {
+    headers: sessionHeaders(),
+  });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
   return res.json();
 }
 
 export async function fetchScenarios(): Promise<ScenarioMeta[]> {
-  const res = await fetch('/api/scenarios');
+  const res = await fetch('/api/scenarios', {
+    headers: sessionHeaders(),
+  });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
   return res.json();
 }
@@ -82,7 +105,7 @@ export async function fetchScenarios(): Promise<ScenarioMeta[]> {
 export async function selectScenario(scenarioId: string, assetToken?: string): Promise<ScenarioSnapshot> {
   const res = await fetch('/api/scenario/select', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: sessionHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ scenario_id: scenarioId, ...(assetToken ? { asset_token: assetToken } : {}) }),
   });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
@@ -90,13 +113,17 @@ export async function selectScenario(scenarioId: string, assetToken?: string): P
 }
 
 export async function fetchCustomerSnapshot(): Promise<CustomerSnapshotView> {
-  const res = await fetch('/api/customer/snapshot');
+  const res = await fetch('/api/customer/snapshot', {
+    headers: sessionHeaders(),
+  });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
   return res.json();
 }
 
 export async function lookupPremiseTopology(premiseId: string): Promise<any> {
-  const res = await fetch(`/api/topology/lookup?premise_id=${encodeURIComponent(premiseId)}`);
+  const res = await fetch(`/api/topology/lookup?premise_id=${encodeURIComponent(premiseId)}`, {
+    headers: sessionHeaders(),
+  });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
   return res.json();
 }
@@ -110,7 +137,7 @@ export async function calculateBatteryRuntime(params: {
 }): Promise<BatteryCalcResult> {
   const res = await fetch('/api/customer/battery-runtime', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: sessionHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(params),
   });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
@@ -120,7 +147,7 @@ export async function calculateBatteryRuntime(params: {
 export async function fetchPreparednessGuidance(needs: Record<string, any>): Promise<PreparednessGuidance[]> {
   const res = await fetch('/api/customer/preparedness', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: sessionHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(needs),
   });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
@@ -129,7 +156,10 @@ export async function fetchPreparednessGuidance(needs: Record<string, any>): Pro
 }
 
 export async function resetScenario(): Promise<ScenarioSnapshot> {
-  const res = await fetch('/api/scenario/reset', { method: 'POST' });
+  const res = await fetch('/api/scenario/reset', {
+    method: 'POST',
+    headers: sessionHeaders(),
+  });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
   return res.json();
 }
@@ -142,10 +172,14 @@ export async function advanceScenario(params: {
   status?: string;
   cutout_status?: string;
   restoration_summary?: string;
+  action?: string;
+  completed_task_ids?: string[];
+  authorized_premises?: string[];
+  record_demo_authorization?: boolean;
 }): Promise<ScenarioSnapshot> {
   const res = await fetch('/api/scenario/advance', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: sessionHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(params),
   });
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
@@ -160,7 +194,9 @@ export interface AEPSourceAsset {
 }
 
 export async function fetchAEPAssets(): Promise<AEPSourceAsset[]> {
-  const res = await fetch('/api/aep/assets');
+  const res = await fetch('/api/aep/assets', {
+    headers: sessionHeaders(),
+  });
   if (!res.ok) throw new Error('AEP source data unavailable: ' + res.status);
   return res.json();
 }
