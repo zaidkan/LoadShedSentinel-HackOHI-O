@@ -30,3 +30,24 @@ htmlcov/
 # Large Private Data
 data/processed/private/
 
+# Local development tooling
+.agents/
+.cursor/
+.impeccable/
+skills/
+skills-lock.json
+vendor/awesome-design-md/
+
+# Local secrets and internal working material
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+ZOOM LINK
+research/
+reviews/
+verification/
+FINAL_LOADSHET_IMPLEMENTATION.md
+LoadShed-Team-and-Agent-Assignments.md

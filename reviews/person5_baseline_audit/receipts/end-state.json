@@ -1,7 +1,0 @@
-{
-  "at": "2026-10-25T12:38:02.170423+00:00",
-  "baseline_source_hash_mismatches": [],
-  "canonical_head": "d9534829849ae92d58e7e3930a723b8b130cbbb6",
-  "canonical_status": "",
-  "note": "Concurrent modifications were observed after archive creation and were not authored or audited as part of pinned baseline."
-}

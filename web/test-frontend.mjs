@@ -129,7 +129,7 @@ console.log('--- Test 4: advanceScenario parameter serialization ---');
   console.log('✔ advanceScenario serialized action and blocker parameters passed');
 }
 
-console.log('--- Person 5 UI regressions ---');
+console.log('--- UI regressions ---');
 let remediationFailures = 0;
 async function regression(name, run) {
   try { await run(); console.log(`✔ ${name}`); }
@@ -274,7 +274,7 @@ await regression('Customer light surface has readable heading/body/secondary ink
     assert.ok((Math.max(a, b) + .05) / (Math.min(a, b) + .05) >= 4.5, `${ink} on ${bg} needs 4.5:1`);
   }
 });
-if (remediationFailures) throw new Error(`${remediationFailures} Person 5 remediation regressions failed`);
+if (remediationFailures) throw new Error(`${remediationFailures} UI regressions failed`);
 
 // Customer household-generation races and loaded dashboard states.
 await import('./test-customer.mjs');

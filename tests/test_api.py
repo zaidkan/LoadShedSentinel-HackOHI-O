@@ -92,13 +92,13 @@ def test_preparedness_endpoint():
 
 
 def test_openapi_and_advance_sensitivity():
-    # F01: OpenAPI schema generation works without NameError/Union failure
+    # OpenAPI schema generation works without NameError/Union failure
     res_open = client.get("/openapi.json")
     assert res_open.status_code == 200
     schema = res_open.json()
     assert "/api/scenario/advance" in schema["paths"]
 
-    # F01: POST /api/scenario/advance with sensitivity parameters succeeds
+    # POST /api/scenario/advance with sensitivity parameters succeeds
     client.post("/api/scenario/reset")
     client.post("/api/scenario/select", json={"scenario_id": "confirmed_replacement"})
     res_adv = client.post("/api/scenario/advance", json={"crew_size": 6, "access_hours": 2.0})
@@ -111,7 +111,7 @@ def test_openapi_and_advance_sensitivity():
 
 
 def test_advance_atomic_rollback():
-    # F03: Rejected advance does not mutate state or increment revision
+    # Rejected advance does not mutate state or increment revision
     client.post("/api/scenario/reset")
     client.post("/api/scenario/select", json={"scenario_id": "confirmed_replacement"})
     curr_before = client.get("/api/scenario/current").json()
@@ -142,7 +142,7 @@ def test_advance_atomic_rollback():
 
 
 def test_extra_fields_forbidden():
-    # F07: Extra unsupported fields in requests return 422
+    # Extra unsupported fields in requests return 422
     res = client.post("/api/scenario/select", json={
         "scenario_id": "confirmed_replacement",
         "damage_quantity": 3
@@ -165,7 +165,7 @@ def test_extra_fields_forbidden():
 
 
 def test_battery_boundary_validation():
-    # F08: Invalid inverter efficiency (< 0.5 or > 1.0) rejected with HTTP 400
+    # Invalid inverter efficiency (< 0.5 or > 1.0) rejected with HTTP 400
     res_low = client.post("/api/customer/battery-runtime", json={
         "capacity_wh": 1000,
         "usable_fraction": 0.85,
@@ -185,7 +185,7 @@ def test_battery_boundary_validation():
 
 
 def test_customer_alert_plan_and_privacy():
-    # F06 & F09: Alert plan eligibility and internal asset id redaction
+    # Alert plan eligibility and internal asset id redaction
     client.post("/api/scenario/reset")
     client.post("/api/scenario/select", json={"scenario_id": "confirmed_replacement"})
     res = client.get("/api/customer/snapshot")
@@ -193,14 +193,14 @@ def test_customer_alert_plan_and_privacy():
     data = res.json()
     alert_plan = data["alert_plan"]
     assert alert_plan["eligible"] is True
-    # F09: Raw asset ID not directly interpolated into customer basis
+    # Raw asset ID not directly interpolated into customer basis
     assert "ASSET-" not in alert_plan["basis"]
     assert "T-DEMO" not in alert_plan["basis"]
     assert "escalation_policy" in alert_plan
 
 
 def test_scenario_selection_notification_dedup():
-    # F05: Single OUTAGE_CONFIRMED, no double alerts
+    # Single OUTAGE_CONFIRMED, no double alerts
     client.post("/api/scenario/reset")
     res = client.post("/api/scenario/select", json={"scenario_id": "confirmed_replacement"})
     assert res.status_code == 200
@@ -210,7 +210,7 @@ def test_scenario_selection_notification_dedup():
 
 
 def test_session_isolation():
-    # P1-03: Multiple sessions maintain isolated states
+    # Multiple sessions maintain isolated states
     s1 = client.post("/api/session/new").json()["session_id"]
     s2 = client.post("/api/session/new").json()["session_id"]
     assert s1 != s2
@@ -227,7 +227,7 @@ def test_session_isolation():
 
 
 def test_restoration_authorization_gating():
-    # P0-01: Direct RESTORED status without clearing blockers or operator authorization must be rejected
+    # Direct RESTORED status without clearing blockers or operator authorization must be rejected
     sid = client.post("/api/session/new").json()["session_id"]
     client.post("/api/scenario/select", json={"scenario_id": "local_protection"}, headers={"X-Session-ID": sid})
 
@@ -248,7 +248,7 @@ def test_restoration_authorization_gating():
 
 
 def test_customer_view_revision_and_escalation_preview():
-    # R-01 & R-06: Customer snapshot exposes authoritative revision and simulation preview escalation
+    # Customer snapshot exposes authoritative revision and simulation preview escalation
     client.post("/api/scenario/reset")
     snap_before = client.get("/api/scenario/current").json()
     cust_view = client.get("/api/customer/snapshot").json()
@@ -260,7 +260,7 @@ def test_customer_view_revision_and_escalation_preview():
 
 
 
-# Run 3: real endpoint regressions for session integrity and cache policy.
+# Endpoint regressions for session integrity and cache policy.
 def _selected_session():
     sid = client.post('/api/session/new').json()['session_id']
     headers = {'X-Session-ID': sid}
