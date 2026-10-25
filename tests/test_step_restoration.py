@@ -96,4 +96,3 @@ def test_elapsed_estimates_or_caller_flags_do_not_create_events(source):
     result = apply_section_action(demo, 'isolate_section')
     assert result['status'] == 'OUTAGE'
     assert result['restored_count'] == 0 and not result['completed_repair']
-

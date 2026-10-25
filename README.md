@@ -5,9 +5,9 @@
 ### Current rubric completion and demo
 
 See the [current AEP Guide and rubric crosswalk](docs/latest_guide_closure.md) for
-verified features, source limits and test results. Start in **Prevention & Evidence**
+verified features, source limits and test results. Open **Prevention** (`/prevention`)
 to replay developing condition trends and inspect the assumed response comparison.
-In **Utility Console**, select the confirmed replacement scenario, keep three crew
+In **Operator**, select the confirmed replacement scenario, keep three crew
 members and zero access delay, and inspect the sourced critical-first comparison.
 Then start **Step restoration**, isolate the section, authorize the unaffected
 group, complete repair and authorize the repaired group: the modeled outage count

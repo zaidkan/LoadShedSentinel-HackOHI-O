@@ -87,4 +87,3 @@ def test_no_hospital_association_does_not_invent_criticality(monkeypatch):
     result = compare(monkeypatch, ['PREM-H'], ['PREM-A'], facility_count=0)
     assert not result['enabled']
     assert result['hospital_first'] is None and result['unprioritized'] is None
-
