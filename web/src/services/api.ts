@@ -72,26 +72,33 @@ let _memorySessionId: string | null = null;
 
 export function getSessionId(): string {
   let sid: string | null = null;
-  if (typeof sessionStorage !== 'undefined') {
-    try {
-      sid = sessionStorage.getItem('loadshed_session_id');
-    } catch {
-      sid = null;
+  try {
+    const storage = typeof window !== 'undefined' ? window.sessionStorage : (typeof globalThis !== 'undefined' ? (globalThis as any).sessionStorage : null);
+    if (storage) {
+      sid = storage.getItem('loadshed_session_id');
     }
+  } catch {
+    sid = null;
   }
-  if (!sid) {
-    sid = _memorySessionId;
-  }
-  if (!sid) {
-    sid = 'sess_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
-    if (typeof sessionStorage !== 'undefined') {
-      try {
-        sessionStorage.setItem('loadshed_session_id', sid);
-      } catch {
-        // quota or security error fallback to memory
-      }
-    }
+
+  if (sid) {
     _memorySessionId = sid;
+    return sid;
+  }
+
+  if (_memorySessionId) {
+    return _memorySessionId;
+  }
+
+  sid = 'sess_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
+  _memorySessionId = sid;
+  try {
+    const storage = typeof window !== 'undefined' ? window.sessionStorage : (typeof globalThis !== 'undefined' ? (globalThis as any).sessionStorage : null);
+    if (storage) {
+      storage.setItem('loadshed_session_id', sid);
+    }
+  } catch {
+    // quota or security error fallback to memory
   }
   return sid;
 }
