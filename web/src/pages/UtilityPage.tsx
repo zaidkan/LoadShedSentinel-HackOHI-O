@@ -42,21 +42,22 @@ function Situation({ snapshot }: { snapshot: ScenarioSnapshot }) {
 
 function SourceLegend({ snapshot }: { snapshot: ScenarioSnapshot }) {
   const counts = snapshot.evidence.reduce<Partial<Record<Provenance, number>>>((acc, e) => ({ ...acc, [e.provenance]: (acc[e.provenance] ?? 0) + 1 }), {});
+  const fieldConfirmed = snapshot.evidence.filter(e => e.quality === 'field_confirmed').length;
   return <section className="console-block" aria-labelledby="legend-heading">
     <header className="block-head">
       <h2 id="legend-heading" className="console-h2"><em>Source</em> legend</h2>
-      <p className="block-sub">Every reading in this console carries one of these sources. Counts are records of that source in this incident.</p>
+      <p className="block-sub">Every reading in this console carries one of these sources. Bracketed counts are evidence records in this incident.</p>
     </header>
     <ul className="legend-list">
       {(Object.keys(PROVENANCE) as Provenance[]).map(key => <li key={key}>
         <span className="tag" data-source={key}>{PROVENANCE[key]}</span>
         <p>{PROVENANCE_NOTE[key]}</p>
-        <span className="mono legend-count">[{counts[key] ?? 0}]</span>
+        <span className="mono legend-count" data-zero={!counts[key] || undefined}><span aria-hidden="true">[{counts[key] ?? 0}]</span><span className="sr-only">{counts[key] ?? 0} evidence records in this incident</span></span>
       </li>)}
       <li>
         <span className="tag" data-source="field_confirmed">Field confirmed</span>
         <p>Quality mark for records the scenario declares as confirmed in the field.</p>
-        <span className="mono legend-count">[{snapshot.evidence.filter(e => e.quality === 'field_confirmed').length}]</span>
+        <span className="mono legend-count" data-zero={!fieldConfirmed || undefined}><span aria-hidden="true">[{fieldConfirmed}]</span><span className="sr-only">{fieldConfirmed} evidence records in this incident</span></span>
       </li>
     </ul>
   </section>;

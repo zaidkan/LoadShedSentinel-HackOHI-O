@@ -36,8 +36,10 @@ const KIND_LABEL: Record<string, string> = {
 export const kindLabel = (kind: string) => KIND_LABEL[kind] ?? sentenceCase(kind);
 export const tokenTail = (token: string) => `…${token.slice(-8)}`;
 
-/** Hours as a short reading figure: 1.69 → "1.7 h". */
-export const hoursText = (value: number | null | undefined) => value === null || value === undefined || !Number.isFinite(value) ? 'Unavailable' : `${numberText(value)} h`;
+/** A planning range as the console charts print it: 1.6875, 3.375 → "1.69–3.38 h". */
+export const rangeHoursText = (lower: number | null | undefined, upper: number | null | undefined) =>
+  lower === null || lower === undefined || upper === null || upper === undefined || !Number.isFinite(lower) || !Number.isFinite(upper)
+    ? 'Unavailable' : `${numberText(lower, 2)}–${numberText(upper, 2)} h`;
 
 /** Hours in plain words for customers: 2.25 → "2 hours 15 minutes". */
 export function hoursWords(value: number | null | undefined): string {

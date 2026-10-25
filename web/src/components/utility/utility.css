@@ -992,6 +992,10 @@
   color: var(--ink);
 }
 
+.legend-count[data-zero] {
+  color: var(--muted);
+}
+
 /* Responsive */
 
 @media (max-width: 1180px) {

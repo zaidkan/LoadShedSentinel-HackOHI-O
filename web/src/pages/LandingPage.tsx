@@ -9,7 +9,7 @@ import { useSmoothScroll } from '../app/smooth-scroll';
 import { SiteFooter } from '../components/shell/SiteFooter';
 import { SiteHeader } from '../components/shell/SiteHeader';
 import { scenarioName, scenarioQualifier } from '../components/shell/IncidentBar';
-import { PROVENANCE, PROVENANCE_NOTE, hoursText, humanize, numberText, scoreText, tokenTail } from '../components/utility/presentation';
+import { PROVENANCE, PROVENANCE_NOTE, humanize, numberText, rangeHoursText, scoreText, tokenTail } from '../components/utility/presentation';
 import { SOURCE_FIGURES } from '../content/source-figures';
 import { incidentHotspots } from '../sentinel/hotspots';
 import { SentinelStage, WebGLBoundary, useWebGLSupport } from '../sentinel/SentinelStage';
@@ -162,7 +162,7 @@ function Method() {
     {
       title: 'Customer guidance', tag: 'Estimated restoration', source: 'estimate',
       text: 'Status in plain language, home battery runtime against the planning range, and preparation steps ordered by urgency.',
-      live: restoration && restoration.kind !== 'unavailable' ? `Planning range ${hoursText(restoration.lower_hours)} to ${hoursText(restoration.upper_hours)}` : 'Restoration estimate unavailable for this incident',
+      live: restoration && restoration.kind !== 'unavailable' ? `Planning range ${rangeHoursText(restoration.lower_hours, restoration.upper_hours)}` : 'Restoration estimate unavailable for this incident',
     },
   ];
   return <section className="method" aria-labelledby="method-title">
@@ -245,11 +245,12 @@ function Receipts() {
         <Heading id="receipts-title" lines={['Technology', <><Hook />with receipts</>]} />
         <p className="lead">Every evidence record carries its provenance. The counts in brackets are records of that kind in the incident loaded now.</p>
       </div>
+      <p className="receipt-caption" aria-hidden="true">Evidence records in this incident</p>
       <Rows className="receipt-list">
         <ul>{(Object.keys(PROVENANCE) as Provenance[]).map(key => <li key={key} className="receipt-row">
           <h3 className="title">{PROVENANCE[key]}</h3>
           <p>{PROVENANCE_NOTE[key]}</p>
-          <span className="receipt-count mono" aria-label={`${counts.get(key) ?? 0} records`}>[{counts.get(key) ?? 0}]</span>
+          <span className="receipt-count mono" data-zero={!counts.get(key) || undefined}><span aria-hidden="true">[{counts.get(key) ?? 0}]</span><span className="sr-only">{counts.get(key) ?? 0} evidence records in this incident</span></span>
         </li>)}</ul>
       </Rows>
       <div className="receipts-sample">
@@ -272,7 +273,7 @@ function Views() {
   const panelRef = useReveal<HTMLDivElement>();
   const top = snapshot?.hypotheses[0];
   const restoration = snapshot?.restoration;
-  const range = restoration && restoration.kind !== 'unavailable' ? `${hoursText(restoration.lower_hours)} to ${hoursText(restoration.upper_hours)}` : 'Unavailable';
+  const range = restoration && restoration.kind !== 'unavailable' ? rangeHoursText(restoration.lower_hours, restoration.upper_hours) : 'Unavailable';
   return <section className="views" aria-labelledby="views-title">
     <div className="page">
       <div className="section-head">

@@ -566,6 +566,18 @@
   color: var(--ink);
 }
 
+.receipt-count[data-zero] {
+  color: var(--muted);
+}
+
+.receipt-caption {
+  margin-bottom: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  text-align: right;
+}
+
 .receipts-sample {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
