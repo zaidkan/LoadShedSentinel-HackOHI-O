@@ -255,7 +255,7 @@ samp,
   border-radius: var(--radius-pill);
   background: linear-gradient(var(--btn-fill), var(--btn-fill)) padding-box, var(--btn-stroke) border-box;
   color: var(--btn-text);
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   font-weight: 560;
   line-height: 1;
   text-decoration: none;
@@ -304,7 +304,7 @@ samp,
 .btn--small {
   min-height: 40px;
   padding: 0 1rem;
-  font-size: 0.875rem;
+  font-size: var(--text-small);
 }
 
 .btn:disabled {
@@ -322,7 +322,7 @@ samp,
   border-radius: var(--radius-pill);
   background: transparent;
   color: var(--ink-2);
-  font-size: 0.875rem;
+  font-size: var(--text-small);
   font-weight: 540;
   transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
@@ -489,7 +489,7 @@ textarea.input {
   border-radius: var(--radius-pill);
   background: var(--state-soft);
   color: var(--state-ink);
-  font-size: 0.8125rem;
+  font-size: var(--text-label);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -540,7 +540,7 @@ textarea.input {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-pill);
   color: var(--ink-2);
-  font-size: 0.75rem;
+  font-size: var(--text-micro);
   font-weight: 560;
   white-space: nowrap;
 }

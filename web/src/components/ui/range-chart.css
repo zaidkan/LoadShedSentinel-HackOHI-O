@@ -81,7 +81,7 @@
   background: var(--rc-ink);
   color: var(--paper);
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--text-tiny);
   white-space: nowrap;
 }
 
@@ -134,7 +134,7 @@
   transform: translateX(-50%);
   color: var(--rc-muted);
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: var(--text-tiny);
   white-space: nowrap;
 }
 

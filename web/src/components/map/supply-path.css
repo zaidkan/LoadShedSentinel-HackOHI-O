@@ -94,25 +94,25 @@
   fill: var(--ink-2);
   stroke: none;
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: var(--text-tiny);
   font-weight: 700;
 }
 
 .supply-kind {
   fill: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-tiny);
   font-weight: 560;
 }
 
 .supply-token {
   fill: var(--ink);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--text-tiny);
 }
 
 .supply-columns text {
   fill: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-tiny);
   font-weight: 600;
 }
 
@@ -124,7 +124,7 @@
 
 .supply-node--substation .supply-glyph {
   fill: var(--muted);
-  font-size: 12px;
+  font-size: var(--text-micro);
 }
 
 .supply-node--substation .supply-token {
@@ -216,7 +216,7 @@
 
 .supply-flag {
   fill: var(--accent-strong);
-  font-size: 11px;
+  font-size: var(--text-tiny);
   font-weight: 600;
 }
 
@@ -433,7 +433,7 @@
   border: 1.5px dashed var(--muted);
   border-radius: 4px;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: var(--text-tiny);
 }
 
 .supply-tree-premises {

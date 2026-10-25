@@ -142,7 +142,7 @@
 }
 
 .hero-title {
-  font-size: clamp(2.3rem, 6.2vw, 5.25rem);
+  font-size: var(--text-hero);
   text-shadow: 0 2px 14px rgb(12 10 29 / 0.45);
 }
 
@@ -343,7 +343,7 @@
 
 .ledger td {
   text-align: right;
-  font-size: 0.9375rem;
+  font-size: var(--text-body);
 }
 
 .ledger figcaption {
@@ -562,7 +562,7 @@
 
 .receipt-count {
   justify-self: end;
-  font-size: 1.125rem;
+  font-size: var(--text-body-l);
   color: var(--accent-strong);
 }
 

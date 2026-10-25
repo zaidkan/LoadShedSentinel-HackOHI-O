@@ -27,7 +27,7 @@
 .feeder-cell text {
   fill: var(--muted);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--text-tiny);
 }
 
 .feeder-node .feeder-token {
@@ -85,7 +85,7 @@
 
 .feeder-node text {
   fill: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-tiny);
   font-weight: 560;
   pointer-events: none;
 }
@@ -115,7 +115,7 @@
 }
 
 .feeder-inspector .select {
-  font-size: 0.8125rem;
+  font-size: var(--text-label);
 }
 
 .feeder-inspector p {

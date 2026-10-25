@@ -81,7 +81,7 @@
   border-radius: var(--radius-m);
   background: rgb(12 10 29 / 0.78);
   box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.6);
-  font-size: 0.75rem;
+  font-size: var(--text-micro);
   line-height: 1.3;
   opacity: 0;
   transform: translateX(-6px);
@@ -95,7 +95,7 @@
 
 .sentinel-hotspot-label strong {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: var(--text-label);
   font-weight: 500;
   color: var(--on-night);
 }
@@ -123,5 +123,5 @@
 }
 
 .sentinel-hotspot--compact .sentinel-hotspot-label {
-  font-size: 0.6875rem;
+  font-size: var(--text-tiny);
 }
