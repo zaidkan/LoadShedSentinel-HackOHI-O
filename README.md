@@ -22,7 +22,7 @@ LoadShed Sentinel bridges the utility distribution blind spot by combining real 
    - Models edge IoT solar/battery node physics (25 W PV panel, 41 Wh battery, sleep/wake power budget).
 
 3. **Procedural 3D Digital Twin & Utility Operator Console**:
-   - Interactive Three.js/WebGL procedural utility pole, distribution transformer, sensor pod, and animated cutout switch (latched switch vs modeled blown drop).
+   - Interactive Three.js/WebGL procedural pole assembly (wood pole, crossarm, distribution transformer, protective cutout, solar module and the Sentinel sensing node) with a hero presentation mode and a technical inspection mode; in inspection the cutout fuse door follows the reported state (latched, dropped, or position not asserted). Preview at `/#/sentinel`; see [`docs/sentinel_3d_integration.md`](docs/sentinel_3d_integration.md).
    - Source-derived schematic SVG feeder map visualizing provided upstream equipment relationships (not measured power flow or live state).
    - Telemetry HUD with protective cutout state, modeled battery/solar status, and communications connectivity.
 
