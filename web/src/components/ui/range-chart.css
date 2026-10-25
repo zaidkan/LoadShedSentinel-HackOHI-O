@@ -4,8 +4,8 @@
   --rc-grid: var(--line);
   --rc-band: var(--accent-soft);
   --rc-band-edge: var(--accent);
-  --rc-bar: var(--state-closed-fill);
-  --rc-bar-soft: var(--state-closed-soft);
+  --rc-bar: color-mix(in srgb, var(--ink-2) 22%, transparent);
+  --rc-bar-edge: var(--ink-2);
   margin: 0;
 }
 
@@ -97,6 +97,8 @@
   top: 0.35rem;
   bottom: 0.35rem;
   left: 0;
+  border: 1.5px solid var(--rc-bar-edge);
+  border-left: 0;
   border-radius: 0 var(--radius-s) var(--radius-s) 0;
   background: var(--rc-bar);
   transform-origin: left center;
@@ -111,9 +113,9 @@
 }
 
 .range-chart-bar[data-tone="soft"] {
-  background: var(--rc-bar-soft);
-  border: 1px solid var(--rc-bar);
-  border-left: 0;
+  border-width: 1px;
+  border-style: dashed;
+  background: transparent;
 }
 
 .range-chart-bar-label {

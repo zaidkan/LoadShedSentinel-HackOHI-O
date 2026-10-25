@@ -420,7 +420,7 @@
 .method-live-label {
   font-size: var(--text-micro);
   font-weight: 600;
-  color: var(--accent-strong);
+  color: var(--muted);
 }
 
 @media (max-width: 1080px) {
@@ -563,7 +563,7 @@
 .receipt-count {
   justify-self: end;
   font-size: var(--text-body-l);
-  color: var(--accent-strong);
+  color: var(--ink);
 }
 
 .receipts-sample {

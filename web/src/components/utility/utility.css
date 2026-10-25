@@ -682,7 +682,7 @@
 }
 
 .evidence-chip .mono {
-  color: var(--accent-strong);
+  color: var(--ink);
   font-weight: 600;
 }
 
@@ -724,7 +724,7 @@
 
 .ledger-table tbody th .mono {
   display: block;
-  color: var(--accent-strong);
+  color: var(--ink);
 }
 
 .ledger-table td > * {
@@ -837,6 +837,7 @@
 }
 
 .planning-figure {
+  color: var(--ink-2);
   font-size: var(--text-heading);
   font-weight: 500;
   line-height: 1.05;
@@ -851,7 +852,8 @@
 }
 
 .planning-figures > div[data-emphasis] .planning-figure {
-  color: var(--accent-strong);
+  color: var(--ink);
+  font-weight: 620;
 }
 
 .planning-empty {
@@ -880,7 +882,7 @@
 }
 
 .planning-assumptions summary .mono {
-  color: var(--accent-strong);
+  color: var(--muted);
 }
 
 .planning-assumptions ol {
@@ -978,7 +980,7 @@
 }
 
 .legend-count {
-  color: var(--accent-strong);
+  color: var(--ink);
 }
 
 /* Responsive */

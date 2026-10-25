@@ -162,6 +162,7 @@
 }
 
 .outlook-time {
+  color: var(--ink-2);
   font-family: var(--font-display);
   font-size: var(--text-display-s);
   line-height: 1;
@@ -170,7 +171,7 @@
 }
 
 .outlook li[data-emphasis] .outlook-time {
-  color: var(--accent-strong);
+  color: var(--ink);
 }
 
 .outlook-after {
@@ -553,7 +554,7 @@
 
 .planner-headline strong {
   white-space: nowrap;
-  color: var(--accent-strong);
+  color: var(--ink);
   font-style: italic;
   font-weight: 400;
 }
