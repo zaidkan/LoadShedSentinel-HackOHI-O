@@ -1,405 +1,290 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { Search } from 'lucide-react';
 import type { ScenarioSnapshot } from '../../../contracts/types';
+import { useIncident } from '../app/incident';
+import { BatteryPlanner, INVERTER_EFFICIENCY, RESERVE_MARGIN } from '../components/customer/BatteryPlanner';
+import { DEFAULT_NEEDS, GuidanceList, NeedsPicker, type HouseholdNeeds } from '../components/customer/HouseholdNeeds';
+import { localClockAfter, localDateTime } from '../components/customer/time';
+import { scenarioName, scenarioQualifier } from '../components/shell/IncidentBar';
+import { hoursWords, kindLabel, numberText, sentenceCase, tokenTail } from '../components/utility/presentation';
 import {
-  fetchCustomerSnapshot,
   calculateBatteryRuntime,
+  fetchCustomerSnapshot,
   fetchPreparednessGuidance,
   lookupPremiseTopology,
-  CustomerSnapshotView,
-  BatteryCalcResult,
-  PreparednessGuidance,
+  type BatteryCalcResult,
+  type CustomerSnapshotView,
+  type PreparednessGuidance,
+  type TopologyTrace,
 } from '../services/api';
-import { ShieldAlert, Battery, AlertTriangle, Clock, HeartPulse, CheckCircle2, Search, GitBranch } from 'lucide-react';
+import '../components/customer/customer.css';
 
 export interface CustomerPageProps {
   snapshot: ScenarioSnapshot;
   scenarioId?: string;
 }
 
-export const CustomerPage: React.FC<CustomerPageProps> = ({ snapshot: scenarioSnapshot, scenarioId }) => {
-  const [snapshot, setSnapshot] = useState<CustomerSnapshotView | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [premiseToken, setPremiseToken] = useState('');
-  const [topologyTrace, setTopologyTrace] = useState<any | null>(null);
-  const [traceLoading, setTraceLoading] = useState(false);
+type Status = CustomerSnapshotView['status'];
 
-  // Household Needs State
-  const [needs, setNeeds] = useState({
-    food_refrigeration: true,
-    refrigerated_medication: false,
-    life_critical_medical_device: false,
-    medical_device_notes: '',
-    mobility_accessibility_needs: false,
-    communications_charging: true,
-    sump_pump: false,
-    backup_battery_available: true,
-    battery_capacity_wh: 1000,
-    battery_usable_pct: 0.85,
-    essential_load_w: 120,
-  });
+const HEADLINE: Record<Status, [string, string]> = {
+  OUTAGE: ['Your', 'power is out'],
+  UNDER_REVIEW: ['We’re', 'checking your service'],
+  AT_RISK: ['Your', 'service is at risk'],
+  RESTORED: ['Your', 'power is back'],
+  NORMAL: ['No', 'outage reported'],
+};
 
-  const [batteryCalc, setBatteryCalc] = useState<BatteryCalcResult | null>(null);
-  const [guidance, setGuidance] = useState<PreparednessGuidance[]>([]);
+const NOTICE_LABEL: Record<string, string> = {
+  OUTAGE_CONFIRMED: 'Outage confirmed',
+  ESTIMATE_UPDATED: 'Estimate updated',
+  RESTORED: 'Power restored',
+  AT_RISK: 'Risk alert',
+};
 
-  useEffect(() => {
-    loadSnapshot();
-  }, [scenarioId, scenarioSnapshot.incident_id, scenarioSnapshot.revision, scenarioSnapshot.current_asset_id]);
+const RISK_STATE: Record<string, string> = { HIGH: 'critical', MODERATE: 'open', LOW: 'normal', UNKNOWN: 'unknown' };
 
-  useEffect(() => {
-    runBatteryCalculation();
-    loadPreparedness();
-  }, [needs]);
+/** Survives the remount that follows each incident revision, so a household keeps its plan within the session. */
+let rememberedNeeds: HouseholdNeeds = DEFAULT_NEEDS;
 
-  async function loadSnapshot() {
-    try {
-      const data = await fetchCustomerSnapshot();
-      setSnapshot(data);
-      // This selected premise is drawn from the same source-dependent fault footprint.
-      setPremiseToken(data.selected_premise_token);
-      setTopologyTrace(null);
-    } catch (e) {
-      console.error('Failed to load customer snapshot', e);
-    } finally {
-      setLoading(false);
+function statusBody(view: CustomerSnapshotView): string {
+  const source = view.impact_source;
+  switch (view.status) {
+    case 'OUTAGE': {
+      const reach = source ? source.full_source_known_dependent_count && source.full_source_known_dependent_count > source.affected_count_in_sample
+        ? ` ${source.affected_count_in_sample} of the ${source.sample_premise_count} sample premises share the same equipment, and so do ${numberText(source.full_source_known_dependent_count, 0)} premises in the full AEP source.`
+        : ` ${source.affected_count_in_sample} of the ${source.sample_premise_count} sample premises share the same equipment.` : '';
+      return `This premise depends on ${source ? `a ${kindLabel(source.fault_asset_kind).toLowerCase()}` : 'equipment'} with a simulated fault.${reach} The cause is still being assessed.`;
     }
+    case 'UNDER_REVIEW': return 'Readings from the equipment that serves this premise disagree, so we are not saying whether the power is out. A qualified crew needs to check it before anyone gives a restoration time.';
+    case 'AT_RISK': return 'Equipment that serves this premise is flagged as at risk in this scenario.';
+    case 'RESTORED': return 'Service is shown as restored in this scenario.';
+    default: return 'No outage is reported for this premise in this scenario.';
   }
+}
 
-  async function runBatteryCalculation() {
-    if (needs.battery_capacity_wh > 0 && needs.essential_load_w > 0) {
-      try {
-        const res = await calculateBatteryRuntime({
+export function CustomerPage({ snapshot: scenarioSnapshot, scenarioId }: CustomerPageProps) {
+  const { scenarios } = useIncident();
+  const [view, setView] = useState<CustomerSnapshotView | null>(null);
+  const [loadState, setLoadState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [attempt, setAttempt] = useState(0);
+  const [premiseToken, setPremiseToken] = useState('');
+  const [trace, setTrace] = useState<TopologyTrace | null>(null);
+  const [tracedToken, setTracedToken] = useState('');
+  const [traceState, setTraceState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [needs, setNeedsState] = useState<HouseholdNeeds>(rememberedNeeds);
+  const [battery, setBattery] = useState<BatteryCalcResult | null>(null);
+  const [batteryState, setBatteryState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [guidance, setGuidance] = useState<PreparednessGuidance[]>([]);
+  const [guidanceState, setGuidanceState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const requestSeq = useRef(0);
+
+  const setNeeds = (next: HouseholdNeeds) => { rememberedNeeds = next; setNeedsState(next); };
+
+  const runTrace = async (token: string) => {
+    const premise = token.trim().toUpperCase();
+    if (!premise) return;
+    setTraceState('loading');
+    try {
+      setTrace(await lookupPremiseTopology(premise));
+      setTracedToken(premise);
+      setTraceState('idle');
+    } catch (error) {
+      console.error('Topology lookup failed', error);
+      setTraceState('error');
+    }
+  };
+
+  useEffect(() => {
+    let live = true;
+    setLoadState('loading');
+    fetchCustomerSnapshot()
+      .then(data => {
+        if (!live) return;
+        setView(data);
+        // This selected premise is drawn from the same source-dependent fault footprint.
+        setPremiseToken(data.selected_premise_token);
+        setTrace(null);
+        setLoadState('ready');
+        void runTrace(data.selected_premise_token);
+      })
+      .catch(error => { console.error('Failed to load customer snapshot', error); if (live) setLoadState('error'); });
+    return () => { live = false; };
+  }, [scenarioId, scenarioSnapshot.incident_id, scenarioSnapshot.revision, scenarioSnapshot.current_asset_id, attempt]);
+
+  useEffect(() => {
+    const seq = ++requestSeq.current;
+    const timer = window.setTimeout(async () => {
+      const valid = needs.battery_capacity_wh > 0 && needs.essential_load_w > 0;
+      setGuidanceState('loading');
+      if (valid) setBatteryState('loading');
+      const [runtime, steps] = await Promise.allSettled([
+        valid ? calculateBatteryRuntime({
           capacity_wh: needs.battery_capacity_wh,
           usable_fraction: needs.battery_usable_pct,
           device_w: needs.essential_load_w,
-          inverter_efficiency: 0.85,
-          reserve_margin_pct: 0.15,
-        });
-        setBatteryCalc(res);
-      } catch (err) {
-        console.error('Battery calc error', err);
-      }
-    } else {
-      setBatteryCalc(null);
-    }
-  }
+          inverter_efficiency: INVERTER_EFFICIENCY,
+          reserve_margin_pct: RESERVE_MARGIN,
+        }) : Promise.resolve(null),
+        fetchPreparednessGuidance(needs),
+      ]);
+      if (seq !== requestSeq.current) return;
+      if (runtime.status === 'fulfilled') { setBattery(runtime.value); setBatteryState('idle'); } else { console.error('Battery calc error', runtime.reason); setBatteryState('error'); }
+      if (steps.status === 'fulfilled') { setGuidance(steps.value); setGuidanceState('idle'); } else { console.error('Guidance error', steps.reason); setGuidanceState('error'); }
+    }, 180);
+    return () => window.clearTimeout(timer);
+  }, [needs]);
 
-  async function loadPreparedness() {
-    try {
-      const res = await fetchPreparednessGuidance(needs);
-      setGuidance(res);
-    } catch (err) {
-      console.error('Guidance error', err);
-    }
-  }
+  const meta = scenarios.find(item => item.id === (view?.scenario_id ?? scenarioId));
+  const restoration = view?.restoration_planning;
+  const hasRange = !!restoration && restoration.kind !== 'unavailable' && restoration.expected_hours !== null;
+  const outlook = useMemo(() => !view || !hasRange ? [] : [
+    { label: 'Earliest', hours: restoration!.lower_hours },
+    { label: 'Most likely', hours: restoration!.expected_hours },
+    { label: 'Latest', hours: restoration!.upper_hours },
+  ], [view, hasRange, restoration]);
 
-  async function handleTracePremise() {
-    if (!premiseToken) return;
-    setTraceLoading(true);
-    try {
-      const trace = await lookupPremiseTopology(premiseToken);
-      setTopologyTrace(trace);
-    } catch (e) {
-      console.error('Topology lookup failed', e);
-      setTopologyTrace(null);
-    } finally {
-      setTraceLoading(false);
-    }
-  }
+  if (loadState === 'error' && !view) return <div className="page cust-state" role="alert">
+    <h1 className="display display-m"><em>We</em> can’t load your status</h1>
+    <p className="lead">The outage service did not answer. Nothing is shown until it does, so you never see an old status.</p>
+    <button type="button" className="btn btn--accent" onClick={() => setAttempt(value => value + 1)}>Try again</button>
+  </div>;
+  if (!view) return <div className="page cust-state" role="status"><p className="muted">Loading your service status…</p></div>;
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[500px]">
-        <div className="text-slate-400 animate-pulse text-lg">Loading Customer Concierge...</div>
+  const [lead, rest] = HEADLINE[view.status] ?? HEADLINE.NORMAL;
+  const fault = view.impact_source?.fault_asset_token;
+  const showFault = view.status === 'OUTAGE';
+  const steps = trace?.status === 'KNOWN' && trace.equipment?.length ? trace.equipment : null;
+
+  const submitTrace = (event: FormEvent) => { event.preventDefault(); void runTrace(premiseToken); };
+
+  return <div className="cust">
+    <section className="cust-hero page" aria-labelledby="cust-status">
+      <div className="cust-hero-main">
+        <h1 id="cust-status" className="display display-l"><em>{lead}</em> {rest}</h1>
+        <span className="state" data-state={view.status.toLowerCase()}>{sentenceCase(view.status)} · simulated</span>
+        <p className="lead">{statusBody(view)}</p>
       </div>
-    );
-  }
+      <aside className="cust-premise" aria-label="This premise">
+        <dl>
+          <div><dt>Premise</dt><dd className="mono">{view.selected_premise_token}</dd></div>
+          <div><dt>Scenario</dt><dd>{meta ? scenarioName(meta.title) : sentenceCase(view.scenario_id)}{meta && scenarioQualifier(meta.title) ? <span className="tag" data-source="scenario">{scenarioQualifier(meta.title)}</span> : null}</dd></div>
+          <div><dt>Status as of</dt><dd><time dateTime={view.timestamp_utc}>{localDateTime(view.timestamp_utc)}</time></dd></div>
+        </dl>
+        <p className="cust-premise-note">A demonstration on AEP-supplied equipment paths. Not a live outage.</p>
+      </aside>
+    </section>
 
-  return (
-    <div className="min-w-0 max-w-4xl mx-auto px-4 py-8 space-y-8 [overflow-wrap:anywhere]">
-      {/* Header */}
-      <div className="border-b border-slate-800 pb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <ShieldAlert className="w-7 h-7 text-blue-500" />
-              LoadShed Outage Concierge
-            </h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Personalized residential storm preparation and restoration updates.
-            </p>
-          </div>
-          <div className="min-w-0 md:text-right">
-            <span className="text-xs text-slate-500 block mb-1">Premise Location Token</span>
-            <div className="flex items-center gap-1.5">
-              <input
-                type="text"
-                value={premiseToken}
-                onChange={(e) => setPremiseToken(e.target.value)}
-                placeholder="Anonymized AEP premise"
-                className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-sm text-blue-400 font-mono w-36"
-              />
-              <button
-                onClick={handleTracePremise}
-                disabled={traceLoading}
-                className="flex items-center gap-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold transition"
-              >
-                <Search className="w-3.5 h-3.5" /> Trace
-              </button>
+    <section className="cust-outlook page" aria-labelledby="cust-outlook-heading">
+      <h2 id="cust-outlook-heading" className="cust-h2"><em>When</em> power could return</h2>
+      {hasRange ? <>
+        <ol className="outlook">
+          {outlook.map(item => <li key={item.label} data-emphasis={item.label === 'Most likely' || undefined}>
+            <span className="outlook-label">{item.label}</span>
+            <span className="outlook-time">{localClockAfter(view.timestamp_utc, item.hours) ?? 'Unknown'}</span>
+            <span className="outlook-after">{hoursWords(item.hours)} after the outage began</span>
+          </li>)}
+        </ol>
+        <p className="cust-note">A planning estimate under this scenario’s assumptions, not a promise. Times are shown in your time zone.</p>
+      </> : <div className="outlook-none">
+        <p className="title">No restoration time yet</p>
+        <p className="muted">{view.status === 'UNDER_REVIEW' ? 'The equipment readings conflict, so no time is given until a crew has assessed it.' : 'No estimate is supplied for this premise.'}</p>
+      </div>}
+      {restoration?.assumptions.length ? <details className="cust-details">
+        <summary>How this {hasRange ? 'estimate was made' : 'was decided'}</summary>
+        <ul>{restoration.assumptions.map((item, index) => <li key={index}>{item}</li>)}</ul>
+      </details> : null}
+    </section>
+
+    <section className="cust-section page" aria-labelledby="cust-updates">
+      <header className="cust-section-head">
+        <h2 id="cust-updates" className="cust-h2"><em>Updates</em> for you</h2>
+        <p className="cust-note">Messages this premise would receive. In this demonstration none are actually sent.</p>
+      </header>
+      <div className="cust-section-body">
+        {view.notifications.length ? <ol className="timeline">
+          {[...view.notifications].reverse().map((notice, index) => <li key={`${notice.type}-${index}`}>
+            <div className="timeline-meta">
+              <strong>{NOTICE_LABEL[notice.type] ?? sentenceCase(notice.type)}</strong>
+              <time dateTime={notice.sent_at_utc}>{localDateTime(notice.sent_at_utc)}</time>
+              {notice.delivery_mode === 'demo' ? <span className="tag" data-source="scenario">Demo · not sent</span> : null}
             </div>
-          </div>
+            <p>{notice.text}</p>
+          </li>)}
+        </ol> : <p className="cust-empty">No updates have been sent for this premise{view.status === 'UNDER_REVIEW' ? ' while the readings are checked' : ''}.</p>}
+      </div>
+    </section>
+
+    <section className="cust-section page" aria-labelledby="cust-household">
+      <header className="cust-section-head">
+        <h2 id="cust-household" className="cust-h2"><em>Your</em> household</h2>
+        <p className="cust-note">Tell us what depends on power. The steps on the right reorder so that anything life-critical comes first.</p>
+      </header>
+      <div className="cust-section-body cust-household">
+        <NeedsPicker needs={needs} onChange={setNeeds} />
+        <div className="cust-guidance">
+          <h3 className="title">What to do</h3>
+          <GuidanceList guidance={guidance} state={guidanceState} />
         </div>
       </div>
+    </section>
 
-      {/* Step 1 Trace Result Card */}
-      {topologyTrace && (
-        <div className="bg-slate-900/90 border border-blue-900/40 rounded-xl p-4 shadow-lg space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-              <GitBranch className="w-4 h-4" /> AEP Source Supply Path (Not Live Energization)
-            </span>
-            <span className={`text-xs px-2 py-0.5 rounded font-mono ${topologyTrace.status === 'KNOWN' ? 'bg-blue-900/40 text-blue-300' : 'bg-amber-900/40 text-amber-300'}`}>
-              Status: {topologyTrace.status}
-            </span>
-          </div>
-          {topologyTrace.status === 'KNOWN' ? (
-            <>
-              <div className="flex flex-wrap items-center gap-2 text-xs font-mono pt-1">
-                <span className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-blue-300 font-bold">
-                  {topologyTrace.premise_token || premiseToken}
-                </span>
-                {topologyTrace.equipment?.map((eq: any, idx: number) => (
-                  <React.Fragment key={idx}>
-                    <span className="text-slate-500">→</span>
-                    <span className="px-2 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">
-                      {eq.kind}: <span className="text-amber-400">{eq.asset_token}</span>
-                    </span>
-                  </React.Fragment>
-                ))}
-              </div>
-              <div className="text-[11px] text-slate-500 italic pt-1">
-                Endpoint: {topologyTrace.endpoint || 'Circuit Breaker'} · Substation status: {topologyTrace.substation_status || 'UNKNOWN'} · Basis: {topologyTrace.basis || 'AEP graph'}
-              </div>
+    <section className="cust-section page" aria-labelledby="cust-battery">
+      <header className="cust-section-head">
+        <h2 id="cust-battery" className="cust-h2"><em>Backup</em> power</h2>
+        <p className="cust-note">How long a home battery could run your essentials, next to the restoration estimate.</p>
+      </header>
+      <div className="cust-section-body">
+        <BatteryPlanner needs={needs} onChange={setNeeds} result={battery} state={batteryState} restoration={restoration} />
+      </div>
+    </section>
+
+    <section className="cust-section page" aria-labelledby="cust-path">
+      <header className="cust-section-head">
+        <h2 id="cust-path" className="cust-h2"><em>Where</em> your power comes from</h2>
+        <p className="cust-note">The equipment path the AEP sample data lists for a premise. It is not a live view of which lines are energized.</p>
+      </header>
+      <div className="cust-section-body">
+        <form className="cust-trace-form" onSubmit={submitTrace}>
+          <label className="field">
+            <span className="field-label">Premise token</span>
+            <input className="input mono" value={premiseToken} onChange={event => setPremiseToken(event.target.value)} placeholder="Anonymized AEP premise" spellCheck={false} autoComplete="off" />
+          </label>
+          <button type="submit" className="btn btn--small" disabled={traceState === 'loading' || !premiseToken.trim()}><Search aria-hidden="true" />{traceState === 'loading' ? 'Tracing…' : 'Trace'}</button>
+        </form>
+        <div className="cust-path" aria-live="polite">
+          {traceState === 'error' ? <p className="cust-alert" role="alert">The path lookup failed. Check the connection and try again.</p>
+            : !trace ? null
+            : steps ? <>
+              <ol className="path-steps" aria-label="Equipment from this premise up toward the substation">
+                <li data-kind="premise"><span className="path-kind">{tracedToken === view.selected_premise_token ? 'Your premise' : 'Premise'}</span><span className="mono">{tokenTail(tracedToken)}</span></li>
+                {steps.map(step => <li key={step.asset_token} data-fault={showFault && step.asset_token === fault || undefined}>
+                  <span className="path-kind">{kindLabel(step.kind)}</span><span className="mono">{tokenTail(step.asset_token)}</span>
+                  {showFault && step.asset_token === fault ? <span className="state" data-state="critical">Simulated fault here</span> : null}
+                </li>)}
+                <li data-kind="substation"><span className="path-kind">Substation</span><span className="muted">{trace.substation_status === 'UNKNOWN' || !trace.substation_status ? 'Not identified in the data' : trace.substation_status}</span></li>
+              </ol>
+              {trace.limitations?.length ? <div className="cust-limits">
+                <h3 className="title">What this path can’t show</h3>
+                <ul>{trace.limitations.map(item => <li key={item}>{item}</li>)}</ul>
+              </div> : null}
             </>
-          ) : (
-            <div className="text-xs text-amber-300 py-1 font-mono">
-              Premise {premiseToken} not mapped in distribution network slice (Reason: {topologyTrace.reason || 'unmapped'}).
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Step 2: Storm Readiness & Outage Status */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Outage Status Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Service Status</span>
-            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-              snapshot?.status === 'OUTAGE' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-              snapshot?.status === 'RESTORED' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-              'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-            }`}>
-              {snapshot?.status || 'NORMAL'}
-            </span>
-          </div>
-
-          <div className="text-xl font-bold text-white mb-2">
-            {snapshot?.status === 'OUTAGE' ? 'Service Disruption Active' : 'Service Operating Normally'}
-          </div>
-
-          <p className="text-sm text-slate-400 mb-4">
-            {snapshot?.status === 'OUTAGE'
-              ? 'Local protective equipment triggered. Utility dispatch investigating supply line.'
-              : 'Supply lines operating within normal load parameters.'}
-          </p>
-
-          {snapshot?.impact_source && (
-            <p className="text-xs text-blue-300 mb-3">
-              {snapshot.status === 'UNDER_REVIEW'
-                ? 'Affected customer count is unconfirmed.'
-                : `${snapshot.impact_source.affected_count_in_sample} modeled dependent premises in a ${snapshot.impact_source.sample_premise_count}-premise AEP source sample.`}
-              {' '}These are simulated dependencies, not confirmed live outages.
-            </p>
-          )}
-
-          {snapshot?.restoration_planning && (
-            <div className="bg-slate-950/60 rounded-lg p-3 border border-slate-800/80 flex items-center gap-3">
-              <Clock className="w-5 h-5 text-amber-400 shrink-0" />
-              <div>
-                <div className="text-xs text-slate-400">Estimated Planning Range</div>
-                <div className="text-sm font-semibold text-slate-200">
-                  {snapshot.restoration_planning.expected_hours
-                    ? `~${snapshot.restoration_planning.expected_hours} hours (${snapshot.restoration_planning.lower_hours ?? 1}h - ${snapshot.restoration_planning.upper_hours ?? 4}h range)`
-                    : 'Awaiting crew assessment'}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Risk & Weather Drivers */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Forecast Risk Band</span>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
-              {snapshot?.customer_risk?.band || 'UNKNOWN'}
-            </span>
-          </div>
-
-          <div className="text-xl font-bold text-white mb-2">Contributing Factors</div>
-          <ul className="space-y-1.5 text-sm text-slate-300">
-            {snapshot?.customer_risk?.drivers?.map((d, i) => (
-              <li key={i} className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                {d}
-              </li>
-            ))}
-          </ul>
+            : <p className="cust-empty">We could not find <span className="mono">{tracedToken}</span> in the public AEP sample, so we can’t show its path{trace.reason ? ` (${sentenceCase(trace.reason)})` : ''}.</p>}
         </div>
       </div>
+    </section>
 
-      {/* Step 4: Household Needs Declaration */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg space-y-4">
-        <div className="flex items-center gap-2">
-          <HeartPulse className="w-5 h-5 text-rose-400" />
-          <h2 className="text-lg font-bold text-white">Declared Household Needs</h2>
-        </div>
-        <p className="text-sm text-slate-400">
-          Declare special power dependencies. Guidance updates dynamically to prioritize life safety.
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={needs.life_critical_medical_device}
-              onChange={(e) => setNeeds({ ...needs, life_critical_medical_device: e.target.checked })}
-              className="rounded border-slate-700 text-rose-500 focus:ring-rose-500"
-            />
-            <span className="text-sm text-slate-200">Life-Critical Medical Device</span>
-          </label>
-
-          <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={needs.refrigerated_medication}
-              onChange={(e) => setNeeds({ ...needs, refrigerated_medication: e.target.checked })}
-              className="rounded border-slate-700 text-amber-500 focus:ring-amber-500"
-            />
-            <span className="text-sm text-slate-200">Refrigerated Medicine (Insulin)</span>
-          </label>
-
-          <label className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={needs.sump_pump}
-              onChange={(e) => setNeeds({ ...needs, sump_pump: e.target.checked })}
-              className="rounded border-slate-700 text-blue-500 focus:ring-blue-500"
-            />
-            <span className="text-sm text-slate-200">Basement Sump Pump</span>
-          </label>
-        </div>
-
-        {/* Tailored Advice Cards */}
-        {guidance.length > 0 && (
-          <div className="mt-4 space-y-2">
-            {guidance.map((g, idx) => (
-              <div
-                key={idx}
-                className={`p-3.5 rounded-lg border text-sm ${
-                  g.priority === 'IMMEDIATE'
-                    ? 'bg-rose-950/30 border-rose-800/60 text-rose-200'
-                    : 'bg-slate-950 border-slate-800 text-slate-300'
-                }`}
-              >
-                <div className="font-semibold flex items-center gap-2 mb-1">
-                  <AlertTriangle className="w-4 h-4 text-amber-400" />
-                  {g.action}
-                </div>
-                <div className="text-xs text-slate-400 pl-6">{g.detail}</div>
-              </div>
-            ))}
-          </div>
-        )}
+    <section className="cust-section page" aria-labelledby="cust-risk">
+      <header className="cust-section-head">
+        <h2 id="cust-risk" className="cust-h2"><em>Why</em> your area is flagged</h2>
+        <p className="cust-note">Based on this scenario only, not a weather or outage forecast.</p>
+      </header>
+      <div className="cust-section-body">
+        <p className="cust-risk-band"><span className="state" data-state={RISK_STATE[view.customer_risk.band] ?? 'unknown'}>{sentenceCase(view.customer_risk.band)} risk</span><span className="muted small">Confidence: {sentenceCase(view.customer_risk.confidence_kind)}</span></p>
+        {view.customer_risk.drivers.length ? <ul className="cust-drivers">{view.customer_risk.drivers.map(driver => <li key={driver}>{driver}</li>)}</ul> : <p className="cust-empty">No contributing factors supplied.</p>}
       </div>
+    </section>
 
-      {/* Step 5: Backup Battery Planning Calculator */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg space-y-4">
-        <div className="flex items-center gap-2">
-          <Battery className="w-5 h-5 text-emerald-400" />
-          <h2 className="text-lg font-bold text-white">Home Battery Runtime Calculator</h2>
-        </div>
-        <p className="text-sm text-slate-400">
-          Budget your portable power station or home battery against critical household loads.
-        </p>
+  </div>;
+}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Battery Nominal Capacity (Wh)</label>
-            <input
-              type="number"
-              value={needs.battery_capacity_wh}
-              onChange={(e) => setNeeds({ ...needs, battery_capacity_wh: Number(e.target.value) })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1">Continuous Critical Load (Watts)</label>
-            <input
-              type="number"
-              value={needs.essential_load_w}
-              onChange={(e) => setNeeds({ ...needs, essential_load_w: Number(e.target.value) })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"
-            />
-          </div>
-        </div>
-
-        {batteryCalc && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/80 rounded-xl p-4 border border-slate-800/80 text-center">
-            <div>
-              <div className="text-xs text-slate-400">Usable Wh</div>
-              <div className="text-lg font-bold text-white">{batteryCalc.usable_wh} Wh</div>
-            </div>
-            <div>
-              <div className="text-xs text-slate-400">Effective Load</div>
-              <div className="text-lg font-bold text-white">{batteryCalc.effective_load_w} W</div>
-            </div>
-            <div>
-              <div className="text-xs text-slate-400">Theoretical Runtime</div>
-              <div className="text-lg font-bold text-emerald-400">{batteryCalc.theoretical_hours} hrs</div>
-            </div>
-            <div>
-              <div className="text-xs text-slate-400">Conservative Reserve</div>
-              <div className="text-lg font-bold text-blue-400">{batteryCalc.conservative_hours} hrs</div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Step 6: Alerts & Notification History */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg space-y-3">
-        <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-blue-400" />
-          Proactive Alert History
-        </h2>
-        <div className="space-y-2">
-          {snapshot?.notifications && snapshot.notifications.length > 0 ? (
-            snapshot.notifications.map((n, i) => (
-              <div key={i} className="bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-blue-900/40 text-blue-400 text-xs font-mono font-semibold">
-                  {n.type}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="text-slate-200">{n.text}</div>
-                  <div className="text-xs text-slate-500 mt-1">{n.sent_at_utc} (Demo Broadcast)</div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-sm text-slate-500 italic">No alerts dispatched yet for this premise.</div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+export default CustomerPage;

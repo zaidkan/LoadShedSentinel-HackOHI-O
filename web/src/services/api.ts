@@ -87,7 +87,7 @@ export async function fetchCustomerSnapshot(): Promise<CustomerSnapshotView> {
   return res.json();
 }
 
-export async function lookupPremiseTopology(premiseId: string): Promise<any> {
+export async function lookupPremiseTopology(premiseId: string): Promise<TopologyTrace> {
   const res = await fetch(`/api/topology/lookup?premise_id=${encodeURIComponent(premiseId)}`);
   if (!res.ok) throw new Error(`API error: ${res.statusText}`);
   return res.json();
@@ -151,4 +151,41 @@ export async function fetchAEPAssets(): Promise<AEPSourceAsset[]> {
   const res = await fetch('/api/aep/assets');
   if (!res.ok) throw new Error('AEP source data unavailable: ' + res.status);
   return res.json();
+}
+
+export interface AEPSourceSummary {
+  provenance: string;
+  origin: string;
+  scope: string;
+  premises_in_sample: number;
+  equipment_in_sample: number;
+  basis: string;
+  is_live_outage_data: boolean;
+  is_full_territory_impact_count: boolean;
+  limitations: string[];
+}
+
+export async function fetchAEPSource(): Promise<AEPSourceSummary> {
+  const res = await fetch('/api/aep/source');
+  if (!res.ok) throw new Error('AEP source summary unavailable: ' + res.status);
+  return res.json();
+}
+
+export interface TopologyEquipment {
+  asset_token: string;
+  kind: string;
+}
+
+export interface TopologyTrace {
+  status: 'KNOWN' | 'UNKNOWN' | string;
+  premise_token?: string;
+  path: string[];
+  equipment?: TopologyEquipment[];
+  direction?: string;
+  endpoint?: string;
+  substation_status?: string;
+  basis?: string;
+  scope?: string;
+  limitations?: string[];
+  reason?: string;
 }
