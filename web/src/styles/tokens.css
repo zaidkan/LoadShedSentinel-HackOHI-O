@@ -1,0 +1,97 @@
+:root {
+  color-scheme: light;
+
+  --night-0: #0c0a1d;
+  --night-1: #17133a;
+  --night-2: #262058;
+  --night-3: #3b3184;
+  --dusk: #6a58c4;
+  --dusk-haze: #a796e6;
+  --horizon: #d9cff6;
+
+  --paper: #f3f1fa;
+  --paper-2: #ebe8f6;
+  --paper-3: #e1ddf1;
+  --card: #ffffff;
+  --ink: #15122e;
+  --ink-2: #353159;
+  --muted: #5f5c7d;
+  --on-night: #f4f1ff;
+  --on-night-muted: #bdb6e3;
+  --line: #dcd8ee;
+  --line-strong: #c3bddf;
+  --line-night: rgb(214 205 255 / 0.18);
+
+  --accent: #5b34f0;
+  --accent-strong: #4420d4;
+  --accent-soft: #e7e0ff;
+  --accent-ink: #ffffff;
+
+  --state-open: #9a5a00;
+  --state-open-fill: #f0b04a;
+  --state-open-soft: #fdf0d9;
+  --state-closed: #186b47;
+  --state-closed-fill: #59c494;
+  --state-closed-soft: #dcf3e8;
+  --state-unknown: #545a78;
+  --state-unknown-fill: #a9aec8;
+  --state-unknown-soft: #e9eaf2;
+  --state-critical: #a8261c;
+  --state-critical-fill: #e5736a;
+  --state-critical-soft: #fbe3e0;
+
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-body: "Hanken Grotesk Variable", "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --text-hero: clamp(2.75rem, 7.1vw, 6rem);
+  --text-display: clamp(2.4rem, 5.4vw, 5rem);
+  --text-display-s: clamp(2rem, 3.6vw, 3.25rem);
+  --text-title: clamp(1.375rem, 1.6vw, 1.625rem);
+  --text-lead: clamp(1.0625rem, 1.25vw, 1.25rem);
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-micro: 0.75rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --gutter: clamp(1rem, 3.2vw, 2.5rem);
+  --page-max: 92rem;
+
+  --radius-xs: 4px;
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 1px 2px rgb(21 18 46 / 0.05), 0 8px 24px -12px rgb(21 18 46 / 0.12);
+  --shadow-float: 0 2px 6px rgb(21 18 46 / 0.08), 0 24px 48px -24px rgb(21 18 46 / 0.28);
+
+  --btn-stroke: linear-gradient(100deg, #2d257d 0%, #8a5cff 6%, #f3f1fa 32%, #f3f1fa 60%, #c9c3e6 84%, #8a5cff 100%);
+  --btn-stroke-night: linear-gradient(100deg, #8a5cff 0%, rgb(244 241 255 / 0.85) 30%, rgb(244 241 255 / 0.2) 60%, #8a5cff 100%);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur-ui: 240ms;
+  --dur-reveal: 900ms;
+
+  --header-h: 4.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-ui: 0ms;
+    --dur-reveal: 0ms;
+  }
+}
