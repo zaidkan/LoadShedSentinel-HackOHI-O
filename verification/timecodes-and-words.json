@@ -1,7 +1,7 @@
 {
   "passed": true,
   "total_seconds": 180,
-  "total_spoken_words": 403,
+  "total_spoken_words": 400,
   "delivery_seconds": 172,
   "silent_seconds": 8,
   "segments": [
@@ -31,9 +31,9 @@
       "start": "01:25",
       "end": "02:15",
       "duration_seconds": 50,
-      "spoken_words": 108,
+      "spoken_words": 104,
       "delivery_seconds": 48,
-      "words_per_delivery_minute": 135.0
+      "words_per_delivery_minute": 130.0
     },
     {
       "speaker": 4,
@@ -41,9 +41,9 @@
       "start": "02:15",
       "end": "03:00",
       "duration_seconds": 45,
-      "spoken_words": 103,
+      "spoken_words": 104,
       "delivery_seconds": 43,
-      "words_per_delivery_minute": 143.72
+      "words_per_delivery_minute": 145.12
     }
   ],
   "word_count_rule": "Whitespace-delimited words in the four quoted narration blocks only; numeric facts spelled out.",
