@@ -9,7 +9,7 @@
 .feeder-svg {
   display: block;
   width: 100%;
-  height: 300px;
+  height: auto;
   color: var(--ink-2);
 }
 

@@ -91,29 +91,61 @@ const CUTOUT_TEXT: Record<CutoutStatus, string> = {
   UNKNOWN: 'Cutout position unknown · energization unconfirmed',
 };
 
-const MAP_HEIGHT = 320, CELL_INSET_X = 96, CELL_INSET_Y = 56, CELL_STEP_X = 78, CELL_STEP_Y = 76;
+const MAP_HEIGHT = 320, CELL_INSET_X = 96, CELL_INSET_Y = 56, CELL_STEP_X = 78, CELL_STEP_Y = 76, CELL_GAP = 12, CELL_LABEL = 24;
 
 interface GeneralizedCell { key: string; position: Position; center: Position; width: number; height: number; tokens: string[] }
+interface CellLayout { placed: Map<string, Position>; cells: GeneralizedCell[]; height: number; stacked: boolean; point: (p: Position) => Position }
 
-/** Generalized coordinates put several devices in one grid cell; spread them inside the cell instead of stacking them. */
-function generalizedCells(topology: FeederTopology, project: (p: Position) => Position) {
+/**
+ * Generalized coordinates put several devices in one grid cell; spread them inside the cell instead of stacking them.
+ * When the cells cannot sit at their projected positions without colliding, list them west to east in one column.
+ */
+function layoutCells(topology: FeederTopology, width: number): CellLayout {
   const groups = new Map<string, MapNode[]>();
   for (const node of topology.nodes) {
     const key = node.position.join(',');
     groups.set(key, [...(groups.get(key) ?? []), node]);
   }
-  const placed = new Map<string, Position>(), cells: GeneralizedCell[] = [];
-  for (const [key, members] of groups) {
-    const center = project(members[0].position);
-    const columns = Math.min(members.length, 3), rows = Math.ceil(members.length / columns);
-    members.forEach((node, index) => {
-      const column = index % columns, row = Math.floor(index / columns);
-      const inRow = row === rows - 1 ? members.length - row * columns : columns;
-      placed.set(node.token, [center[0] + (column - (inRow - 1) / 2) * CELL_STEP_X, center[1] + (row - (rows - 1) / 2) * CELL_STEP_Y]);
+  const maxColumns = Math.max(1, Math.min(3, Math.floor((width - 2 * CELL_GAP) / CELL_STEP_X)));
+  const sized = [...groups].map(([key, members]) => {
+    const columns = Math.min(members.length, maxColumns), rows = Math.ceil(members.length / columns);
+    return { key, members, columns, rows, width: columns * CELL_STEP_X + 8, height: rows * CELL_STEP_Y + 10 };
+  });
+  const base = fitFeederCoordinates(topology, width - CELL_INSET_X * 2, MAP_HEIGHT - CELL_INSET_Y * 2);
+  const project = (p: Position): Position => { const [x, y] = base(p); return [x + CELL_INSET_X, y + CELL_INSET_Y]; };
+  const box = (center: Position, cell: { width: number; height: number }) => ({
+    left: center[0] - cell.width / 2, right: center[0] + cell.width / 2,
+    top: center[1] - cell.height / 2 - 8 - CELL_LABEL, bottom: center[1] + cell.height / 2 + 24,
+  });
+  const projected = sized.map(cell => ({ cell, center: project(cell.members[0].position) }));
+  const boxes = projected.map(({ cell, center }) => box(center, cell));
+  const fits = boxes.every(b => b.left >= 0 && b.right <= width && b.top >= 0 && b.bottom <= MAP_HEIGHT)
+    && boxes.every((a, i) => boxes.every((b, j) => j <= i || a.right + CELL_GAP <= b.left || b.right + CELL_GAP <= a.left || a.bottom + CELL_GAP <= b.top || b.bottom + CELL_GAP <= a.top));
+
+  const centers = new Map<string, Position>();
+  let height = MAP_HEIGHT;
+  if (fits) projected.forEach(({ cell, center }) => centers.set(cell.key, center));
+  else {
+    let cursor = CELL_GAP + CELL_LABEL;
+    [...sized].sort((a, b) => a.members[0].position[0] - b.members[0].position[0] || b.members[0].position[1] - a.members[0].position[1]).forEach(cell => {
+      centers.set(cell.key, [width / 2, cursor + 8 + cell.height / 2]);
+      cursor += cell.height + 32 + CELL_GAP + CELL_LABEL;
     });
-    if (members.length > 1) cells.push({ key, position: members[0].position, center, width: columns * CELL_STEP_X + 8, height: rows * CELL_STEP_Y + 10, tokens: members.map(node => node.token) });
+    height = Math.max(cursor, 160);
   }
-  return { placed, cells };
+
+  const placed = new Map<string, Position>(), cells: GeneralizedCell[] = [];
+  for (const cell of sized) {
+    const center = centers.get(cell.key)!;
+    cell.members.forEach((node, index) => {
+      const column = index % cell.columns, row = Math.floor(index / cell.columns);
+      const inRow = row === cell.rows - 1 ? cell.members.length - row * cell.columns : cell.columns;
+      placed.set(node.token, [center[0] + (column - (inRow - 1) / 2) * CELL_STEP_X, center[1] + (row - (cell.rows - 1) / 2) * CELL_STEP_Y]);
+    });
+    if (cell.members.length > 1) cells.push({ key: cell.key, position: cell.members[0].position, center, width: cell.width, height: cell.height, tokens: cell.members.map(node => node.token) });
+  }
+  const point = (p: Position) => centers.get(p.join(',')) ?? project(p);
+  return { placed, cells, height, stacked: !fits, point };
 }
 
 export interface FeederMapProps { snapshot: ScenarioSnapshot; topology?: unknown }
@@ -144,12 +176,8 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
     if (data === undefined) return null;
     try { return parseFeederTopology(data); } catch { return null; }
   }, [data]);
-  const project = useMemo(() => {
-    if (!parsed) return null;
-    const base = fitFeederCoordinates(parsed, width - CELL_INSET_X * 2, MAP_HEIGHT - CELL_INSET_Y * 2);
-    return (p: Position): Position => { const [x, y] = base(p); return [x + CELL_INSET_X, y + CELL_INSET_Y]; };
-  }, [parsed, width]);
-  const cells = useMemo(() => parsed && project ? generalizedCells(parsed, project) : null, [parsed, project]);
+  const layout = useMemo(() => parsed ? layoutCells(parsed, width) : null, [parsed, width]);
+  const mapHeight = layout?.height ?? MAP_HEIGHT;
   const loadFailed = (topology === undefined && failed) || (data !== undefined && !parsed);
   const current = parsed?.nodes.find(node => node.token === snapshot.current_asset_id);
   const active = parsed?.nodes.find(node => node.token === (hovered || inspected)) || current || parsed?.nodes[0];
@@ -167,19 +195,19 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
         : !parsed ? <p className="feeder-empty" role="status">Loading network topology…</p>
         : !parsed.nodes.length && !parsed.links.length ? <p className="feeder-empty" role="status">No equipment geometry supplied. Topology status: {parsed.status}.</p>
         : <>
-          <svg viewBox={`0 0 ${width} ${MAP_HEIGHT}`} className="feeder-svg" role="group" aria-labelledby={`${uid}-title ${uid}-description`}>
+          <svg viewBox={`0 0 ${width} ${mapHeight}`} className="feeder-svg" role="group" aria-labelledby={`${uid}-title ${uid}-description`}>
             <title id={`${uid}-title`}>Equipment locations</title><desc id={`${uid}-description`}>Generalized equipment positions. Arrows, when supplied, show upstream to downstream relationships, not measured power flow. Focus or select equipment to inspect it. Only the current asset has a supplied cutout state.</desc>
             <defs>
               <marker id={`${uid}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5 0 10Z" fill="currentColor" /></marker>
               <pattern id={`${uid}-grid`} width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" className="feeder-grid-line" /></pattern>
             </defs>
-            <rect width={width} height={MAP_HEIGHT} fill={`url(#${uid}-grid)`} />
-            {cells?.cells.map(cell => <g key={cell.key} className="feeder-cell" aria-hidden="true">
+            <rect width={width} height={mapHeight} fill={`url(#${uid}-grid)`} />
+            {layout?.cells.map(cell => <g key={cell.key} className="feeder-cell" aria-hidden="true">
               <rect x={cell.center[0] - cell.width / 2} y={cell.center[1] - cell.height / 2 - 8} width={cell.width} height={cell.height + 32} rx="14" />
               <text x={cell.center[0] - cell.width / 2 + 10} y={cell.center[1] - cell.height / 2 - 14}>Cell {cell.position[1].toFixed(2)}°, {cell.position[0].toFixed(2)}° · {cell.tokens.length} devices</text>
             </g>)}
             {parsed.links.map((link, index) => {
-              const positions = link.positions.map(p => project!(p));
+              const positions = link.positions.map(p => layout!.point(p));
               // Shorten the last segment so the arrow remains visible outside the node's hit area.
               if (link.directed) {
                 const end = positions[positions.length - 1], before = positions[positions.length - 2];
@@ -189,7 +217,7 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
               return <polyline key={index} className={`feeder-link${link.directed ? '' : ' feeder-link--unknown'}`} points={positions.map(p => p.join(',')).join(' ')} markerEnd={link.directed ? `url(#${uid}-arrow)` : undefined}><title>{link.directed ? `${link.upstream} supplies ${link.downstream} · topology only` : 'Link direction unavailable'}</title></polyline>;
             })}
             {parsed.nodes.map(node => {
-              const [x, y] = cells?.placed.get(node.token) ?? project!(node.position), selected = node.token === snapshot.current_asset_id;
+              const [x, y] = layout?.placed.get(node.token) ?? layout!.point(node.position), selected = node.token === snapshot.current_asset_id;
               const description = `${node.token} · ${node.label} · ${selected ? CUTOUT_TEXT[snapshot.cutout_status] : 'Energization not supplied'}`;
               return <g key={node.token} transform={`translate(${x} ${y})`} role="button" tabIndex={0} aria-label={description} aria-pressed={active?.token === node.token}
                 className="feeder-node" data-current={selected || undefined} data-state={selected ? snapshot.cutout_status.toLowerCase() : undefined}
@@ -209,7 +237,7 @@ export function FeederMap({ snapshot, topology }: FeederMapProps) {
         </>}
     </div>
     {parsed ? <div className="feeder-notes">
-      <p className="feeder-legend"><span>Arrow: upstream → downstream</span><span>Ring: current asset</span><span>Other equipment: state not supplied</span>{!parsed.links.length ? <span>No links supplied in this slice; see the supply path above</span> : null}</p>
+      <p className="feeder-legend"><span>Arrow: upstream → downstream</span><span>Ring: current asset</span><span>Other equipment: state not supplied</span>{!parsed.links.length ? <span>No links supplied in this slice; see the supply path above</span> : null}{layout?.stacked ? <span>Cells listed west to east to fit this screen</span> : null}</p>
       {!current ? <p role="status">Current asset {snapshot.current_asset_id} is not located in this topology slice.</p> : null}
       {parsed.missing.length ? <p>Missing equipment geometry: <span className="mono">{parsed.missing.join(', ')}</span>.</p> : null}
       {parsed.omitted ? <p>{parsed.omitted} unsupported or invalid features omitted.</p> : null}
